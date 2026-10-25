@@ -42,3 +42,9 @@ coverage/
 tmp/
 temp/
 *.tmp
+
+# Framework caches
+.astro/
+.turbo/
+next-env.d.ts
+*.tsbuildinfo

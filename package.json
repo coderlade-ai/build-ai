@@ -1,0 +1,21 @@
+{
+  "name": "ladestack-build",
+  "private": true,
+  "description": "LadeStack Build monorepo: Astro website (/) and Next.js builder (/app).",
+  "packageManager": "pnpm@9.15.9",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev:website": "pnpm --filter @ladestack/website dev",
+    "dev:builder": "pnpm --filter @ladestack/builder dev",
+    "build": "pnpm -r --if-present build",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "prettier": "3.3.3",
+    "typescript": "5.6.3"
+  }
+}

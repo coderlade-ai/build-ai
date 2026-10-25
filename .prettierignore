@@ -1,0 +1,7 @@
+# Planning documents are owner-authored; do not reformat them.
+*.md
+pnpm-lock.yaml
+node_modules
+dist
+.next
+.astro
