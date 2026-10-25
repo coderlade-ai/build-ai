@@ -1,0 +1,21 @@
+{
+  "name": "@ladestack/website",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "typecheck": "astro check"
+  },
+  "dependencies": {
+    "@ladestack/design-tokens": "workspace:*",
+    "@ladestack/i18n": "workspace:*",
+    "astro": "5.14.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.4",
+    "typescript": "5.6.3"
+  }
+}

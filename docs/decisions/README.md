@@ -1,0 +1,21 @@
+# Architecture Decision Records
+
+Phase 0 decisions for LadeStack Build. Each record states the context, the decision and its consequences. A decision changes only through a new ADR that supersedes the old one.
+
+| ADR | Title | Status |
+|---|---|---|
+| [0001](0001-documentation-source-of-truth-and-priority.md) | Documentation source of truth and priority | Accepted |
+| [0002](0002-build-order.md) | Build order | Accepted |
+| [0003](0003-approval-persistence-scope.md) | Approval persistence scope | Accepted |
+| [0004](0004-blog-localization-strictness.md) | Blog localization strictness | Accepted |
+| [0005](0005-ui-component-foundation.md) | UI component foundation | Accepted |
+| [0006](0006-canonical-names-glossary.md) | Canonical names glossary | Accepted |
+| [0007](0007-hosting-and-routing.md) | Hosting and routing | Accepted |
+| [0008](0008-browser-runtime-selection.md) | Browser runtime selection | Accepted |
+| [0009](0009-alpha-scope.md) | Alpha scope | Accepted |
+| [0010](0010-git-branch-and-push-policy.md) | Git branch and push policy | Accepted |
+| [0011](0011-product-licence.md) | Product licence | Proposed — awaiting owner |
+| [0012](0012-portuguese-locale-variant.md) | Portuguese locale variant | Proposed — awaiting owner |
+| [0013](0013-legacy-gb-coder-data-migration.md) | Legacy "GB Coder" data migration | Proposed — awaiting owner |
+
+Open items still needing the owner: product licence (0011), Portuguese variant (0012), GB Coder migration (0013), attachment size limits, official contact details.

@@ -1,0 +1,13 @@
+{
+  "name": "@ladestack/shared-types",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Canonical project, tool, checkpoint and event contracts (ADR 0006).",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  }
+}
