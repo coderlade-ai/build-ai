@@ -1,0 +1,13 @@
+{
+  "name": "@ladestack/i18n",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Locale registry shared by the Astro website and the Next.js builder.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  }
+}

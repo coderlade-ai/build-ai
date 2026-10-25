@@ -15,6 +15,12 @@ importers:
         specifier: 5.6.3
         version: 5.6.3
 
+  packages/design-tokens: {}
+
+  packages/i18n: {}
+
+  packages/shared-types: {}
+
 packages:
 
   prettier@3.3.3:

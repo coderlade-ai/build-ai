@@ -1,0 +1,14 @@
+{
+  "name": "@ladestack/design-tokens",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Shared LadeStack Build design tokens (DESIGN.md, adapted; pricing excluded).",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./tokens.css": "./src/tokens.css"
+  },
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json"
+  }
+}
