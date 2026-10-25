@@ -2,6 +2,7 @@
   "name": "ladestack-build",
   "private": true,
   "description": "LadeStack Build monorepo: Astro website (/) and Next.js builder (/app).",
+  "license": "MIT",
   "packageManager": "pnpm@9.15.9",
   "engines": {
     "node": ">=22"

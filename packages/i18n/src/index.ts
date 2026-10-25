@@ -1,7 +1,7 @@
 /**
  * The eight supported locales (PRD owner decision 5). English is the default
  * and is served without a prefix; every other locale uses its code as prefix.
- * Portuguese variant is pending owner confirmation (ADR 0012, proposed pt-BR).
+ * Portuguese is Brazilian Portuguese (ADR 0012): prefix /pt, BCP 47 tag pt-BR.
  */
 export const locales = ["en", "ru", "ja", "ko", "zh", "tr", "fr", "pt"] as const;
 
@@ -27,7 +27,7 @@ export const localeInfo: Record<Locale, LocaleInfo> = {
   zh: { nativeName: "简体中文", englishName: "Chinese (Simplified)", bcp47: "zh-Hans", dir: "ltr" },
   tr: { nativeName: "Türkçe", englishName: "Turkish", bcp47: "tr", dir: "ltr" },
   fr: { nativeName: "Français", englishName: "French", bcp47: "fr", dir: "ltr" },
-  pt: { nativeName: "Português", englishName: "Portuguese", bcp47: "pt", dir: "ltr" },
+  pt: { nativeName: "Português", englishName: "Portuguese (Brazil)", bcp47: "pt-BR", dir: "ltr" },
 };
 
 export function isLocale(value: string): value is Locale {

@@ -1,6 +1,6 @@
 # ADR 0011: Product licence
 
-- **Status:** Proposed — awaiting owner
+- **Status:** Accepted (owner confirmed 2026-10-25)
 - **Date:** 2026-10-25
 
 ## Context
@@ -9,7 +9,7 @@ The licence of the LadeStack Build codebase is undecided. Kilo Code is MIT, whic
 
 ## Decision
 
-Proposal: **MIT**. No `LICENSE` file is added until the owner confirms. Third-party notices are always preserved.
+**MIT**, confirmed by the owner on 2026-10-25. The root `LICENSE` file holds the text. Third-party notices are always preserved.
 
 ## Consequences
 
