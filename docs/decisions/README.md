@@ -14,8 +14,8 @@ Phase 0 decisions for LadeStack Build. Each record states the context, the decis
 | [0008](0008-browser-runtime-selection.md) | Browser runtime selection | Accepted |
 | [0009](0009-alpha-scope.md) | Alpha scope | Accepted |
 | [0010](0010-git-branch-and-push-policy.md) | Git branch and push policy | Accepted |
-| [0011](0011-product-licence.md) | Product licence | Proposed — awaiting owner |
-| [0012](0012-portuguese-locale-variant.md) | Portuguese locale variant | Proposed — awaiting owner |
+| [0011](0011-product-licence.md) | Product licence | Accepted |
+| [0012](0012-portuguese-locale-variant.md) | Portuguese locale variant | Accepted |
 | [0013](0013-legacy-gb-coder-data-migration.md) | Legacy "GB Coder" data migration | Proposed — awaiting owner |
 
-Open items still needing the owner: product licence (0011), Portuguese variant (0012), GB Coder migration (0013), attachment size limits, official contact details.
+Open items still needing the owner: GB Coder migration (0013), attachment size limits, official contact details.
