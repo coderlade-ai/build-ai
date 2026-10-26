@@ -22,3 +22,12 @@ export const previewMessages = {
   loaded: "ladestack:preview-loaded",
   log: "ladestack:preview-log",
 } as const;
+
+/**
+ * Address of the project page itself on the preview origin, for "Open in new tab". The service
+ * worker serves it from the files this session stored, so reloading that tab shows the latest
+ * saved files; it stops working once another project is previewed.
+ */
+export function previewPageUrl(origin: string, session: string): string {
+  return `${origin.replace(/\/+$/, "")}/p/${encodeURIComponent(session)}/index.html`;
+}

@@ -26,3 +26,11 @@ The preview must not share an origin with the builder or website. A separate reg
 - Alpha browsers (Chrome/Edge desktop, ADR 0009) support the module service worker used here; Firefox support for module workers should be checked before widening browser support.
 - The CI browser check builds the builder with a local preview origin, serves `apps/preview`, opens the static template's preview and clicks its button, proving scripts run there under both policies.
 - Preview updates on every saved change; unsaved editor text is not previewed.
+
+## Addendum (Oct 2026): Open in new tab
+
+The builder can open the project page itself (`<preview origin>/p/<session>/index.html`) in a new
+tab with `noopener,noreferrer`. It stays on the isolated preview origin and is served by the same
+service worker from the session's cache, so reloading that tab shows the latest saved files. The
+session id is random and unguessable; the tab stops working once another project is previewed
+(the host deletes other sessions' caches). Nothing is published off the device.

@@ -32,6 +32,8 @@ export interface WorkspaceStrings {
   previewLoading: string;
   previewFrame: string;
   reloadPreview: string;
+  openPreviewTab: string;
+  openPreviewTabHint: string;
   viewportLabel: string;
   viewportDesktop: string;
   viewportTablet: string;
@@ -79,6 +81,9 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     previewLoading: "Loading preview…",
     previewFrame: "Preview of your project",
     reloadPreview: "Reload preview",
+    openPreviewTab: "Open in new tab",
+    openPreviewTabHint:
+      "Opens the preview on its own. Reload that tab after saving to see changes.",
     viewportLabel: "Preview size",
     viewportDesktop: "Desktop",
     viewportTablet: "Tablet",
@@ -124,6 +129,9 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     previewLoading: "Загрузка предпросмотра…",
     previewFrame: "Предпросмотр вашего проекта",
     reloadPreview: "Обновить предпросмотр",
+    openPreviewTab: "Открыть в новой вкладке",
+    openPreviewTabHint:
+      "Открывает предпросмотр отдельно. Обновите ту вкладку после сохранения, чтобы увидеть изменения.",
     viewportLabel: "Размер предпросмотра",
     viewportDesktop: "Компьютер",
     viewportTablet: "Планшет",
@@ -169,6 +177,9 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     previewLoading: "プレビューを読み込み中…",
     previewFrame: "プロジェクトのプレビュー",
     reloadPreview: "プレビューを再読み込み",
+    openPreviewTab: "新しいタブで開く",
+    openPreviewTabHint:
+      "プレビューを単独で開きます。保存後にそのタブを再読み込みすると変更が表示されます。",
     viewportLabel: "プレビューのサイズ",
     viewportDesktop: "デスクトップ",
     viewportTablet: "タブレット",
@@ -214,6 +225,9 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     previewLoading: "미리보기 불러오는 중…",
     previewFrame: "프로젝트 미리보기",
     reloadPreview: "미리보기 새로고침",
+    openPreviewTab: "새 탭에서 열기",
+    openPreviewTabHint:
+      "미리보기를 따로 엽니다. 저장한 뒤 그 탭을 새로고침하면 변경 사항이 보입니다.",
     viewportLabel: "미리보기 크기",
     viewportDesktop: "데스크톱",
     viewportTablet: "태블릿",
@@ -256,6 +270,8 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     previewLoading: "正在加载预览…",
     previewFrame: "你的项目预览",
     reloadPreview: "重新加载预览",
+    openPreviewTab: "在新标签页中打开",
+    openPreviewTabHint: "单独打开预览。保存后刷新该标签页即可看到更改。",
     viewportLabel: "预览尺寸",
     viewportDesktop: "桌面",
     viewportTablet: "平板",
@@ -301,6 +317,9 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     previewLoading: "Önizleme yükleniyor…",
     previewFrame: "Projenizin önizlemesi",
     reloadPreview: "Önizlemeyi yenile",
+    openPreviewTab: "Yeni sekmede aç",
+    openPreviewTabHint:
+      "Önizlemeyi ayrı açar. Değişiklikleri görmek için kaydettikten sonra o sekmeyi yenileyin.",
     viewportLabel: "Önizleme boyutu",
     viewportDesktop: "Masaüstü",
     viewportTablet: "Tablet",
@@ -347,6 +366,9 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     previewLoading: "Chargement de l'aperçu…",
     previewFrame: "Aperçu de votre projet",
     reloadPreview: "Recharger l'aperçu",
+    openPreviewTab: "Ouvrir dans un nouvel onglet",
+    openPreviewTabHint:
+      "Ouvre l’aperçu seul. Rechargez cet onglet après l’enregistrement pour voir les changements.",
     viewportLabel: "Taille de l'aperçu",
     viewportDesktop: "Ordinateur",
     viewportTablet: "Tablette",
@@ -393,6 +415,9 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     previewLoading: "Carregando pré-visualização…",
     previewFrame: "Pré-visualização do seu projeto",
     reloadPreview: "Recarregar pré-visualização",
+    openPreviewTab: "Abrir em nova aba",
+    openPreviewTabHint:
+      "Abre a pré-visualização sozinha. Recarregue essa aba depois de salvar para ver as mudanças.",
     viewportLabel: "Tamanho da pré-visualização",
     viewportDesktop: "Computador",
     viewportTablet: "Tablet",
