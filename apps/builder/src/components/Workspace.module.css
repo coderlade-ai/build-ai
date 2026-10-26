@@ -556,3 +556,12 @@
   justify-content: flex-end;
   padding: 6px 16px;
 }
+.previewWrap {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.hiddenPane {
+  display: none;
+}

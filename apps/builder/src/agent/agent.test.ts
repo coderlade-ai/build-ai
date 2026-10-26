@@ -364,8 +364,12 @@ describe("Plan mode", () => {
 });
 
 describe("Debug mode", () => {
-  it("is read-only like Plan", async () => {
-    expect(toolsForMode("debug").map((t) => t.name)).toEqual(["list_files", "read_file"]);
+  it("is read-only like Plan, plus checking the preview", async () => {
+    expect(toolsForMode("debug").map((t) => t.name)).toEqual([
+      "list_files",
+      "read_file",
+      "check_preview",
+    ]);
     const r = await runTool(store, projectId, call("write_file", { path: "z.txt", content: "z" }), {
       mode: "debug",
     });
@@ -377,5 +381,27 @@ describe("Debug mode", () => {
     const p = applyFixPrompt("button does nothing", "onClick missing in App.tsx");
     expect(p).toContain("button does nothing");
     expect(p).toContain("onClick missing in App.tsx");
+  });
+});
+
+describe("check_preview tool", () => {
+  it("reports the preview console in Code and Debug, never in Plan", async () => {
+    const checkPreview = vi.fn(async () => "The page loaded. Console: 1 error(s)");
+    for (const mode of ["code", "debug"] as const) {
+      const r = await runTool(store, projectId, call("check_preview", {}), { mode, checkPreview });
+      expect(r).toMatchObject({ isError: false, output: "The page loaded. Console: 1 error(s)" });
+    }
+    const plan = await runTool(store, projectId, call("check_preview", {}), {
+      mode: "plan",
+      checkPreview,
+    });
+    expect(plan.isError).toBe(true);
+    expect(checkPreview).toHaveBeenCalledTimes(2);
+    expect(toolsForMode("plan").map((t) => t.name)).not.toContain("check_preview");
+  });
+
+  it("fails cleanly without a preview", async () => {
+    const r = await runTool(store, projectId, call("check_preview", {}));
+    expect(r).toMatchObject({ isError: true, output: "The preview is not available here." });
   });
 });
