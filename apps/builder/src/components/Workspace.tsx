@@ -1,14 +1,20 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useRef, useState, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { localePrefix, type Locale } from "@ladestack/i18n";
 import type { Project, ProjectFile } from "@ladestack/shared-types";
 import { workspace } from "../i18n/workspace";
 import { getProjectStore } from "../storage/client";
 import { buildFileTree, defaultFile, type TreeNode } from "../workspace/fileTree";
 import styles from "./Workspace.module.css";
+
+// Monaco is heavy and browser-only: load it when a project opens, never on the welcome screen.
+const CodeEditor = dynamic(() => import("../editor/CodeEditor").then((m) => m.CodeEditor), {
+  ssr: false,
+});
 
 type Load = { state: "loading" } | { state: "missing" } | { state: "ready"; project: Project };
 type Save = "saved" | "dirty" | "saving" | "error" | "conflict";
@@ -108,11 +114,8 @@ export function Workspace({ locale }: { locale: Locale }) {
     timer.current = setTimeout(() => void persist(), autosaveDelayMs);
   }
 
-  function onKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
-    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") {
-      e.preventDefault();
-      if (save !== "conflict") void persist();
-    }
+  function saveNow() {
+    if (save !== "conflict") void persist();
   }
 
   async function select(path: string) {
@@ -191,16 +194,15 @@ export function Workspace({ locale }: { locale: Locale }) {
                   {open.path}
                   {save === "dirty" ? <span aria-hidden="true"> ●</span> : null}
                 </p>
-                <textarea
-                  className={styles.editor}
-                  aria-label={open.path}
-                  value={open.content}
-                  spellCheck={false}
-                  autoCapitalize="off"
-                  autoCorrect="off"
-                  onChange={(e) => edit(e.target.value)}
-                  onKeyDown={onKeyDown}
-                />
+                <div className={styles.editor}>
+                  <CodeEditor
+                    path={open.path}
+                    value={open.content}
+                    loadingLabel={w.editorLoading}
+                    onChange={edit}
+                    onSave={saveNow}
+                  />
+                </div>
               </>
             ) : (
               <p className={styles.empty}>{w.selectFile}</p>

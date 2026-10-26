@@ -21,6 +21,7 @@ export interface WorkspaceStrings {
   reloadFile: string;
   back: string;
   viewLabel: string;
+  editorLoading: string;
 }
 
 export const workspace: Record<Locale, WorkspaceStrings> = {
@@ -48,6 +49,7 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     reloadFile: "Load the latest version",
     back: "Back to start",
     viewLabel: "View",
+    editorLoading: "Loading editor…",
   },
   ru: {
     useTemplate: "Использовать шаблон",
@@ -73,6 +75,7 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     reloadFile: "Загрузить последнюю версию",
     back: "В начало",
     viewLabel: "Вид",
+    editorLoading: "Загрузка редактора…",
   },
   ja: {
     useTemplate: "このテンプレートを使う",
@@ -98,6 +101,7 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     reloadFile: "最新版を読み込む",
     back: "最初に戻る",
     viewLabel: "表示",
+    editorLoading: "エディタを読み込んでいます…",
   },
   ko: {
     useTemplate: "이 템플릿 사용",
@@ -123,6 +127,7 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     reloadFile: "최신 버전 불러오기",
     back: "처음으로",
     viewLabel: "보기",
+    editorLoading: "편집기를 불러오는 중…",
   },
   zh: {
     useTemplate: "使用此模板",
@@ -144,6 +149,7 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     reloadFile: "加载最新版本",
     back: "返回开始",
     viewLabel: "视图",
+    editorLoading: "正在加载编辑器…",
   },
   tr: {
     useTemplate: "Bu şablonu kullan",
@@ -169,6 +175,7 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     reloadFile: "En son sürümü yükle",
     back: "Başa dön",
     viewLabel: "Görünüm",
+    editorLoading: "Düzenleyici yükleniyor…",
   },
   fr: {
     useTemplate: "Utiliser ce modèle",
@@ -194,6 +201,7 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     reloadFile: "Charger la dernière version",
     back: "Retour au début",
     viewLabel: "Vue",
+    editorLoading: "Chargement de l'éditeur…",
   },
   pt: {
     useTemplate: "Usar este modelo",
@@ -219,5 +227,6 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     reloadFile: "Carregar a versão mais recente",
     back: "Voltar ao início",
     viewLabel: "Visualização",
+    editorLoading: "Carregando o editor…",
   },
 };

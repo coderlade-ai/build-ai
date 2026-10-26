@@ -5,3 +5,4 @@ node_modules
 dist
 .next
 .astro
+apps/builder/public/monaco
