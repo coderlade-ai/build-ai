@@ -52,9 +52,21 @@ jobs:
       - name: Builder CSP check
         run: pnpm --filter @ladestack/builder check:csp
 
+      # Cache the Playwright browser so a slow download does not fail CI; retry once if it does.
+      - name: Cache Playwright Chromium
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+
       - name: Install Chromium
-        timeout-minutes: 5
-        run: pnpm --filter @ladestack/builder exec playwright install --with-deps chromium
+        timeout-minutes: 12
+        run: |
+          for attempt in 1 2; do
+            timeout 300 pnpm --filter @ladestack/builder exec playwright install --with-deps chromium && exit 0
+            echo "Chromium install attempt $attempt failed; retrying"
+          done
+          exit 1
 
       - name: Builder browser check (CSP, hydration, Monaco, preview)
         timeout-minutes: 6
