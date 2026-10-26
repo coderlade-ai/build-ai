@@ -29,6 +29,15 @@ describe("project store", () => {
     expect((await store.readFile(p.id, "index.html"))?.content).toBe("<h1>Hi</h1>");
   });
 
+  it("reads a whole project for export", async () => {
+    const p = await store.createProject({ name: "Site", profile: "static", files });
+    await store.writeFile(p.id, "index.html", "<h1>New</h1>", "1");
+    expect(await store.readAllFiles(p.id)).toEqual([
+      { path: "index.html", content: "<h1>New</h1>" },
+      { path: "styles.css", content: files["styles.css"] },
+    ]);
+  });
+
   it("refuses unsafe paths without writing anything", async () => {
     await expect(
       store.createProject({ name: "Bad", profile: "static", files: { "../x": "" } }),

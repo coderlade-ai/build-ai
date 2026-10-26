@@ -9,6 +9,7 @@ import type { Project, ProjectFile } from "@ladestack/shared-types";
 import { workspace } from "../i18n/workspace";
 import { getProjectStore } from "../storage/client";
 import { buildFileTree, defaultFile, type TreeNode } from "../workspace/fileTree";
+import { buildProjectZip, downloadZip, zipFileName } from "../export/zip";
 import styles from "./Workspace.module.css";
 
 // Monaco is heavy and browser-only: load it when a project opens, never on the welcome screen.
@@ -124,6 +125,22 @@ export function Workspace({ locale }: { locale: Locale }) {
     await openFile(id, path);
   }
 
+  const [exporting, setExporting] = useState<"idle" | "busy" | "error">("idle");
+
+  async function exportZip() {
+    if (!id || load.state !== "ready") return;
+    setExporting("busy");
+    try {
+      if (save === "dirty") await persist(); // export what the user sees, not a stale copy
+      const store = await getProjectStore();
+      const bytes = buildProjectZip(await store.readAllFiles(id));
+      downloadZip(bytes, zipFileName(load.project.name));
+      setExporting("idle");
+    } catch {
+      setExporting("error");
+    }
+  }
+
   const home = `${localePrefix(locale)}/`;
 
   if (load.state !== "ready") {
@@ -163,10 +180,23 @@ export function Workspace({ locale }: { locale: Locale }) {
             </button>
           ))}
         </div>
+        <button
+          type="button"
+          className={styles.exportButton}
+          onClick={() => void exportZip()}
+          disabled={exporting === "busy"}
+        >
+          {exporting === "busy" ? w.exporting : w.exportZip}
+        </button>
         <p className={styles.saveState} role="status" data-state={save}>
           {save === "conflict" || save === "error" ? null : status[save]}
         </p>
       </header>
+      {exporting === "error" ? (
+        <p className={styles.alert} role="alert">
+          {w.exportError}
+        </p>
+      ) : null}
       {save === "conflict" || save === "error" ? (
         <div className={styles.alert} role="alert">
           <span>{status[save]}</span>

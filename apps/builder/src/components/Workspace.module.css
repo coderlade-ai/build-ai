@@ -200,3 +200,25 @@
     display: none;
   }
 }
+.exportButton {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--color-hairline, #e6e5e0);
+  border-radius: var(--radius-md);
+  background: var(--color-canvas);
+  color: var(--color-ink);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+.exportButton:hover:not(:disabled) {
+  border-color: var(--color-ink);
+}
+.exportButton:disabled {
+  opacity: 0.6;
+  cursor: progress;
+}
+.exportButton:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
