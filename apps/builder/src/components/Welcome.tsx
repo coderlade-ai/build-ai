@@ -25,7 +25,7 @@ export function Welcome({ locale }: { locale: Locale }) {
         <Composer s={s} />
         <p className={styles.note}>{s.freeNote}</p>
         <p className={styles.note}>{s.body}</p>
-        <Templates s={s} />
+        <Templates s={s} locale={locale} />
         <a className={styles.back} href={`${localePrefix(locale)}/`}>
           {s.back}
         </a>

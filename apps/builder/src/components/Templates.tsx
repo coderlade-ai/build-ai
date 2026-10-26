@@ -1,9 +1,11 @@
 import { starterTemplates, type StarterTemplate } from "../templates";
+import type { Locale } from "@ladestack/i18n";
 import type { ShellStrings } from "../i18n/shell";
+import { UseTemplateButton } from "./UseTemplateButton";
 import styles from "./Welcome.module.css";
 
 /** Templates are explorable before any AI provider is connected (PRD A.12). */
-export function Templates({ s }: { s: ShellStrings }) {
+export function Templates({ s, locale }: { s: ShellStrings; locale: Locale }) {
   const copy: Record<StarterTemplate["id"], { name: string; desc: string }> = {
     "static-site": { name: s.staticName, desc: s.staticDesc },
     "react-vite": { name: s.reactName, desc: s.reactDesc },
@@ -13,7 +15,6 @@ export function Templates({ s }: { s: ShellStrings }) {
       <h2 id="templates-title" className={styles.sectionTitle}>
         {s.templatesTitle}
       </h2>
-      <p className={styles.note}>{s.templatesNote}</p>
       <ul className={styles.templateList}>
         {starterTemplates.map((t) => (
           <li key={t.id} className={styles.template}>
@@ -33,6 +34,7 @@ export function Templates({ s }: { s: ShellStrings }) {
                   ))}
               </ul>
             </details>
+            <UseTemplateButton locale={locale} templateId={t.id} name={copy[t.id].name} />
           </li>
         ))}
       </ul>
