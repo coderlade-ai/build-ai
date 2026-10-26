@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   cacheName,
   contentTypeFor,
+  fileHeaders,
   isSafePreviewPath,
   limits,
   messageTypes,
@@ -49,6 +50,13 @@ describe("preview protocol", () => {
     expect(previewTarget("/sw.js")).toBeNull();
     expect(isSafePreviewPath("a/b.css")).toBe(true);
     expect(cacheName(session)).toBe(`ladestack-preview-${session}`);
+  });
+
+  it("lets only the host and the builder frame project pages", () => {
+    expect(fileHeaders("a.html", ["https://build.ladestack.in"])["content-security-policy"]).toBe(
+      "frame-ancestors 'self' https://build.ladestack.in",
+    );
+    expect(fileHeaders("a.html", [])["content-security-policy"]).toBe("frame-ancestors 'self'");
   });
 
   it("serves sensible content types", () => {

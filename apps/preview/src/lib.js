@@ -88,13 +88,17 @@ export function previewTarget(pathname) {
   return isSafePreviewPath(file) ? { session: m[1], file } : null;
 }
 
-/** Headers on every file the preview serves for a project. */
-export function fileHeaders(path) {
+/**
+ * Headers on every file the preview serves for a project. frame-ancestors checks the whole chain
+ * (project page <- host page <- builder), so it lists this origin and the builder origins.
+ * @param {string} path
+ * @param {string[]} parents
+ */
+export function fileHeaders(path, parents) {
   return {
     "content-type": contentTypeFor(path),
     "cache-control": "no-store",
     "x-content-type-options": "nosniff",
-    // Project pages may only be framed by the preview host page itself.
-    "content-security-policy": "frame-ancestors 'self'",
+    "content-security-policy": `frame-ancestors 'self' ${parents.join(" ")}`.trim(),
   };
 }

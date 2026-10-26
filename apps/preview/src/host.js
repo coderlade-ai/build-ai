@@ -17,7 +17,10 @@ async function store(session, files) {
       await cache.delete(req);
   await Promise.all(
     Object.entries(files).map(([path, content]) =>
-      cache.put(`/p/${session}/${path}`, new Response(content, { headers: fileHeaders(path) })),
+      cache.put(
+        `/p/${session}/${path}`,
+        new Response(content, { headers: fileHeaders(path, allowedParents) }),
+      ),
     ),
   );
 }
