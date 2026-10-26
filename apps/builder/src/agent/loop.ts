@@ -1,6 +1,6 @@
 import { ProviderStreamError, type StreamError } from "../providers/stream";
 import type { Conversation } from "./adapters";
-import { runTool, type AgentFs, type ToolResult } from "./tools";
+import { runTool, type AgentFs, type ToolContext, type ToolResult } from "./tools";
 
 export type AgentEvent = { type: "text"; text: string } | { type: "tool"; result: ToolResult };
 
@@ -24,6 +24,7 @@ export async function runAgent(o: {
   signal?: AbortSignal;
   maxSteps?: number;
   onEvent: (e: AgentEvent) => void;
+  approve?: ToolContext["approve"];
 }): Promise<AgentOutcome> {
   const maxSteps = o.maxSteps ?? defaultMaxSteps;
   for (let step = 0; step < maxSteps; step++) {
@@ -42,7 +43,7 @@ export async function runAgent(o: {
       if (o.signal?.aborted) return { reason: "stopped" };
       let r: ToolResult;
       try {
-        r = await runTool(o.fs, o.projectId, call);
+        r = await runTool(o.fs, o.projectId, call, { approve: o.approve });
       } catch {
         r = { call, output: "Tool failed unexpectedly.", isError: true };
       }
@@ -56,7 +57,8 @@ export async function runAgent(o: {
 
 export const codeSystemPrompt = [
   "You are the Code mode agent of LadeStack Build, a browser-based builder for websites and web apps.",
-  "You work on the user's current project through tools: list_files, read_file and write_file.",
+  "You work on the user's current project through tools: list_files, read_file, write_file and delete_file.",
+  "Only delete files when the task needs it; the user approves each deletion and may decline.",
   "If the project is empty, create a React + TypeScript + Vite app (package.json, index.html, src/main.tsx, src/App.tsx) unless the user asks for plain HTML.",
   "Start by listing files, read what you need before changing it, and write complete files (never fragments).",
   "Keep the project runnable: for React/Vite keep package.json, index.html and src consistent; for static sites keep index.html, CSS and JS linked.",

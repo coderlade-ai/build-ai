@@ -141,7 +141,7 @@ export function Workspace({ locale }: { locale: Locale }) {
     [id, openFile],
   );
 
-  /** Files were restored from a checkpoint: reload the tree and the open file. */
+  /** Files were restored or deleted: reload the tree and the open file. */
   const restored = useCallback(async () => {
     if (!id) return;
     const store = await getProjectStore();
@@ -150,7 +150,7 @@ export function Workspace({ locale }: { locale: Locale }) {
     const paths = list.map((f) => f.path);
     const current = openRef.current?.path;
     // Unsaved edits stay on screen; saving them later reports a conflict instead of overwriting.
-    if (current && paths.includes(current) && saveRef.current === "dirty") return;
+    if (current && saveRef.current === "dirty") return;
     const next = current && paths.includes(current) ? current : defaultFile(paths);
     if (next) await openFile(id, next);
     else setOpen(null);
@@ -279,7 +279,7 @@ export function Workspace({ locale }: { locale: Locale }) {
         locale={locale}
         projectId={id!}
         onWrite={(p) => void agentWrote(p)}
-        onRestore={() => void restored()}
+        onFilesChanged={() => void restored()}
       />
     </div>
   );

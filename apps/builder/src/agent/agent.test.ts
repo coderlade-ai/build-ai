@@ -253,3 +253,62 @@ describe("provider tool-calling adapters", () => {
     ).rejects.toMatchObject({ code: "invalid-key" });
   });
 });
+
+describe("delete_file approval", () => {
+  it("deletes only after an explicit allow, and reports a decline", async () => {
+    const asked: string[] = [];
+    const deny = await runTool(store, projectId, call("delete_file", { path: "index.html" }), {
+      approve: async (r) => (asked.push(r.path), false),
+    });
+    expect(deny).toMatchObject({ isError: true, declined: true });
+    expect(asked).toEqual(["index.html"]);
+    expect(await store.readFile(projectId, "index.html")).toBeDefined();
+
+    const allow = await runTool(store, projectId, call("delete_file", { path: "index.html" }), {
+      approve: async () => true,
+    });
+    expect(allow).toMatchObject({ isError: false, output: "Deleted index.html" });
+    expect(await store.readFile(projectId, "index.html")).toBeUndefined();
+  });
+
+  it("treats no approver, a throwing approver or a truthy non-true value as deny", async () => {
+    for (const approve of [
+      undefined,
+      async () => {
+        throw new Error("x");
+      },
+      async () => "yes" as unknown as boolean,
+    ]) {
+      const r = await runTool(store, projectId, call("delete_file", { path: "index.html" }), {
+        approve,
+      });
+      expect(r.declined).toBe(true);
+    }
+    expect(await store.readFile(projectId, "index.html")).toBeDefined();
+  });
+
+  it("never asks for unsafe or missing paths", async () => {
+    let asked = 0;
+    const approve = async () => (asked++, true);
+    for (const path of ["../x", ".env", "missing.txt"])
+      expect(
+        (await runTool(store, projectId, call("delete_file", { path }), { approve })).isError,
+      ).toBe(true);
+    expect(asked).toBe(0);
+  });
+
+  it("the loop passes the approver through", async () => {
+    const conv = scripted([
+      { text: "", calls: [call("delete_file", { path: "index.html" })] },
+      { text: "ok", calls: [] },
+    ]);
+    await runAgent({
+      conversation: conv,
+      fs: store,
+      projectId,
+      onEvent: () => {},
+      approve: async () => true,
+    });
+    expect(await store.listFiles(projectId)).toEqual([]);
+  });
+});

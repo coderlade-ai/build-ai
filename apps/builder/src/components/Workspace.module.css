@@ -342,3 +342,33 @@
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
+.agentApproval {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 1px solid #f5b08f;
+  border-radius: 8px;
+}
+.agentApproval p {
+  flex: 1 1 240px;
+  margin: 0;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.agentSecondary {
+  min-height: 44px;
+  padding: 0 18px;
+  border: 1px solid #5a574c;
+  border-radius: 8px;
+  background: transparent;
+  color: #e9e7df;
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+.agentSecondary:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}

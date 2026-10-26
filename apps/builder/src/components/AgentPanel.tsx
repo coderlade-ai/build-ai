@@ -43,12 +43,12 @@ export function AgentPanel({
   locale,
   projectId,
   onWrite,
-  onRestore,
+  onFilesChanged,
 }: {
   locale: Locale;
   projectId: string;
   onWrite: (path: string) => void;
-  onRestore: () => void;
+  onFilesChanged: () => void;
 }) {
   const a = agentStrings[locale];
   const t = providerStrings[locale];
@@ -57,9 +57,12 @@ export function AgentPanel({
   const [log, setLog] = useState<LogEntry[]>([]);
   const [running, setRunning] = useState(false);
   const [restoring, setRestoring] = useState(false);
+  const [approval, setApproval] = useState<{ path: string; decide: (ok: boolean) => void } | null>(
+    null,
+  );
   const abort = useRef<AbortController | null>(null);
   const logEnd = useRef<HTMLLIElement>(null);
-  const ids = { prompt: useId(), note: useId() };
+  const ids = { prompt: useId(), note: useId(), approval: useId() };
 
   useEffect(() => () => abort.current?.abort(), []);
 
@@ -133,18 +136,42 @@ export function AgentPanel({
           if (e.type === "text") return add({ kind: "text", text: e.text });
           const { call, isError, path } = e.result;
           const p = path ?? "?";
+          const done: Record<string, string> = {
+            read_file: a.read,
+            write_file: a.wrote,
+            delete_file: a.deleted,
+          };
           const label =
             call.name === "list_files"
               ? a.listed
-              : isError
-                ? a.toolFailed.replace("{path}", p)
-                : (call.name === "write_file" ? a.wrote : a.read).replace("{path}", p);
-          add({ kind: "tool", label, error: isError });
-          if (call.name === "write_file" && !isError && path) {
+              : e.result.declined
+                ? a.declined.replace("{path}", p)
+                : isError
+                  ? a.toolFailed.replace("{path}", p)
+                  : (done[call.name] ?? a.toolFailed).replace("{path}", p);
+          add({ kind: "tool", label, error: isError && !e.result.declined });
+          if (isError || !path) return;
+          if (call.name === "write_file") {
             wrote = true;
             onWrite(path);
+          } else if (call.name === "delete_file") {
+            wrote = true;
+            onFilesChanged();
           }
         },
+        // Allow once / Deny (ADR 0003). Stop or leaving the page counts as Deny.
+        approve: (req) =>
+          new Promise<boolean>((resolve) => {
+            if (controller.signal.aborted) return resolve(false);
+            const decide = (ok: boolean) => {
+              controller.signal.removeEventListener("abort", onAbort);
+              setApproval(null);
+              resolve(ok);
+            };
+            const onAbort = () => decide(false);
+            controller.signal.addEventListener("abort", onAbort);
+            setApproval({ path: req.path, decide });
+          }),
       });
       const end = endText(outcome);
       add(wrote && end.kind === "end" ? { ...end, undo: { checkpointId, label: a.undo } } : end);
@@ -169,7 +196,7 @@ export function AgentPanel({
           error: false,
           undo: { checkpointId: r.safety.id, label: a.undoRestore },
         });
-        onRestore();
+        onFilesChanged();
       } else add({ kind: "end", text: a.restoreFailed, error: true });
     } catch {
       add({ kind: "end", text: a.restoreFailed, error: true });
@@ -225,6 +252,26 @@ export function AgentPanel({
           {running ? <li data-kind="working">{a.working}</li> : null}
           <li ref={logEnd} aria-hidden="true" />
         </ol>
+      ) : null}
+      {approval ? (
+        <div className={styles.agentApproval} role="group" aria-labelledby={ids.approval}>
+          <p id={ids.approval}>{a.approveDelete.replace("{path}", approval.path)}</p>
+          <button
+            type="button"
+            className={styles.agentButton}
+            onClick={() => approval.decide(true)}
+          >
+            {a.allowOnce}
+          </button>
+          <button
+            type="button"
+            className={styles.agentSecondary}
+            autoFocus
+            onClick={() => approval.decide(false)}
+          >
+            {a.deny}
+          </button>
+        </div>
       ) : null}
       <form className={styles.agentForm} onSubmit={onSubmit}>
         <label htmlFor={ids.prompt} className={styles.srOnly}>
