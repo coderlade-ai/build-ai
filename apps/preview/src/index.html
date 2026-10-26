@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>LadeStack Build preview</title>
+    <style>
+      html,
+      body,
+      iframe {
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        border: 0;
+        display: block;
+        background: #fff;
+      }
+      #status {
+        position: fixed;
+        inset: 0;
+        display: grid;
+        place-items: center;
+        font:
+          14px system-ui,
+          sans-serif;
+        color: #5a574c;
+      }
+    </style>
+  </head>
+  <body>
+    <p id="status">Loading preview…</p>
+    <iframe id="frame" title="Project"></iframe>
+    <script type="module" src="/host.js"></script>
+  </body>
+</html>

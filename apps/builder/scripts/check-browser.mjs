@@ -1,6 +1,7 @@
 // Real-browser smoke test under the production CSP (ADR 0015): run after `next build`.
 // Fails on any CSP violation, page error, or if the app does not hydrate and mount Monaco.
 // Needs Chromium: `pnpm exec playwright install --with-deps chromium`.
+// Preview: build with NEXT_PUBLIC_PREVIEW_ORIGIN=http://127.0.0.1:4322; this script serves that origin.
 import { spawn } from "node:child_process";
 import { chromium } from "playwright";
 
@@ -9,6 +10,19 @@ const base = `http://127.0.0.1:${port}/app`;
 const server = spawn("pnpm", ["exec", "next", "start", "--port", String(port)], {
   stdio: "ignore",
 });
+const previewPort = 4322;
+const previewServer = spawn(
+  "node",
+  [
+    "../preview/scripts/serve.mjs",
+    "--port",
+    String(previewPort),
+    "--parents",
+    `http://127.0.0.1:${port}`,
+  ],
+  { stdio: "ignore" },
+);
+const checkPreview = process.env.NEXT_PUBLIC_PREVIEW_ORIGIN === `http://127.0.0.1:${previewPort}`;
 const problems = [];
 
 async function waitUp() {
@@ -52,15 +66,30 @@ try {
   await page.getByRole("button", { name: "History" }).click();
   await page.getByRole("button", { name: "Save checkpoint" }).click();
   await page.getByText("Saved by you").first().waitFor({ timeout: 10000 });
+  await page.getByRole("button", { name: "History" }).click();
+
+  // Preview: the static template runs on the isolated preview origin, scripts included.
+  if (checkPreview) {
+    await page.getByRole("button", { name: "Preview", exact: true }).click();
+    const project = page
+      .frameLocator('iframe[title="Preview of your project"]')
+      .frameLocator("#frame");
+    await project.getByRole("heading", { name: "Hello" }).waitFor({ timeout: 20000 });
+    await project.getByRole("button", { name: "Say hello" }).click();
+    await project.getByText("Hello from script.js").waitFor({ timeout: 5000 });
+  }
   await page.goto(`${base}/ja`, { waitUntil: "networkidle" });
 } catch (e) {
   problems.push(String(e));
 } finally {
   await browser?.close();
   server.kill();
+  previewServer.kill();
 }
 if (problems.length) {
   console.error(problems.join("\n"));
   process.exit(1);
 }
-console.warn("Browser check passed: hydrated, Monaco mounted, checkpoint saved, no CSP violations");
+console.warn(
+  `Browser check passed: hydrated, Monaco mounted, checkpoint saved${checkPreview ? ", preview ran" : ""}, no CSP violations`,
+);

@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { buildCsp, createNonce } from "./security/csp";
+import { previewOrigin } from "./preview/origin";
 
 /**
  * Sets a per-response nonce CSP (ADR 0015). Next.js reads the nonce from the request's CSP header
@@ -7,7 +8,7 @@ import { buildCsp, createNonce } from "./security/csp";
  */
 export function middleware(request: NextRequest) {
   const nonce = createNonce();
-  const csp = buildCsp(nonce, process.env.NODE_ENV === "development");
+  const csp = buildCsp(nonce, process.env.NODE_ENV === "development", previewOrigin);
   const headers = new Headers(request.headers);
   headers.set("x-nonce", nonce);
   headers.set("Content-Security-Policy", csp);

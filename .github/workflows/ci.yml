@@ -44,6 +44,9 @@ jobs:
 
       - name: Build
         run: pnpm build
+        env:
+          # The browser check serves this preview origin locally (ADR 0016).
+          NEXT_PUBLIC_PREVIEW_ORIGIN: http://127.0.0.1:4322
 
       - name: Builder CSP check
         run: pnpm --filter @ladestack/builder check:csp
@@ -51,5 +54,7 @@ jobs:
       - name: Install Chromium
         run: pnpm --filter @ladestack/builder exec playwright install --with-deps chromium
 
-      - name: Builder browser check (CSP, hydration, Monaco)
+      - name: Builder browser check (CSP, hydration, Monaco, preview)
         run: pnpm --filter @ladestack/builder check:browser
+        env:
+          NEXT_PUBLIC_PREVIEW_ORIGIN: http://127.0.0.1:4322

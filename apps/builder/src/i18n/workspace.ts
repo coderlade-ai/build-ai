@@ -27,6 +27,11 @@ export interface WorkspaceStrings {
   exportError: string;
   followEdits: string;
   agentWriting: string;
+  previewOff: string;
+  previewNoEntry: string;
+  previewLoading: string;
+  previewFrame: string;
+  reloadPreview: string;
 }
 
 export const workspace: Record<Locale, WorkspaceStrings> = {
@@ -60,6 +65,11 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     exportError: "Export failed. Your files are still saved in this browser.",
     followEdits: "Follow AI edits",
     agentWriting: "Agent is writing…",
+    previewOff: "Preview isn't set up on this deployment yet. Your files are saved and ready.",
+    previewNoEntry: "Add an index.html at the top of the project to preview it.",
+    previewLoading: "Loading preview…",
+    previewFrame: "Preview of your project",
+    reloadPreview: "Reload preview",
   },
   ru: {
     useTemplate: "Использовать шаблон",
@@ -91,6 +101,11 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     exportError: "Не удалось экспортировать. Файлы по-прежнему сохранены в этом браузере.",
     followEdits: "Следить за правками ИИ",
     agentWriting: "Агент пишет…",
+    previewOff: "Предпросмотр на этом развёртывании ещё не настроен. Файлы сохранены и готовы.",
+    previewNoEntry: "Добавьте index.html в корень проекта, чтобы увидеть предпросмотр.",
+    previewLoading: "Загрузка предпросмотра…",
+    previewFrame: "Предпросмотр вашего проекта",
+    reloadPreview: "Обновить предпросмотр",
   },
   ja: {
     useTemplate: "このテンプレートを使う",
@@ -122,6 +137,11 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     exportError: "エクスポートに失敗しました。ファイルはこのブラウザに保存されたままです。",
     followEdits: "AI の編集を追跡",
     agentWriting: "エージェントが書き込み中…",
+    previewOff: "このデプロイではプレビューがまだ設定されていません。ファイルは保存済みです。",
+    previewNoEntry: "プレビューするには、プロジェクトの最上位に index.html を追加してください。",
+    previewLoading: "プレビューを読み込み中…",
+    previewFrame: "プロジェクトのプレビュー",
+    reloadPreview: "プレビューを再読み込み",
   },
   ko: {
     useTemplate: "이 템플릿 사용",
@@ -153,6 +173,11 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     exportError: "내보내기에 실패했습니다. 파일은 이 브라우저에 그대로 저장되어 있습니다.",
     followEdits: "AI 편집 따라가기",
     agentWriting: "에이전트가 작성 중…",
+    previewOff: "이 배포에는 아직 미리보기가 설정되지 않았습니다. 파일은 저장되어 있습니다.",
+    previewNoEntry: "미리보려면 프로젝트 최상위에 index.html을 추가하세요.",
+    previewLoading: "미리보기 불러오는 중…",
+    previewFrame: "프로젝트 미리보기",
+    reloadPreview: "미리보기 새로고침",
   },
   zh: {
     useTemplate: "使用此模板",
@@ -180,6 +205,11 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     exportError: "导出失败。你的文件仍保存在此浏览器中。",
     followEdits: "跟随 AI 编辑",
     agentWriting: "智能体正在写入…",
+    previewOff: "此部署尚未设置预览。你的文件已保存。",
+    previewNoEntry: "在项目根目录添加 index.html 即可预览。",
+    previewLoading: "正在加载预览…",
+    previewFrame: "你的项目预览",
+    reloadPreview: "重新加载预览",
   },
   tr: {
     useTemplate: "Bu şablonu kullan",
@@ -211,6 +241,11 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     exportError: "Dışa aktarma başarısız. Dosyalarınız bu tarayıcıda kayıtlı olmaya devam ediyor.",
     followEdits: "Yapay zekâ düzenlemelerini izle",
     agentWriting: "Ajan yazıyor…",
+    previewOff: "Bu dağıtımda önizleme henüz kurulmadı. Dosyalarınız kayıtlı ve hazır.",
+    previewNoEntry: "Önizlemek için projenin en üstüne bir index.html ekleyin.",
+    previewLoading: "Önizleme yükleniyor…",
+    previewFrame: "Projenizin önizlemesi",
+    reloadPreview: "Önizlemeyi yenile",
   },
   fr: {
     useTemplate: "Utiliser ce modèle",
@@ -242,6 +277,12 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     exportError: "L'exportation a échoué. Vos fichiers restent enregistrés dans ce navigateur.",
     followEdits: "Suivre les modifications de l'IA",
     agentWriting: "L'agent écrit…",
+    previewOff:
+      "L'aperçu n'est pas encore configuré sur ce déploiement. Vos fichiers sont enregistrés.",
+    previewNoEntry: "Ajoutez un index.html à la racine du projet pour l'afficher en aperçu.",
+    previewLoading: "Chargement de l'aperçu…",
+    previewFrame: "Aperçu de votre projet",
+    reloadPreview: "Recharger l'aperçu",
   },
   pt: {
     useTemplate: "Usar este modelo",
@@ -273,5 +314,11 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     exportError: "Falha na exportação. Seus arquivos continuam salvos neste navegador.",
     followEdits: "Acompanhar edições da IA",
     agentWriting: "O agente está escrevendo…",
+    previewOff:
+      "A pré-visualização ainda não está configurada nesta implantação. Seus arquivos estão salvos.",
+    previewNoEntry: "Adicione um index.html na raiz do projeto para pré-visualizar.",
+    previewLoading: "Carregando pré-visualização…",
+    previewFrame: "Pré-visualização do seu projeto",
+    reloadPreview: "Recarregar pré-visualização",
   },
 };
