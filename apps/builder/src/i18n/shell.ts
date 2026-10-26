@@ -20,7 +20,6 @@ export interface ShellStrings {
   tooLong: string;
   back: string;
   templatesTitle: string;
-  templatesNote: string;
   staticName: string;
   staticDesc: string;
   reactName: string;
@@ -32,7 +31,7 @@ export const shell: Record<Locale, ShellStrings> = {
   en: {
     kicker: "Builder · in development",
     title: "What do you want to build?",
-    body: "The agent, editor and preview are still being built. Only your draft is kept, in this browser tab.",
+    body: "The AI agent and preview are still being built. Templates open as projects saved in this browser on your device.",
     composerLabel: "Describe your website or app",
     placeholder: "A portfolio site with a projects grid, an about section and a contact link…",
     modeLabel: "Agent mode",
@@ -50,8 +49,6 @@ export const shell: Record<Locale, ShellStrings> = {
     tooLong: "This prompt is too long. Keep it under 20,000 characters.",
     back: "Back to the homepage",
     templatesTitle: "Start from a template",
-    templatesNote:
-      "Browse what each starter contains. Opening one in the editor comes with the workspace.",
     staticName: "Static site",
     staticDesc: "HTML, CSS and a little JavaScript. No build step.",
     reactName: "React + Vite",
@@ -61,7 +58,7 @@ export const shell: Record<Locale, ShellStrings> = {
   ru: {
     kicker: "Конструктор · в разработке",
     title: "Что вы хотите создать?",
-    body: "Агент, редактор и превью ещё в разработке. Сохраняется только ваш черновик, в этой вкладке браузера.",
+    body: "ИИ-агент и превью ещё в разработке. Шаблоны открываются как проекты, сохранённые в этом браузере на вашем устройстве.",
     composerLabel: "Опишите свой сайт или приложение",
     placeholder: "Сайт-портфолио с сеткой проектов, разделом «Обо мне» и ссылкой для связи…",
     modeLabel: "Режим агента",
@@ -79,8 +76,6 @@ export const shell: Record<Locale, ShellStrings> = {
     tooLong: "Запрос слишком длинный. Сократите его до 20 000 символов.",
     back: "На главную",
     templatesTitle: "Начать с шаблона",
-    templatesNote:
-      "Посмотрите, что входит в каждый шаблон. Открыть его в редакторе можно будет, когда появится рабочее пространство.",
     staticName: "Статический сайт",
     staticDesc: "HTML, CSS и немного JavaScript. Без сборки.",
     reactName: "React + Vite",
@@ -90,7 +85,7 @@ export const shell: Record<Locale, ShellStrings> = {
   ja: {
     kicker: "ビルダー · 開発中",
     title: "何を作りたいですか?",
-    body: "エージェント、エディタ、プレビューはまだ開発中です。保存されるのは下書きのみで、このブラウザタブ内に限られます。",
+    body: "AI エージェントとプレビューはまだ開発中です。テンプレートは、お使いのデバイスのこのブラウザに保存されるプロジェクトとして開きます。",
     composerLabel: "作りたいサイトやアプリを説明してください",
     placeholder: "プロジェクト一覧、自己紹介、連絡先リンクのあるポートフォリオサイト…",
     modeLabel: "エージェントモード",
@@ -108,8 +103,6 @@ export const shell: Record<Locale, ShellStrings> = {
     tooLong: "プロンプトが長すぎます。20,000 文字以内にしてください。",
     back: "ホームページに戻る",
     templatesTitle: "テンプレートから始める",
-    templatesNote:
-      "各スターターの中身を確認できます。エディタで開く機能はワークスペースとともに提供予定です。",
     staticName: "静的サイト",
     staticDesc: "HTML、CSS と少しの JavaScript。ビルド不要です。",
     reactName: "React + Vite",
@@ -119,7 +112,7 @@ export const shell: Record<Locale, ShellStrings> = {
   ko: {
     kicker: "빌더 · 개발 중",
     title: "무엇을 만들고 싶으세요?",
-    body: "에이전트, 편집기, 미리보기는 아직 개발 중입니다. 초안만 이 브라우저 탭에 보관됩니다.",
+    body: "AI 에이전트와 미리보기는 아직 개발 중입니다. 템플릿은 기기의 이 브라우저에 저장되는 프로젝트로 열립니다.",
     composerLabel: "만들고 싶은 웹사이트나 앱을 설명하세요",
     placeholder: "프로젝트 목록, 소개 섹션, 연락처 링크가 있는 포트폴리오 사이트…",
     modeLabel: "에이전트 모드",
@@ -137,8 +130,6 @@ export const shell: Record<Locale, ShellStrings> = {
     tooLong: "프롬프트가 너무 깁니다. 20,000자 이내로 줄여 주세요.",
     back: "홈페이지로 돌아가기",
     templatesTitle: "템플릿으로 시작하기",
-    templatesNote:
-      "각 스타터에 무엇이 들어 있는지 살펴보세요. 편집기에서 여는 기능은 작업 공간과 함께 제공됩니다.",
     staticName: "정적 사이트",
     staticDesc: "HTML, CSS와 약간의 JavaScript. 빌드 단계가 없습니다.",
     reactName: "React + Vite",
@@ -148,7 +139,7 @@ export const shell: Record<Locale, ShellStrings> = {
   zh: {
     kicker: "构建器 · 开发中",
     title: "你想构建什么?",
-    body: "智能体、编辑器和预览仍在开发中。目前只会保存你的草稿,且仅限于当前浏览器标签页。",
+    body: "AI 智能体和预览仍在开发中。模板会以项目形式打开,并保存在你设备上的此浏览器中。",
     composerLabel: "描述你的网站或应用",
     placeholder: "一个包含项目展示、个人简介和联系链接的作品集网站…",
     modeLabel: "智能体模式",
@@ -165,7 +156,6 @@ export const shell: Record<Locale, ShellStrings> = {
     tooLong: "提示词过长,请控制在 20,000 个字符以内。",
     back: "返回首页",
     templatesTitle: "从模板开始",
-    templatesNote: "查看每个起始模板包含的内容。在编辑器中打开模板的功能将随工作区一起推出。",
     staticName: "静态网站",
     staticDesc: "HTML、CSS 和少量 JavaScript,无需构建。",
     reactName: "React + Vite",
@@ -175,7 +165,7 @@ export const shell: Record<Locale, ShellStrings> = {
   tr: {
     kicker: "Oluşturucu · geliştirme aşamasında",
     title: "Ne oluşturmak istiyorsunuz?",
-    body: "Ajan, düzenleyici ve önizleme hâlâ geliştiriliyor. Yalnızca taslağınız, bu tarayıcı sekmesinde saklanır.",
+    body: "Yapay zekâ ajanı ve önizleme hâlâ geliştiriliyor. Şablonlar, cihazınızdaki bu tarayıcıda kaydedilen projeler olarak açılır.",
     composerLabel: "Web sitenizi ya da uygulamanızı anlatın",
     placeholder:
       "Proje ızgarası, hakkımda bölümü ve iletişim bağlantısı olan bir portfolyo sitesi…",
@@ -194,8 +184,6 @@ export const shell: Record<Locale, ShellStrings> = {
     tooLong: "Bu istem çok uzun. 20.000 karakterin altında tutun.",
     back: "Ana sayfaya dön",
     templatesTitle: "Bir şablonla başlayın",
-    templatesNote:
-      "Her başlangıç şablonunun içeriğine göz atın. Düzenleyicide açma özelliği çalışma alanıyla birlikte gelecek.",
     staticName: "Statik site",
     staticDesc: "HTML, CSS ve biraz JavaScript. Derleme adımı yok.",
     reactName: "React + Vite",
@@ -205,7 +193,7 @@ export const shell: Record<Locale, ShellStrings> = {
   fr: {
     kicker: "Créateur · en développement",
     title: "Que voulez-vous créer ?",
-    body: "L'agent, l'éditeur et l'aperçu sont encore en développement. Seul votre brouillon est conservé, dans cet onglet du navigateur.",
+    body: "L'agent IA et l'aperçu sont encore en développement. Les modèles s'ouvrent comme des projets enregistrés dans ce navigateur, sur votre appareil.",
     composerLabel: "Décrivez votre site ou votre application",
     placeholder:
       "Un site portfolio avec une grille de projets, une section à propos et un lien de contact…",
@@ -224,8 +212,6 @@ export const shell: Record<Locale, ShellStrings> = {
     tooLong: "Cette requête est trop longue. Limitez-la à 20 000 caractères.",
     back: "Retour à l'accueil",
     templatesTitle: "Partir d'un modèle",
-    templatesNote:
-      "Parcourez le contenu de chaque modèle. L'ouverture dans l'éditeur arrivera avec l'espace de travail.",
     staticName: "Site statique",
     staticDesc: "HTML, CSS et un peu de JavaScript. Aucune étape de compilation.",
     reactName: "React + Vite",
@@ -235,7 +221,7 @@ export const shell: Record<Locale, ShellStrings> = {
   pt: {
     kicker: "Criador · em desenvolvimento",
     title: "O que você quer criar?",
-    body: "O agente, o editor e a prévia ainda estão em desenvolvimento. Só o seu rascunho fica guardado, nesta aba do navegador.",
+    body: "O agente de IA e a prévia ainda estão em desenvolvimento. Os modelos abrem como projetos salvos neste navegador, no seu dispositivo.",
     composerLabel: "Descreva seu site ou aplicativo",
     placeholder: "Um site de portfólio com grade de projetos, seção sobre mim e link de contato…",
     modeLabel: "Modo do agente",
@@ -253,8 +239,6 @@ export const shell: Record<Locale, ShellStrings> = {
     tooLong: "Este prompt é muito longo. Mantenha-o abaixo de 20.000 caracteres.",
     back: "Voltar para a página inicial",
     templatesTitle: "Comece com um modelo",
-    templatesNote:
-      "Veja o que cada modelo inicial contém. Abrir no editor vai chegar junto com o espaço de trabalho.",
     staticName: "Site estático",
     staticDesc: "HTML, CSS e um pouco de JavaScript. Sem etapa de build.",
     reactName: "React + Vite",
