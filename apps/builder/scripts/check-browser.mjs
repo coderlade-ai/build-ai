@@ -127,6 +127,37 @@ try {
       .frameLocator("#frame");
     await react.getByRole("button", { name: "Clicked 0 times" }).click({ timeout: 45000 });
     await react.getByRole("button", { name: "Clicked 1 times" }).waitFor({ timeout: 5000 });
+
+    // Tailwind: make App.css Tailwind source in Monaco; the preview compiles it in the page
+    // (preflight resets the h1 to the body's font size, and a utility class takes effect).
+    step("tailwind in preview");
+    await page.locator("header").getByRole("button", { name: "Code", exact: true }).click();
+    await page.getByRole("button", { name: "App.css", exact: true }).click();
+    await page.locator(".monaco-editor").first().click();
+    await page.keyboard.press("ControlOrMeta+A");
+    await page.keyboard.insertText('@import "tailwindcss";\nbody { @apply bg-orange-500; }\n');
+    await page.waitForTimeout(2000); // autosave
+    await page.getByRole("button", { name: "Preview", exact: true }).click();
+    // The frame reloads after the save; poll (surviving navigations) until Tailwind applied.
+    let sizes = null;
+    for (let t = Date.now(); Date.now() - t < 45000 && !sizes; ) {
+      try {
+        sizes = await react.locator("body").evaluate(
+          (body) => {
+            if (getComputedStyle(body).backgroundColor === "rgba(0, 0, 0, 0)") return null;
+            const h1 = body.querySelector("h1");
+            return h1 ? [getComputedStyle(h1).fontSize, getComputedStyle(body).fontSize] : null;
+          },
+          undefined,
+          { timeout: 2000 },
+        );
+      } catch {
+        // navigating or not rendered yet
+      }
+      if (!sizes) await page.waitForTimeout(500);
+    }
+    if (!sizes) throw new Error("Tailwind was not applied in the preview");
+    if (sizes[0] !== sizes[1]) throw new Error(`Tailwind preflight not applied: h1 ${sizes[0]}`);
   }
   step("locale page");
   await page.goto(`${base}/ja`, { waitUntil: "networkidle" });
@@ -140,6 +171,6 @@ if (problems.length) {
   finish(false);
 }
 console.warn(
-  `Browser check passed: hydrated, Monaco mounted, checkpoint saved${checkPreview ? ", static + React previews ran, console bridged" : ""}, no CSP violations`,
+  `Browser check passed: hydrated, Monaco mounted, checkpoint saved${checkPreview ? ", static + React + Tailwind previews ran, console bridged" : ""}, no CSP violations`,
 );
 finish(true);

@@ -50,6 +50,21 @@ function loadEsbuild() {
   return esbuild;
 }
 
+/** @type {Promise<string> | null} */
+let tailwind = null;
+function loadTailwind() {
+  tailwind ??= fetch("/vendor/tailwind/browser.js")
+    .then((r) => {
+      if (!r.ok) throw new Error(String(r.status));
+      return r.text();
+    })
+    .catch((e) => {
+      tailwind = null;
+      throw e;
+    });
+  return tailwind;
+}
+
 /**
  * package.json projects are bundled here first (ADR 0018); a failed build shows an error page.
  * @param {Record<string, string>} files
@@ -61,7 +76,7 @@ async function prepare(files) {
   status.textContent = "Building…";
   let result;
   try {
-    result = await bundleProject(await loadEsbuild(), files);
+    result = await bundleProject(await loadEsbuild(), files, { tailwindScript: loadTailwind });
   } catch {
     result = {
       ok: false,

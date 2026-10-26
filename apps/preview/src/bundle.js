@@ -86,6 +86,35 @@ export function resolveLocal(files, path) {
 /** @param {string} s */
 const escapeHtml = (s) => s.replace(/[&<>"]/g, (c) => `&#${c.charCodeAt(0)};`);
 
+const tailwindDirective =
+  /@import\s+(url\()?["']tailwindcss["']|@tailwind\s+(base|components|utilities)\b/;
+
+/** Whether a stylesheet is Tailwind source (v4 `@import "tailwindcss"` or v3 `@tailwind`). @param {string} css */
+export function isTailwindCss(css) {
+  return tailwindDirective.test(css);
+}
+
+/**
+ * Splits Tailwind source for the browser compiler. The compiler adds `@import "tailwindcss"` itself
+ * when the source has no `@import`, and an `@import` left in the page's styles makes Chrome fetch
+ * it, so every `@import` is taken out: remote ones (fonts) go to a plain stylesheet, the Tailwind
+ * import and v3 directives are dropped, and other local imports are not followed.
+ * @param {string} css
+ * @returns {{ tailwind: string, remote: string[] }}
+ */
+export function splitTailwindCss(css) {
+  /** @type {string[]} */
+  const remote = [];
+  const tailwind = css
+    .replace(/@tailwind\s+(base|components|utilities)\s*;?/g, "")
+    .replace(/@import\s+(?:url\(\s*)?["']?([^"')\s;]+)["']?\s*\)?[^;]*;?/g, (rule, target) => {
+      if (/^https?:\/\//.test(target)) remote.push(rule.trim().replace(/;?$/, ";"));
+      return "";
+    })
+    .replace(/<\/style/gi, "<\\/style");
+  return { tailwind, remote: remote.map((r) => r.replace(/<\/style/gi, "")) };
+}
+
 /** A page shown in the preview when the build fails. @param {string[]} errors */
 export function errorPage(errors) {
   return `<!doctype html><html><head><meta charset="utf-8"><title>Build failed</title></head><body style="font:14px ui-monospace,monospace;margin:24px;color:#26251e"><h1 style="font:600 16px system-ui">The preview couldn't build this project</h1><pre style="white-space:pre-wrap">${escapeHtml(errors.join("\n\n"))}</pre></body></html>`;
@@ -95,9 +124,11 @@ export function errorPage(errors) {
  * Bundles a package.json project for the preview.
  * @param {{ build: Function }} esbuild an initialized esbuild(-wasm) module
  * @param {Record<string, string>} files
+ * @param {{ tailwindScript?: () => Promise<string> }} [options] loads the self-hosted Tailwind
+ *   browser compiler, used only when a stylesheet is Tailwind source
  * @returns {Promise<{ ok: true, files: Record<string, string> } | { ok: false, errors: { text: string, where: string }[] }>}
  */
-export async function bundleProject(esbuild, files) {
+export async function bundleProject(esbuild, files, options = {}) {
   const fail = (text, where = "") => ({
     ok: /** @type {const} */ (false),
     errors: [{ text, where }],
@@ -119,6 +150,10 @@ export async function bundleProject(esbuild, files) {
 
   /** @type {string[]} */
   const cssLinks = [];
+  /** Tailwind stylesheets, compiled in the page by @tailwindcss/browser. @type {string[]} */
+  const tailwindCss = [];
+  /** `@import`s of remote CSS (fonts) found in Tailwind stylesheets. @type {string[]} */
+  const remoteImports = [];
   const plugin = {
     name: "ladestack-project",
     setup(build) {
@@ -143,8 +178,15 @@ export async function bundleProject(esbuild, files) {
       build.onLoad({ filter: /.*/, namespace: "empty" }, () => ({ contents: "", loader: "js" }));
       build.onLoad({ filter: /.*/, namespace: "project" }, (args) => {
         const ext = args.path.split(".").pop()?.toLowerCase() ?? "";
+        const contents = files[args.path] ?? "";
+        if (ext === "css" && options.tailwindScript && isTailwindCss(contents)) {
+          const { tailwind, remote } = splitTailwindCss(contents);
+          tailwindCss.push(tailwind);
+          remoteImports.push(...remote);
+          return { contents: "", loader: "js" };
+        }
         const loader = args.path.endsWith(".module.css") ? "local-css" : (loaders[ext] ?? "text");
-        return { contents: files[args.path], loader, resolveDir: "/" };
+        return { contents, loader, resolveDir: "/" };
       });
     },
   };
@@ -204,7 +246,12 @@ export async function bundleProject(esbuild, files) {
       css = `<link rel="stylesheet" href="/${bundleDir}/bundle.css">`;
     }
   }
-  const links = cssLinks.map((u) => `<link rel="stylesheet" href="${escapeHtml(u)}">`).join("");
+  let links = cssLinks.map((u) => `<link rel="stylesheet" href="${escapeHtml(u)}">`).join("");
+  if (tailwindCss.length && options.tailwindScript) {
+    out[`${bundleDir}/tailwind.js`] = await options.tailwindScript();
+    if (remoteImports.length) links += `<style>${remoteImports.join("\n")}</style>`;
+    links += `<style type="text/tailwindcss">${tailwindCss.join("\n")}</style><script src="/${bundleDir}/tailwind.js"></script>`;
+  }
   let page = html.replace(
     entry.tag,
     `<script type="module" src="/${bundleDir}/bundle.js"></script>`,

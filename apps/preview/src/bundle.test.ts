@@ -4,6 +4,8 @@ import {
   bundleProject,
   errorPage,
   findModuleEntry,
+  isTailwindCss,
+  splitTailwindCss,
   packageUrl,
   resolveLocal,
   splitPackage,
@@ -88,5 +90,59 @@ describe("bundleProject (esbuild-wasm)", () => {
   it("explains a missing entry", async () => {
     const r = await bundleProject(esbuild, { "package.json": pkg, "index.html": "<p>hi</p>" });
     expect(r).toMatchObject({ ok: false, errors: [{ text: expect.stringMatching(/entry/) }] });
+  });
+});
+
+describe("Tailwind in bundled previews", () => {
+  it("detects Tailwind v4 and v3 sources and normalises them", () => {
+    expect(isTailwindCss('@import "tailwindcss";')).toBe(true);
+    expect(isTailwindCss("@tailwind base;\n@tailwind utilities;")).toBe(true);
+    expect(isTailwindCss("body { color: red }")).toBe(false);
+    expect(
+      splitTailwindCss("@tailwind base;\n@tailwind components;\n@tailwind utilities;\n.x{}"),
+    ).toEqual({
+      tailwind: "\n\n\n.x{}",
+      remote: [],
+    });
+    expect(
+      splitTailwindCss(
+        `@import url("https://fonts.googleapis.com/css2?family=Inter");\n@import "tailwindcss";\n@import "./local.css";\n@theme { --x: 1; }`,
+      ),
+    ).toEqual({
+      tailwind: "\n\n\n@theme { --x: 1; }",
+      remote: ['@import url("https://fonts.googleapis.com/css2?family=Inter");'],
+    });
+    expect(splitTailwindCss("a{}</style><script>").tailwind).not.toContain("</style>");
+  });
+
+  it("compiles Tailwind stylesheets in the page with the self-hosted browser build", async () => {
+    const r = await bundleProject(
+      esbuild,
+      {
+        "package.json": JSON.stringify({ dependencies: { tailwindcss: "^4.1.0" } }),
+        "index.html": html,
+        "src/main.tsx": `import "./index.css";\nimport "./plain.css";\ndocument.body.className = "p-4";`,
+        "src/index.css": '@import "tailwindcss";\n@theme { --color-brand: #f54e00; }',
+        "src/plain.css": "h1 { margin: 0 }",
+      },
+      { tailwindScript: async () => "/* tw */" },
+    );
+    if (!r.ok) throw new Error(JSON.stringify(r.errors));
+    expect(r.files["__ladestack/tailwind.js"]).toBe("/* tw */");
+    expect(r.files["index.html"]).toContain('<style type="text/tailwindcss">');
+    expect(r.files["index.html"]).not.toContain("@import");
+    expect(r.files["index.html"]).toContain("--color-brand: #f54e00");
+    expect(r.files["index.html"]).toContain('src="/__ladestack/tailwind.js"');
+    expect(r.files["__ladestack/bundle.css"]).toContain("margin: 0");
+    expect(r.files["__ladestack/bundle.css"]).not.toContain("tailwindcss");
+  });
+
+  it("leaves projects without Tailwind untouched", async () => {
+    const r = await bundleProject(
+      esbuild,
+      { "package.json": "{}", "index.html": html, "src/main.tsx": "console.log(1)" },
+      { tailwindScript: async () => "x" },
+    );
+    expect(r.ok && r.files["__ladestack/tailwind.js"]).toBe(undefined);
   });
 });

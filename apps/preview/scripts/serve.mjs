@@ -4,7 +4,7 @@ import { readFile } from "node:fs/promises";
 import { createServer } from "node:http";
 import { contentTypeFor } from "../src/lib.js";
 import { hostHeaders, parseParents } from "./headers.mjs";
-import { esbuildFiles } from "./vendor.mjs";
+import { esbuildFiles, tailwindFile } from "./vendor.mjs";
 
 const arg = (name, fallback) => {
   const i = process.argv.indexOf(`--${name}`);
@@ -20,6 +20,9 @@ createServer(async (req, res) => {
   if (path === "config.js") {
     res.writeHead(200, { ...headers, "Content-Type": contentTypeFor(path) });
     res.end(`export const allowedParents = ${JSON.stringify(parents)};\n`);
+  } else if (path === "vendor/tailwind/browser.js") {
+    res.writeHead(200, { ...headers, "Content-Type": contentTypeFor(path) });
+    res.end(await readFile(tailwindFile));
   } else if (path.startsWith("vendor/esbuild/") && path.slice(15) in esbuildFiles) {
     res.writeHead(200, { ...headers, "Content-Type": contentTypeFor(path) });
     res.end(await readFile(esbuildFiles[path.slice(15)]));
