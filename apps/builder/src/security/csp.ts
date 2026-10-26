@@ -4,13 +4,14 @@ import { providers } from "../providers/registry";
  * Builder Content-Security-Policy (ADR 0015). Scripts run only with this response's nonce or when
  * loaded by a script that had it ('strict-dynamic', which covers Monaco's AMD loader). Network
  * access is limited to this origin and the four BYOK provider APIs, so an injected script cannot
- * send a key anywhere else. Previews will run on their own origin and are not framed from here yet.
+ * send a key anywhere else. Project previews are framed only from the isolated preview origin
+ * (ADR 0016), when one is configured.
  */
 export const providerOrigins = Array.from(
   new Set(Object.values(providers).map((p) => p.apiOrigin)),
 ).sort();
 
-export function buildCsp(nonce: string, dev = false): string {
+export function buildCsp(nonce: string, dev = false, previewOrigin: string | null = null): string {
   const directives: Record<string, string[]> = {
     "default-src": ["'self'"],
     "script-src": [`'nonce-${nonce}'`, "'strict-dynamic'", ...(dev ? ["'unsafe-eval'"] : [])],
@@ -20,7 +21,7 @@ export function buildCsp(nonce: string, dev = false): string {
     "font-src": ["'self'", "data:"],
     "worker-src": ["'self'", "blob:"],
     "connect-src": ["'self'", ...providerOrigins, ...(dev ? ["ws:"] : [])],
-    "frame-src": ["'none'"],
+    "frame-src": previewOrigin ? [previewOrigin] : ["'none'"],
     "object-src": ["'none'"],
     "base-uri": ["'none'"],
     "form-action": ["'self'"],

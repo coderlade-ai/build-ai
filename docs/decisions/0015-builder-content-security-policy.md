@@ -11,7 +11,7 @@ BYOK keys live in the builder tab's `sessionStorage` (ADR 0014). Any script that
 
 - **Nonce CSP from middleware** (`apps/builder/src/middleware.ts`, policy in `src/security/csp.ts`): a fresh 128-bit nonce per response; `script-src 'nonce-…' 'strict-dynamic'`. No `unsafe-inline` or `unsafe-eval` for scripts in production. `'strict-dynamic'` lets nonce'd scripts load Next chunks and Monaco's loader without listing hosts.
 - **`connect-src 'self'` plus exactly the four provider API origins** (`apiOrigin` in the provider registry). An injected script cannot exfiltrate a key to any other host; adding a provider means adding its origin in one place, and a test fails if code calls a provider URL the CSP does not allow.
-- `object-src 'none'`, `base-uri 'none'`, `frame-ancestors 'none'`, `frame-src 'none'` (previews will get their own origin, ADR 0007, and their own policy), `form-action 'self'`, `worker-src 'self' blob:`, `upgrade-insecure-requests`.
+- `object-src 'none'`, `base-uri 'none'`, `frame-ancestors 'none'`, `frame-src 'none'`, or exactly the preview origin once configured (ADR 0016), `form-action 'self'`, `worker-src 'self' blob:`, `upgrade-insecure-requests`.
 - `style-src 'self' 'unsafe-inline'`: Monaco and React set inline styles. Accepted risk: style injection cannot run script or reach the network beyond `connect-src`/`img-src`.
 - Static headers from `next.config.ts`: `nosniff`, `Referrer-Policy: no-referrer`, COOP `same-origin`, CORP `same-origin`, `X-Frame-Options: DENY`, restrictive `Permissions-Policy`.
 - Dev server only adds `'unsafe-eval'` and `ws:` for React Refresh.

@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { AgentPanel } from "./AgentPanel";
 import { CheckpointHistory } from "./CheckpointHistory";
+import { Preview } from "./Preview";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { localePrefix, type Locale } from "@ladestack/i18n";
@@ -41,6 +42,11 @@ export function Workspace({ locale }: { locale: Locale }) {
   const [draft, setDraft] = useState<{ path: string; content: string } | null>(null);
   const [follow, setFollow] = useState(true);
   const [save, setSave] = useState<Save>("saved");
+  // Reload the preview whenever the saved files change.
+  const [previewKey, setPreviewKey] = useState(0);
+  useEffect(() => {
+    if (save === "saved") setPreviewKey((k) => k + 1);
+  }, [save, files]);
   const [view, setView] = useState<"code" | "preview">("code");
   const [agentBusy, setAgentBusy] = useState(false);
   const [historyKey, setHistoryKey] = useState(0);
@@ -312,9 +318,12 @@ export function Workspace({ locale }: { locale: Locale }) {
           </section>
         </div>
       ) : (
-        <div className={styles.preview}>
-          <p>{w.previewUnavailable}</p>
-        </div>
+        <Preview
+          locale={locale}
+          projectId={id!}
+          paths={files.map((f) => f.path)}
+          refreshKey={previewKey}
+        />
       )}
       <AgentPanel
         locale={locale}

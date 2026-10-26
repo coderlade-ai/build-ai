@@ -15,7 +15,8 @@ concurrency:
 jobs:
   validate:
     name: Format, lint, typecheck, test and build
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest is moving to Ubuntu 26, which Playwright 1.56's --with-deps predates.
+    runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
@@ -44,12 +45,19 @@ jobs:
 
       - name: Build
         run: pnpm build
+        env:
+          # The browser check serves this preview origin locally (ADR 0016).
+          NEXT_PUBLIC_PREVIEW_ORIGIN: http://127.0.0.1:4322
 
       - name: Builder CSP check
         run: pnpm --filter @ladestack/builder check:csp
 
       - name: Install Chromium
+        timeout-minutes: 5
         run: pnpm --filter @ladestack/builder exec playwright install --with-deps chromium
 
-      - name: Builder browser check (CSP, hydration, Monaco)
+      - name: Builder browser check (CSP, hydration, Monaco, preview)
+        timeout-minutes: 6
         run: pnpm --filter @ladestack/builder check:browser
+        env:
+          NEXT_PUBLIC_PREVIEW_ORIGIN: http://127.0.0.1:4322

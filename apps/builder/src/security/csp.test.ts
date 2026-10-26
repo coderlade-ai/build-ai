@@ -62,3 +62,13 @@ describe("builder CSP", () => {
     expect(createNonce()).not.toBe(a);
   });
 });
+
+describe("preview framing", () => {
+  it("frames nothing by default and only the preview origin when set", () => {
+    expect(buildCsp("n")).toContain("frame-src 'none'");
+    const csp = buildCsp("n", false, "https://preview.ladestack.in");
+    expect(csp).toContain("frame-src https://preview.ladestack.in;");
+    expect(csp).toContain("frame-ancestors 'none'");
+    expect(csp).not.toMatch(/connect-src[^;]*preview/);
+  });
+});
