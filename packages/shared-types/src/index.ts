@@ -56,7 +56,14 @@ export const agentModes = [
 export type AgentMode = (typeof agentModes)[number];
 
 /** Modes included in the public alpha (ADR 0009). */
-export const alphaAgentModes: readonly AgentMode[] = ["code", "plan", "ask", "debug"];
+export const alphaAgentModes = [
+  "code",
+  "plan",
+  "ask",
+  "debug",
+] as const satisfies readonly AgentMode[];
+
+export type AlphaAgentMode = (typeof alphaAgentModes)[number];
 
 export const toolNames = [
   "list_files",
