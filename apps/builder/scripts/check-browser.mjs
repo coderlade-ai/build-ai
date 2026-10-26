@@ -47,6 +47,11 @@ try {
   await page.waitForURL(/\/app\/project\?id=/, { timeout: 15000 });
   await page.locator(".monaco-editor").first().waitFor({ timeout: 20000 });
   await page.waitForTimeout(1500); // let workers start and report violations
+
+  // Checkpoint history: open it, save a checkpoint, and see it listed.
+  await page.getByRole("button", { name: "History" }).click();
+  await page.getByRole("button", { name: "Save checkpoint" }).click();
+  await page.getByText("Saved by you").first().waitFor({ timeout: 10000 });
   await page.goto(`${base}/ja`, { waitUntil: "networkidle" });
 } catch (e) {
   problems.push(String(e));
@@ -58,4 +63,4 @@ if (problems.length) {
   console.error(problems.join("\n"));
   process.exit(1);
 }
-console.warn("Browser check passed: hydrated, Monaco mounted, no CSP violations");
+console.warn("Browser check passed: hydrated, Monaco mounted, checkpoint saved, no CSP violations");
