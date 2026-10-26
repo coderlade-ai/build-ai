@@ -2,8 +2,8 @@ import { IDBFactory } from "fake-indexeddb";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { openProjectDb, ProjectStore } from "../storage/projectStore";
 import { createConversation, type Conversation, type StepResult } from "./adapters";
-import { runAgent } from "./loop";
-import { agentTools, maxWriteBytes, runTool, type ToolCall } from "./tools";
+import { buildFromPlanPrompt, runAgent } from "./loop";
+import { agentTools, maxWriteBytes, runTool, toolsForMode, type ToolCall } from "./tools";
 
 let store: ProjectStore;
 let projectId: string;
@@ -310,5 +310,55 @@ describe("delete_file approval", () => {
       approve: async () => true,
     });
     expect(await store.listFiles(projectId)).toEqual([]);
+  });
+});
+
+describe("Plan mode", () => {
+  it("offers only read tools", () => {
+    expect(toolsForMode("plan").map((t) => t.name)).toEqual(["list_files", "read_file"]);
+    expect(toolsForMode("code")).toEqual(agentTools);
+  });
+
+  it("blocks writes and deletes in the executor, without asking for approval", async () => {
+    let asked = 0;
+    const ctx = { mode: "plan" as const, approve: async () => (asked++, true) };
+    const w = await runTool(
+      store,
+      projectId,
+      call("write_file", { path: "x.txt", content: "hi" }),
+      ctx,
+    );
+    const d = await runTool(store, projectId, call("delete_file", { path: "index.html" }), ctx);
+    expect(w.isError && d.isError).toBe(true);
+    expect(w.output).toMatch(/not allowed in Plan mode/);
+    expect(asked).toBe(0);
+    expect(await store.readFile(projectId, "x.txt")).toBeUndefined();
+    expect(await store.readFile(projectId, "index.html")).toBeDefined();
+    expect(
+      (await runTool(store, projectId, call("read_file", { path: "index.html" }), ctx)).isError,
+    ).toBe(false);
+  });
+
+  it("the loop enforces the mode", async () => {
+    const conv = scripted([
+      { text: "", calls: [call("write_file", { path: "y.txt", content: "y" })] },
+      { text: "plan", calls: [] },
+    ]);
+    const results: boolean[] = [];
+    await runAgent({
+      conversation: conv,
+      fs: store,
+      projectId,
+      mode: "plan",
+      onEvent: (e) => e.type === "tool" && results.push(e.result.isError),
+    });
+    expect(results).toEqual([true]);
+    expect(await store.readFile(projectId, "y.txt")).toBeUndefined();
+  });
+
+  it("builds a Code task from the plan", () => {
+    const p = buildFromPlanPrompt("a cafe site", "1. index.html");
+    expect(p).toContain("a cafe site");
+    expect(p).toContain("1. index.html");
   });
 });

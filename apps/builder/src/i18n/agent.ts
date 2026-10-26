@@ -28,6 +28,12 @@ export interface AgentStrings {
   deny: string;
   deleted: string;
   declined: string;
+  modeLabel: string;
+  modeCode: string;
+  modePlan: string;
+  planPlaceholder: string;
+  planNote: string;
+  buildPlan: string;
 }
 
 export const agentStrings: Record<Locale, AgentStrings> = {
@@ -60,6 +66,12 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     deny: "Deny",
     deleted: "Deleted {path}",
     declined: "You declined deleting {path}",
+    modeLabel: "Agent mode",
+    modeCode: "Code",
+    modePlan: "Plan",
+    planPlaceholder: "Describe what you want planned…",
+    planNote: "Plan mode only reads your files. It never changes them.",
+    buildPlan: "Build this plan",
   },
   ru: {
     label: "Агент",
@@ -89,6 +101,12 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     deny: "Запретить",
     deleted: "Удалён {path}",
     declined: "Вы запретили удалять {path}",
+    modeLabel: "Режим агента",
+    modeCode: "Код",
+    modePlan: "План",
+    planPlaceholder: "Опишите, что нужно спланировать…",
+    planNote: "Режим «План» только читает файлы и никогда их не меняет.",
+    buildPlan: "Реализовать этот план",
   },
   ja: {
     label: "エージェント",
@@ -118,6 +136,12 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     deny: "拒否",
     deleted: "{path} を削除",
     declined: "{path} の削除を拒否しました",
+    modeLabel: "エージェントモード",
+    modeCode: "コード",
+    modePlan: "プラン",
+    planPlaceholder: "計画したい内容を入力…",
+    planNote: "プランモードはファイルを読むだけで、変更しません。",
+    buildPlan: "このプランで作成",
   },
   ko: {
     label: "에이전트",
@@ -147,6 +171,12 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     deny: "거부",
     deleted: "{path} 삭제함",
     declined: "{path} 삭제를 거부했습니다",
+    modeLabel: "에이전트 모드",
+    modeCode: "코드",
+    modePlan: "계획",
+    planPlaceholder: "계획할 내용을 설명하세요…",
+    planNote: "계획 모드는 파일을 읽기만 하고 절대 변경하지 않습니다.",
+    buildPlan: "이 계획대로 만들기",
   },
   zh: {
     label: "智能体",
@@ -175,6 +205,12 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     deny: "拒绝",
     deleted: "已删除 {path}",
     declined: "你拒绝了删除 {path}",
+    modeLabel: "智能体模式",
+    modeCode: "代码",
+    modePlan: "规划",
+    planPlaceholder: "描述你想规划的内容…",
+    planNote: "规划模式只读取你的文件，从不修改。",
+    buildPlan: "按此规划构建",
   },
   tr: {
     label: "Ajan",
@@ -205,6 +241,12 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     deny: "Reddet",
     deleted: "{path} silindi",
     declined: "{path} silinmesini reddettiniz",
+    modeLabel: "Ajan modu",
+    modeCode: "Kod",
+    modePlan: "Plan",
+    planPlaceholder: "Planlanmasını istediğiniz şeyi anlatın…",
+    planNote: "Plan modu yalnızca dosyalarınızı okur, asla değiştirmez.",
+    buildPlan: "Bu planı uygula",
   },
   fr: {
     label: "Agent",
@@ -236,6 +278,12 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     deny: "Refuser",
     deleted: "{path} supprimé",
     declined: "Vous avez refusé la suppression de {path}",
+    modeLabel: "Mode de l'agent",
+    modeCode: "Code",
+    modePlan: "Plan",
+    planPlaceholder: "Décrivez ce que vous voulez planifier…",
+    planNote: "Le mode Plan lit seulement vos fichiers. Il ne les modifie jamais.",
+    buildPlan: "Réaliser ce plan",
   },
   pt: {
     label: "Agente",
@@ -267,5 +315,11 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     deny: "Negar",
     deleted: "{path} excluído",
     declined: "Você recusou a exclusão de {path}",
+    modeLabel: "Modo do agente",
+    modeCode: "Código",
+    modePlan: "Plano",
+    planPlaceholder: "Descreva o que você quer planejar…",
+    planNote: "O modo Plano só lê seus arquivos. Ele nunca os altera.",
+    buildPlan: "Construir este plano",
   },
 };

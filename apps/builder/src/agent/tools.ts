@@ -53,6 +53,19 @@ export const agentTools: ToolSpec[] = [
   },
 ];
 
+/** Agent modes with a permission contract (PRD MODE-01). Plan is read-only. */
+export type AgentMode = "code" | "plan";
+
+const modeTools: Record<AgentMode, readonly ToolName[]> = {
+  code: toolNames,
+  plan: ["list_files", "read_file"],
+};
+
+/** The tool specs a mode may offer the model. */
+export function toolsForMode(mode: AgentMode): ToolSpec[] {
+  return agentTools.filter((t) => modeTools[mode].includes(t.name as ToolName));
+}
+
 /** An action that needs the user's explicit Allow once (Balanced profile, ADR 0003). */
 export interface ApprovalRequest {
   tool: "delete_file";
@@ -60,6 +73,8 @@ export interface ApprovalRequest {
 }
 
 export interface ToolContext {
+  /** Defaults to "code". Enforced here, not by the prompt (PRD AS-04). */
+  mode?: AgentMode;
   /** Resolves true only on an explicit allow. Missing, aborted or silent means denied. */
   approve?: (request: ApprovalRequest) => Promise<boolean>;
 }
@@ -127,6 +142,16 @@ export async function runTool(
   call: ToolCall,
   ctx: ToolContext = {},
 ): Promise<ToolResult> {
+  const mode = ctx.mode ?? "code";
+  if (
+    (toolNames as readonly string[]).includes(call.name) &&
+    !modeTools[mode].includes(call.name as ToolName)
+  )
+    return fail(
+      call,
+      `${call.name} is not allowed in ${mode === "plan" ? "Plan" : mode} mode, which is read-only. Describe the change in your plan instead; the user can switch to Code mode to build it.`,
+      stringArg(call.args, "path"),
+    );
   switch (call.name) {
     case "list_files": {
       const files = await fs.listFiles(projectId);

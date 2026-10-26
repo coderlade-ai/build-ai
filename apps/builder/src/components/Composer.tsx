@@ -121,12 +121,12 @@ export function Composer({ s, locale }: { s: ShellStrings; locale: Locale }) {
       return;
     }
     const name = providers[session.provider].name;
-    if (draft.mode === "code") {
-      void startCode(draft.prompt.trim());
+    if (draft.mode === "code" || draft.mode === "plan") {
+      void startProject(draft.mode, draft.prompt.trim());
       return;
     }
     if (draft.mode !== "ask") {
-      // Plan and Debug are later units: send nothing and keep the draft.
+      // Debug is a later unit: send nothing and keep the draft.
       setNotice(t.modePending.replace("{provider}", name).replace("{mode}", modeNames[draft.mode]));
       return;
     }
@@ -134,8 +134,8 @@ export function Composer({ s, locale }: { s: ShellStrings; locale: Locale }) {
     void ask(session, name, draft.prompt.trim());
   }
 
-  /** Code mode: a new empty local project, then the workspace agent picks up the prompt. */
-  async function startCode(prompt: string) {
+  /** Code or Plan mode: a new empty local project, then the workspace agent picks up the prompt. */
+  async function startProject(mode: "code" | "plan", prompt: string) {
     if (creating) return;
     setCreating(true);
     setNotice(w.creating);
@@ -146,7 +146,7 @@ export function Composer({ s, locale }: { s: ShellStrings; locale: Locale }) {
         profile: "react-vite",
         files: {},
       });
-      setPendingTask(project.id, prompt);
+      setPendingTask(project.id, { mode, prompt });
       setDraft((d) => ({ ...d, prompt: "" }));
       router.push(`${localePrefix(locale)}/project?id=${encodeURIComponent(project.id)}`);
     } catch {
