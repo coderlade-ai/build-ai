@@ -1,0 +1,241 @@
+import type { Project, ProjectFile, ProjectProfile } from "@ladestack/shared-types";
+import { isSafeProjectPath } from "../templates/validate";
+
+/**
+ * Local-first project store on IndexedDB (PRD A.20). The revisioned file records here are the
+ * source of truth; Monaco and the runtime only ever hold copies.
+ *
+ * Stores: `projects` (Project), `projectFiles` (ProjectFile, key [projectId, path]) and
+ * `fileBlobs` (content-addressed by SHA-256). Writes use optimistic concurrency: a caller passes
+ * the revision it edited, and a mismatch is reported as a conflict instead of last-write-wins.
+ */
+
+export const dbName = "ladestack-build";
+export const dbVersion = 1;
+
+export interface FileBlob {
+  hash: string;
+  content: string;
+}
+
+export type WriteResult =
+  | { ok: true; file: ProjectFile }
+  | { ok: false; reason: "conflict"; current: ProjectFile | undefined }
+  | { ok: false; reason: "invalid-path" | "missing-project" };
+
+export function openProjectDb(
+  factory: IDBFactory = indexedDB,
+  name = dbName,
+): Promise<IDBDatabase> {
+  return new Promise((resolve, reject) => {
+    const req = factory.open(name, dbVersion);
+    req.onupgradeneeded = () => {
+      const db = req.result;
+      db.createObjectStore("projects", { keyPath: "id" });
+      const files = db.createObjectStore("projectFiles", { keyPath: ["projectId", "path"] });
+      files.createIndex("byProject", "projectId");
+      db.createObjectStore("fileBlobs", { keyPath: "hash" });
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+    req.onblocked = () => reject(new Error("Project database upgrade is blocked by another tab."));
+  });
+}
+
+export async function sha256(text: string): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+  return Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+function request<T>(req: IDBRequest<T>): Promise<T> {
+  return new Promise((resolve, reject) => {
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+function done(tx: IDBTransaction): Promise<void> {
+  return new Promise((resolve, reject) => {
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+    tx.onabort = () => reject(tx.error ?? new Error("Transaction aborted"));
+  });
+}
+
+const nextRevision = (r: string | undefined) => String((r ? Number(r) : 0) + 1);
+const byteLength = (s: string) => new TextEncoder().encode(s).length;
+
+export class ProjectStore {
+  constructor(
+    private readonly db: IDBDatabase,
+    private readonly now: () => Date = () => new Date(),
+  ) {}
+
+  /** Creates a project and its files atomically. Paths are validated before anything is written. */
+  async createProject(input: {
+    name: string;
+    profile: ProjectProfile;
+    files: Record<string, string>;
+    outputLanguage?: string;
+  }): Promise<Project> {
+    const paths = Object.keys(input.files);
+    const bad = paths.find((p) => !isSafeProjectPath(p));
+    if (bad !== undefined) throw new Error(`Unsafe project path: ${bad}`);
+    // Hash first: a transaction commits as soon as it waits on anything that is not IndexedDB.
+    const hashes = await Promise.all(paths.map((p) => sha256(input.files[p]!)));
+    const at = this.now().toISOString();
+    const project: Project = {
+      id: crypto.randomUUID(),
+      name: input.name,
+      profile: input.profile,
+      outputLanguage: input.outputLanguage ?? "en",
+      createdAt: at,
+      updatedAt: at,
+      headRevision: "1",
+    };
+    const tx = this.db.transaction(["projects", "projectFiles", "fileBlobs"], "readwrite");
+    tx.objectStore("projects").add(project);
+    paths.forEach((path, i) => {
+      const content = input.files[path]!;
+      tx.objectStore("fileBlobs").put({ hash: hashes[i]!, content } satisfies FileBlob);
+      tx.objectStore("projectFiles").add({
+        id: crypto.randomUUID(),
+        projectId: project.id,
+        path,
+        contentHash: hashes[i]!,
+        size: byteLength(content),
+        revision: "1",
+      } satisfies ProjectFile);
+    });
+    await done(tx);
+    return project;
+  }
+
+  async listProjects(): Promise<Project[]> {
+    const tx = this.db.transaction("projects");
+    const all = await request(tx.objectStore("projects").getAll() as IDBRequest<Project[]>);
+    return all.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
+  }
+
+  getProject(id: string): Promise<Project | undefined> {
+    const tx = this.db.transaction("projects");
+    return request(tx.objectStore("projects").get(id) as IDBRequest<Project | undefined>);
+  }
+
+  async listFiles(projectId: string): Promise<ProjectFile[]> {
+    const tx = this.db.transaction("projectFiles");
+    const idx = tx.objectStore("projectFiles").index("byProject");
+    const files = await request(idx.getAll(projectId) as IDBRequest<ProjectFile[]>);
+    return files.sort((a, b) => a.path.localeCompare(b.path));
+  }
+
+  async readFile(
+    projectId: string,
+    path: string,
+  ): Promise<{ file: ProjectFile; content: string } | undefined> {
+    const tx = this.db.transaction(["projectFiles", "fileBlobs"]);
+    const file = await request(
+      tx.objectStore("projectFiles").get([projectId, path]) as IDBRequest<ProjectFile | undefined>,
+    );
+    if (!file) return undefined;
+    const blob = await request(
+      tx.objectStore("fileBlobs").get(file.contentHash) as IDBRequest<FileBlob | undefined>,
+    );
+    if (!blob) throw new Error(`Missing content for ${path}`);
+    return { file, content: blob.content };
+  }
+
+  /**
+   * Writes a file if `baseRevision` matches what is stored (`null` means "must not exist yet").
+   * Never overwrites a newer revision: the caller gets the current record back as a conflict.
+   */
+  async writeFile(
+    projectId: string,
+    path: string,
+    content: string,
+    baseRevision: string | null,
+  ): Promise<WriteResult> {
+    if (!isSafeProjectPath(path)) return { ok: false, reason: "invalid-path" };
+    const hash = await sha256(content);
+    const tx = this.db.transaction(["projects", "projectFiles", "fileBlobs"], "readwrite");
+    const projects = tx.objectStore("projects");
+    const files = tx.objectStore("projectFiles");
+    const project = await request(projects.get(projectId) as IDBRequest<Project | undefined>);
+    if (!project) {
+      tx.abort();
+      return { ok: false, reason: "missing-project" };
+    }
+    const current = await request(
+      files.get([projectId, path]) as IDBRequest<ProjectFile | undefined>,
+    );
+    if ((current?.revision ?? null) !== baseRevision) {
+      tx.abort();
+      return { ok: false, reason: "conflict", current };
+    }
+    const file: ProjectFile = {
+      id: current?.id ?? crypto.randomUUID(),
+      projectId,
+      path,
+      contentHash: hash,
+      size: byteLength(content),
+      revision: nextRevision(current?.revision),
+    };
+    tx.objectStore("fileBlobs").put({ hash, content } satisfies FileBlob);
+    files.put(file);
+    projects.put({
+      ...project,
+      updatedAt: this.now().toISOString(),
+      headRevision: nextRevision(project.headRevision),
+    });
+    await done(tx);
+    return { ok: true, file };
+  }
+
+  /** Deletes a file if it is still at `baseRevision`. Blobs are left for a later collection pass. */
+  async deleteFile(projectId: string, path: string, baseRevision: string): Promise<WriteResult> {
+    const tx = this.db.transaction(["projects", "projectFiles"], "readwrite");
+    const projects = tx.objectStore("projects");
+    const files = tx.objectStore("projectFiles");
+    const project = await request(projects.get(projectId) as IDBRequest<Project | undefined>);
+    const current = await request(
+      files.get([projectId, path]) as IDBRequest<ProjectFile | undefined>,
+    );
+    if (!project) {
+      tx.abort();
+      return { ok: false, reason: "missing-project" };
+    }
+    if (!current || current.revision !== baseRevision) {
+      tx.abort();
+      return { ok: false, reason: "conflict", current };
+    }
+    files.delete([projectId, path]);
+    projects.put({
+      ...project,
+      updatedAt: this.now().toISOString(),
+      headRevision: nextRevision(project.headRevision),
+    });
+    await done(tx);
+    return { ok: true, file: current };
+  }
+
+  async renameProject(projectId: string, name: string): Promise<Project | undefined> {
+    const tx = this.db.transaction("projects", "readwrite");
+    const store = tx.objectStore("projects");
+    const project = await request(store.get(projectId) as IDBRequest<Project | undefined>);
+    if (!project) return undefined;
+    const updated = { ...project, name, updatedAt: this.now().toISOString() };
+    store.put(updated);
+    await done(tx);
+    return updated;
+  }
+
+  /** Removes a project and its file records. Callers must confirm with the user first. */
+  async deleteProject(projectId: string): Promise<void> {
+    const tx = this.db.transaction(["projects", "projectFiles"], "readwrite");
+    tx.objectStore("projects").delete(projectId);
+    const files = tx.objectStore("projectFiles");
+    const keys = await request(files.index("byProject").getAllKeys(projectId));
+    for (const key of keys) files.delete(key);
+    await done(tx);
+  }
+}
