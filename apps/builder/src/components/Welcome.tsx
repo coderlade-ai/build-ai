@@ -1,7 +1,6 @@
 import { localePrefix, type Locale } from "@ladestack/i18n";
 import { shell } from "../i18n/shell";
 import { Composer } from "./Composer";
-import { providerStrings } from "../i18n/providers";
 import { ImportZip } from "./ImportZip";
 import { ProviderSetup } from "./ProviderSetup";
 import { RecentProjects } from "./RecentProjects";
@@ -23,7 +22,7 @@ export function Welcome({ locale }: { locale: Locale }) {
       <main className={styles.main}>
         <p className={styles.kicker}>{s.kicker}</p>
         <h1 className={styles.title}>{s.title}</h1>
-        <Composer s={s} agentPending={providerStrings[locale].agentPending} />
+        <Composer s={s} locale={locale} />
         <p className={styles.note}>{s.freeNote}</p>
         <p className={styles.note}>{s.body}</p>
         <RecentProjects locale={locale} />
