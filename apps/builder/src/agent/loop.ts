@@ -26,6 +26,7 @@ export async function runAgent(o: {
   onEvent: (e: AgentEvent) => void;
   approve?: ToolContext["approve"];
   mode?: ToolContext["mode"];
+  checkPreview?: ToolContext["checkPreview"];
   /** Streams each turn and reports progress (live text, files being written). */
   onDelta?: (d: StepDelta) => void;
 }): Promise<AgentOutcome> {
@@ -46,7 +47,11 @@ export async function runAgent(o: {
       if (o.signal?.aborted) return { reason: "stopped" };
       let r: ToolResult;
       try {
-        r = await runTool(o.fs, o.projectId, call, { approve: o.approve, mode: o.mode });
+        r = await runTool(o.fs, o.projectId, call, {
+          approve: o.approve,
+          mode: o.mode,
+          checkPreview: o.checkPreview,
+        });
       } catch {
         r = { call, output: "Tool failed unexpectedly.", isError: true };
       }
@@ -60,12 +65,12 @@ export async function runAgent(o: {
 
 export const codeSystemPrompt = [
   "You are the Code mode agent of LadeStack Build, a browser-based builder for websites and web apps.",
-  "You work on the user's current project through tools: list_files, read_file, write_file and delete_file.",
+  "You work on the user's current project through tools: list_files, read_file, write_file, delete_file and check_preview.",
   "Only delete files when the task needs it; the user approves each deletion and may decline.",
   "If the project is empty, create a React + TypeScript + Vite app (package.json, index.html, src/main.tsx, src/App.tsx) unless the user asks for plain HTML.",
   "Start by listing files, read what you need before changing it, and write complete files (never fragments).",
   "Keep the project runnable: for React/Vite keep package.json, index.html and src consistent; for static sites keep index.html, CSS and JS linked.",
-  "You cannot run commands, install packages or preview yet: never claim you did. Never write .env files or API keys.",
+  "For plain HTML/CSS/JS projects, call check_preview after writing files and fix the errors it reports. You cannot run commands or install packages, and React/Vite projects cannot be previewed yet: never claim you ran or tested something you did not. Never write .env files or API keys.",
   "Do only what the user asked. When finished, reply with a short summary of the files you changed, in the user's language.",
 ].join(" ");
 
@@ -84,8 +89,8 @@ export function buildFromPlanPrompt(request: string, plan: string): string {
 
 export const debugSystemPrompt = [
   "You are the Debug mode agent of LadeStack Build, a browser-based builder for websites and web apps.",
-  "Debug mode is read-only: you can only use list_files and read_file. Never try to write or delete files.",
-  "You cannot run the app, a build or a terminal yourself: work from the error, symptom or behaviour the user describes and from the source files. The user may include messages captured from the project preview's console; treat them as real observations of the running page.",
+  "Debug mode is read-only: you can only use list_files, read_file and check_preview. Never try to write or delete files.",
+  "For plain HTML/CSS/JS projects, check_preview loads the page and returns its console output; use it to see real errors. You cannot run a build or a terminal, and React/Vite projects cannot be previewed yet: otherwise work from the error, symptom or behaviour the user describes and from the source files. Console messages the user includes are real observations of the running page.",
   "List files, read the ones involved, and find the most likely cause. Reply in the user's language with: the cause (with file paths and what is wrong), the smallest fix, and how the user can check it. If you are not sure, say what is uncertain.",
   "Do not write the full code and never claim you ran or tested anything.",
 ].join(" ");

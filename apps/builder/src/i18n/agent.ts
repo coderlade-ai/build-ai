@@ -11,6 +11,7 @@ export interface AgentStrings {
   startPage: string;
   working: string;
   listed: string;
+  checkedPreview: string;
   read: string;
   wrote: string;
   toolFailed: string;
@@ -52,6 +53,7 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     startPage: "Go to start page",
     working: "Working…",
     listed: "Listed files",
+    checkedPreview: "Checked the preview",
     read: "Read {path}",
     wrote: "Wrote {path}",
     toolFailed: "Couldn't change {path}",
@@ -94,6 +96,7 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     startPage: "На стартовую страницу",
     working: "Работаю…",
     listed: "Просмотрен список файлов",
+    checkedPreview: "Проверил предпросмотр",
     read: "Прочитан {path}",
     wrote: "Записан {path}",
     toolFailed: "Не удалось изменить {path}",
@@ -135,6 +138,7 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     startPage: "スタートページへ",
     working: "作業中…",
     listed: "ファイル一覧を取得",
+    checkedPreview: "プレビューを確認しました",
     read: "{path} を読み込み",
     wrote: "{path} を書き込み",
     toolFailed: "{path} を変更できませんでした",
@@ -176,6 +180,7 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     startPage: "시작 페이지로",
     working: "작업 중…",
     listed: "파일 목록 확인",
+    checkedPreview: "미리보기를 확인했습니다",
     read: "{path} 읽음",
     wrote: "{path} 작성",
     toolFailed: "{path}을(를) 변경하지 못했습니다",
@@ -217,6 +222,7 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     startPage: "前往起始页",
     working: "正在处理…",
     listed: "已列出文件",
+    checkedPreview: "已检查预览",
     read: "已读取 {path}",
     wrote: "已写入 {path}",
     toolFailed: "无法修改 {path}",
@@ -256,6 +262,7 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     startPage: "Başlangıç sayfasına git",
     working: "Çalışıyor…",
     listed: "Dosyalar listelendi",
+    checkedPreview: "Önizleme kontrol edildi",
     read: "{path} okundu",
     wrote: "{path} yazıldı",
     toolFailed: "{path} değiştirilemedi",
@@ -298,6 +305,7 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     startPage: "Aller à la page d'accueil",
     working: "En cours…",
     listed: "Fichiers listés",
+    checkedPreview: "Aperçu vérifié",
     read: "{path} lu",
     wrote: "{path} écrit",
     toolFailed: "Impossible de modifier {path}",
@@ -341,6 +349,7 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     startPage: "Ir para a página inicial",
     working: "Trabalhando…",
     listed: "Arquivos listados",
+    checkedPreview: "Pré-visualização verificada",
     read: "{path} lido",
     wrote: "{path} gravado",
     toolFailed: "Não foi possível alterar {path}",

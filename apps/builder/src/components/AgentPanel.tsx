@@ -62,6 +62,7 @@ export function AgentPanel({
   onFilesChanged,
   onRunningChange,
   request,
+  checkPreview,
 }: {
   locale: Locale;
   projectId: string;
@@ -72,6 +73,8 @@ export function AgentPanel({
   onRunningChange?: (running: boolean) => void;
   /** A task started from elsewhere in the workspace (the preview console); runs when its id changes. */
   request?: { id: number; mode: AgentMode; prompt: string };
+  /** Reloads the live preview and reports its console (tool check_preview). */
+  checkPreview?: () => Promise<string>;
 }) {
   const a = agentStrings[locale];
   const t = providerStrings[locale];
@@ -205,6 +208,7 @@ export function AgentPanel({
         }),
         fs,
         projectId,
+        checkPreview,
         mode: runMode,
         signal: controller.signal,
         onDelta: (d) => {
@@ -232,11 +236,13 @@ export function AgentPanel({
           const label =
             call.name === "list_files"
               ? a.listed
-              : e.result.declined
-                ? a.declined.replace("{path}", p)
-                : isError
-                  ? a.toolFailed.replace("{path}", p)
-                  : (done[call.name] ?? a.toolFailed).replace("{path}", p);
+              : call.name === "check_preview"
+                ? a.checkedPreview
+                : e.result.declined
+                  ? a.declined.replace("{path}", p)
+                  : isError
+                    ? a.toolFailed.replace("{path}", p)
+                    : (done[call.name] ?? a.toolFailed).replace("{path}", p);
           add({ kind: "tool", label, error: isError && !e.result.declined });
           if (isError || !path) return;
           if (call.name === "write_file") {

@@ -1,6 +1,6 @@
 import { isSafeProjectPath } from "../templates/validate";
 
-/** Tools the Code-mode agent may call (PRD A.15). No run or install yet. */
+/** Tools the agent may call (PRD A.15). No terminal or install yet. */
 export interface ToolSpec {
   name: ToolName;
   description: string;
@@ -8,7 +8,13 @@ export interface ToolSpec {
   parameters: { type: "object"; properties: Record<string, unknown>; required: string[] } | null;
 }
 
-export const toolNames = ["list_files", "read_file", "write_file", "delete_file"] as const;
+export const toolNames = [
+  "list_files",
+  "read_file",
+  "write_file",
+  "delete_file",
+  "check_preview",
+] as const;
 export type ToolName = (typeof toolNames)[number];
 
 export const agentTools: ToolSpec[] = [
@@ -51,6 +57,12 @@ export const agentTools: ToolSpec[] = [
       required: ["path"],
     },
   },
+  {
+    name: "check_preview",
+    description:
+      "Load the project's saved files in the live preview and return what the page's console reported after it settled: errors, warnings, logs and files that failed to load. Use it after writing files to check your work. Only plain HTML/CSS/JS projects (index.html, no package.json) can be previewed for now.",
+    parameters: null,
+  },
 ];
 
 /**
@@ -62,7 +74,7 @@ export type AgentMode = "code" | "plan" | "debug";
 const modeTools: Record<AgentMode, readonly ToolName[]> = {
   code: toolNames,
   plan: ["list_files", "read_file"],
-  debug: ["list_files", "read_file"],
+  debug: ["list_files", "read_file", "check_preview"],
 };
 
 const modeLabel: Record<AgentMode, string> = { code: "Code", plan: "Plan", debug: "Debug" };
@@ -83,6 +95,8 @@ export interface ToolContext {
   mode?: AgentMode;
   /** Resolves true only on an explicit allow. Missing, aborted or silent means denied. */
   approve?: (request: ApprovalRequest) => Promise<boolean>;
+  /** Reloads the live preview and reports its console; missing means no preview here. */
+  checkPreview?: () => Promise<string>;
 }
 
 export interface ToolCall {
@@ -230,6 +244,10 @@ export async function runTool(
       if (!result.ok)
         return fail(call, "The file changed while deleting. Read it again first.", path);
       return { call, output: `Deleted ${path}`, isError: false, path };
+    }
+    case "check_preview": {
+      if (!ctx.checkPreview) return fail(call, "The preview is not available here.");
+      return { call, output: await ctx.checkPreview(), isError: false };
     }
     default:
       return fail(call, `Unknown tool: ${call.name}`);

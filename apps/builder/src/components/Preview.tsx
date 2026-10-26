@@ -9,6 +9,7 @@ import {
   parsePreviewLog,
   type PreviewLog,
 } from "../preview/console";
+import type { PreviewController } from "../preview/controller";
 import { newPreviewSession, previewKind, previewMessages } from "../preview/files";
 import { previewOrigin } from "../preview/origin";
 import { getProjectStore } from "../storage/client";
@@ -25,6 +26,7 @@ export function Preview({
   paths,
   refreshKey,
   onDebug,
+  controller,
 }: {
   locale: Locale;
   projectId: string;
@@ -33,6 +35,8 @@ export function Preview({
   refreshKey: number;
   /** Starts a Debug-mode run with this task (built from the console's errors). */
   onDebug?: (prompt: string) => void;
+  /** Lets the agent reload this preview and read its console (check_preview). */
+  controller?: PreviewController;
 }) {
   const w = workspace[locale];
   const kind = previewKind(paths);
@@ -42,15 +46,57 @@ export function Preview({
   const [loaded, setLoaded] = useState(false);
   const [frameKey, setFrameKey] = useState(0);
   const [logs, setLogs] = useState<PreviewLog[]>([]);
+  const [reloadNonce, setReloadNonce] = useState(0);
+  const control = useRef(controller);
+  control.current = controller;
+
+  // Tell the agent's check_preview what this preview can do, in words for the model.
+  useEffect(() => {
+    const c = control.current;
+    if (!c) return;
+    if (!previewOrigin)
+      c.attach(
+        {
+          ok: false,
+          reason: "Preview is not set up on this deployment, so nothing can be checked.",
+        },
+        null,
+      );
+    else if (kind === "needs-runtime")
+      c.attach(
+        {
+          ok: false,
+          reason:
+            "This project has a package.json. React/Vite projects need the runtime, which isn't available yet, so the preview can't run it; check the code by reading it.",
+        },
+        null,
+      );
+    else if (kind === "no-entry")
+      c.attach(
+        {
+          ok: false,
+          reason: "There is no index.html at the project root, so there is nothing to preview.",
+        },
+        null,
+      );
+    else c.attach({ ok: true }, () => setReloadNonce((n) => n + 1));
+    return () => c.detach();
+  }, [kind]);
 
   useEffect(() => {
     function onMessage(e: MessageEvent) {
       if (!previewOrigin || e.origin !== previewOrigin) return;
       if (e.source !== frame.current?.contentWindow) return;
       if (e.data?.type === previewMessages.ready) setReady(true);
-      if (e.data?.type === previewMessages.loaded) setLoaded(true);
+      if (e.data?.type === previewMessages.loaded) {
+        setLoaded(true);
+        control.current?.loaded();
+      }
       const log = parsePreviewLog(e.data);
-      if (log) setLogs((l) => appendLog(l, log));
+      if (log) {
+        setLogs((l) => appendLog(l, log));
+        control.current?.log(log);
+      }
     }
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
@@ -65,6 +111,7 @@ export function Preview({
       if (cancelled) return;
       const files = Object.fromEntries(all.map((f) => [f.path, f.content]));
       setLogs([]); // each load starts a fresh console
+      control.current?.filesSent();
       frame.current?.contentWindow?.postMessage(
         { type: previewMessages.files, session, files },
         previewOrigin!,
@@ -73,7 +120,7 @@ export function Preview({
     return () => {
       cancelled = true;
     };
-  }, [ready, refreshKey, kind, projectId, session]);
+  }, [ready, refreshKey, reloadNonce, kind, projectId, session]);
 
   const errors = logs.filter((l) => l.level === "error" || l.level === "warn").length;
   const debugPrompt = debugPromptFromLogs(w.consoleDebugPrompt, logs);

@@ -5,8 +5,9 @@ import Link from "next/link";
 import { AgentPanel } from "./AgentPanel";
 import { CheckpointHistory } from "./CheckpointHistory";
 import { Preview } from "./Preview";
+import { PreviewController } from "../preview/controller";
 import { useSearchParams } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import { localePrefix, type Locale } from "@ladestack/i18n";
 import type { Project, ProjectFile } from "@ladestack/shared-types";
 import { workspace } from "../i18n/workspace";
@@ -44,6 +45,7 @@ export function Workspace({ locale }: { locale: Locale }) {
   const [save, setSave] = useState<Save>("saved");
   // Reload the preview whenever the saved files change.
   const [previewKey, setPreviewKey] = useState(0);
+  const previewController = useMemo(() => new PreviewController(), []);
   const [agentRequest, setAgentRequest] = useState<
     { id: number; mode: "debug"; prompt: string } | undefined
   >();
@@ -320,17 +322,20 @@ export function Workspace({ locale }: { locale: Locale }) {
             )}
           </section>
         </div>
-      ) : (
+      ) : null}
+      {/* Kept mounted while editing so the agent's check_preview can reload it. */}
+      <div className={view === "code" ? styles.hiddenPane : styles.previewWrap}>
         <Preview
           locale={locale}
           projectId={id!}
           paths={files.map((f) => f.path)}
           refreshKey={previewKey}
+          controller={previewController}
           onDebug={(prompt) =>
             setAgentRequest((r) => ({ id: (r?.id ?? 0) + 1, mode: "debug", prompt }))
           }
         />
-      )}
+      </div>
       <AgentPanel
         locale={locale}
         projectId={id!}
@@ -341,6 +346,7 @@ export function Workspace({ locale }: { locale: Locale }) {
           void restored();
         }}
         request={agentRequest}
+        checkPreview={() => previewController.check()}
         onRunningChange={(r) => {
           setAgentBusy(r);
           if (!r) setHistoryKey((k) => k + 1);

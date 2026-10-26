@@ -65,8 +65,17 @@ async function start() {
     builder = event.origin;
     current = msg.session;
     status.hidden = true;
-    frame.src = `/p/${msg.session}/index.html?v=${++version}`;
-    window.parent.postMessage({ type: messageTypes.loaded }, event.origin);
+    const v = ++version;
+    const origin = event.origin;
+    // "loaded" means the project page finished loading (its scripts ran), not just that files arrived.
+    frame.addEventListener(
+      "load",
+      () => {
+        if (v === version) window.parent.postMessage({ type: messageTypes.loaded }, origin);
+      },
+      { once: true },
+    );
+    frame.src = `/p/${msg.session}/index.html?v=${v}`;
   });
 
   // The builder's origin is one of the allowed parents; a message to any other is dropped.
