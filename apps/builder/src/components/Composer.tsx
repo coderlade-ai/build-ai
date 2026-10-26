@@ -47,6 +47,7 @@ const streamErrorKey: Record<
   timeout: "timeout",
   unexpected: "unexpected",
   "no-models": "noModels",
+  rejected: "rejected",
 };
 
 interface AskTurn {

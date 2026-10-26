@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { AgentPanel } from "./AgentPanel";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { localePrefix, type Locale } from "@ladestack/i18n";
@@ -40,6 +41,8 @@ export function Workspace({ locale }: { locale: Locale }) {
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const openRef = useRef(open);
   openRef.current = open;
+  const saveRef = useRef(save);
+  saveRef.current = save;
 
   const openFile = useCallback(async (projectId: string, path: string) => {
     const store = await getProjectStore();
@@ -124,6 +127,19 @@ export function Workspace({ locale }: { locale: Locale }) {
     if (save === "dirty") await persist();
     await openFile(id, path);
   }
+
+  /** The agent saved a file: refresh the tree, and the open file unless the user has unsaved edits. */
+  const agentWrote = useCallback(
+    async (path: string) => {
+      if (!id) return;
+      const store = await getProjectStore();
+      setFiles(await store.listFiles(id));
+      const current = openRef.current;
+      if (!current) await openFile(id, path);
+      else if (current.path === path && saveRef.current !== "dirty") await openFile(id, path);
+    },
+    [id, openFile],
+  );
 
   const [exporting, setExporting] = useState<"idle" | "busy" | "error">("idle");
 
@@ -244,6 +260,7 @@ export function Workspace({ locale }: { locale: Locale }) {
           <p>{w.previewUnavailable}</p>
         </div>
       )}
+      <AgentPanel locale={locale} projectId={id!} onWrite={(p) => void agentWrote(p)} />
     </div>
   );
 }

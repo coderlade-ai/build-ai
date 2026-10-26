@@ -7,7 +7,7 @@ export interface ChatMessage {
   content: string;
 }
 
-export type StreamError = ConnectError | "interrupted" | "aborted";
+export type StreamError = ConnectError | "interrupted" | "aborted" | "rejected";
 
 export class ProviderStreamError extends Error {
   constructor(readonly code: StreamError) {
