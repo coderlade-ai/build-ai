@@ -1,6 +1,6 @@
 import { isSafeProjectPath } from "../templates/validate";
 
-/** Tools the Code-mode agent may call (PRD A.15). Read and write only: no delete, run or install yet. */
+/** Tools the Code-mode agent may call (PRD A.15). No run or install yet. */
 export interface ToolSpec {
   name: ToolName;
   description: string;
@@ -8,7 +8,7 @@ export interface ToolSpec {
   parameters: { type: "object"; properties: Record<string, unknown>; required: string[] } | null;
 }
 
-export const toolNames = ["list_files", "read_file", "write_file"] as const;
+export const toolNames = ["list_files", "read_file", "write_file", "delete_file"] as const;
 export type ToolName = (typeof toolNames)[number];
 
 export const agentTools: ToolSpec[] = [
@@ -41,7 +41,28 @@ export const agentTools: ToolSpec[] = [
       required: ["path", "content"],
     },
   },
+  {
+    name: "delete_file",
+    description:
+      "Delete a project file. The user is asked to approve every deletion and may decline; if declined, do not retry.",
+    parameters: {
+      type: "object",
+      properties: { path: { type: "string", description: "Project-relative path to delete" } },
+      required: ["path"],
+    },
+  },
 ];
+
+/** An action that needs the user's explicit Allow once (Balanced profile, ADR 0003). */
+export interface ApprovalRequest {
+  tool: "delete_file";
+  path: string;
+}
+
+export interface ToolContext {
+  /** Resolves true only on an explicit allow. Missing, aborted or silent means denied. */
+  approve?: (request: ApprovalRequest) => Promise<boolean>;
+}
 
 export interface ToolCall {
   id: string;
@@ -55,6 +76,8 @@ export interface ToolResult {
   isError: boolean;
   /** For the activity log: which file a read/write touched. */
   path?: string;
+  /** The user said no to an approval. */
+  declined?: boolean;
 }
 
 /** The storage the agent works through; satisfied by ProjectStore. */
@@ -69,6 +92,11 @@ export interface AgentFs {
     path: string,
     content: string,
     baseRevision: string | null,
+  ): Promise<{ ok: true } | { ok: false; reason: string }>;
+  deleteFile(
+    projectId: string,
+    path: string,
+    baseRevision: string,
   ): Promise<{ ok: true } | { ok: false; reason: string }>;
 }
 
@@ -93,7 +121,12 @@ function stringArg(args: unknown, key: string): string | undefined {
  * Runs one validated tool call against the project. Every argument is checked here, in app
  * code, never trusted from the model (PRD: permissions enforced by code, not prompts).
  */
-export async function runTool(fs: AgentFs, projectId: string, call: ToolCall): Promise<ToolResult> {
+export async function runTool(
+  fs: AgentFs,
+  projectId: string,
+  call: ToolCall,
+  ctx: ToolContext = {},
+): Promise<ToolResult> {
   switch (call.name) {
     case "list_files": {
       const files = await fs.listFiles(projectId);
@@ -140,6 +173,32 @@ export async function runTool(fs: AgentFs, projectId: string, call: ToolCall): P
           path,
         );
       return { call, output: `${existing ? "Updated" : "Created"} ${path}`, isError: false, path };
+    }
+    case "delete_file": {
+      const path = stringArg(call.args, "path");
+      if (!path || !isSafeProjectPath(path)) return fail(call, "Invalid path.", path);
+      if (!(await fs.readFile(projectId, path))) return fail(call, `File not found: ${path}`, path);
+      let allowed = false;
+      try {
+        allowed = (await ctx.approve?.({ tool: "delete_file", path })) === true;
+      } catch {
+        allowed = false;
+      }
+      if (!allowed)
+        return {
+          call,
+          output: `The user declined deleting ${path}. Do not retry.`,
+          isError: true,
+          path,
+          declined: true,
+        };
+      // Re-read after approval: the file may have changed while the user was deciding.
+      const current = await fs.readFile(projectId, path);
+      if (!current) return fail(call, `File not found: ${path}`, path);
+      const result = await fs.deleteFile(projectId, path, current.file.revision);
+      if (!result.ok)
+        return fail(call, "The file changed while deleting. Read it again first.", path);
+      return { call, output: `Deleted ${path}`, isError: false, path };
     }
     default:
       return fail(call, `Unknown tool: ${call.name}`);

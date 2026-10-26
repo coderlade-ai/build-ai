@@ -23,6 +23,11 @@ export interface AgentStrings {
   undoRestore: string;
   restoreFailed: string;
   checkpointFailed: string;
+  approveDelete: string;
+  allowOnce: string;
+  deny: string;
+  deleted: string;
+  declined: string;
 }
 
 export const agentStrings: Record<Locale, AgentStrings> = {
@@ -50,6 +55,11 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     undoRestore: "Undo restore",
     restoreFailed: "Couldn't restore the files.",
     checkpointFailed: "Couldn't save a checkpoint, so the agent didn't start.",
+    approveDelete: "Allow the agent to delete {path}?",
+    allowOnce: "Allow once",
+    deny: "Deny",
+    deleted: "Deleted {path}",
+    declined: "You declined deleting {path}",
   },
   ru: {
     label: "Агент",
@@ -74,6 +84,11 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     undoRestore: "Отменить восстановление",
     restoreFailed: "Не удалось восстановить файлы.",
     checkpointFailed: "Не удалось сохранить контрольную точку, поэтому агент не запущен.",
+    approveDelete: "Разрешить агенту удалить {path}?",
+    allowOnce: "Разрешить один раз",
+    deny: "Запретить",
+    deleted: "Удалён {path}",
+    declined: "Вы запретили удалять {path}",
   },
   ja: {
     label: "エージェント",
@@ -98,6 +113,11 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     undoRestore: "復元を取り消す",
     restoreFailed: "ファイルを復元できませんでした。",
     checkpointFailed: "チェックポイントを保存できなかったため、エージェントは開始しませんでした。",
+    approveDelete: "エージェントに {path} の削除を許可しますか？",
+    allowOnce: "今回のみ許可",
+    deny: "拒否",
+    deleted: "{path} を削除",
+    declined: "{path} の削除を拒否しました",
   },
   ko: {
     label: "에이전트",
@@ -122,6 +142,11 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     undoRestore: "복원 취소",
     restoreFailed: "파일을 복원하지 못했습니다.",
     checkpointFailed: "체크포인트를 저장하지 못해 에이전트를 시작하지 않았습니다.",
+    approveDelete: "에이전트가 {path}을(를) 삭제하도록 허용할까요?",
+    allowOnce: "이번만 허용",
+    deny: "거부",
+    deleted: "{path} 삭제함",
+    declined: "{path} 삭제를 거부했습니다",
   },
   zh: {
     label: "智能体",
@@ -145,6 +170,11 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     undoRestore: "撤销恢复",
     restoreFailed: "无法恢复文件。",
     checkpointFailed: "无法保存检查点，因此智能体未启动。",
+    approveDelete: "允许智能体删除 {path} 吗？",
+    allowOnce: "仅允许一次",
+    deny: "拒绝",
+    deleted: "已删除 {path}",
+    declined: "你拒绝了删除 {path}",
   },
   tr: {
     label: "Ajan",
@@ -170,6 +200,11 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     undoRestore: "Geri yüklemeyi geri al",
     restoreFailed: "Dosyalar geri yüklenemedi.",
     checkpointFailed: "Kontrol noktası kaydedilemediği için ajan başlatılmadı.",
+    approveDelete: "Ajanın {path} dosyasını silmesine izin verilsin mi?",
+    allowOnce: "Bir kez izin ver",
+    deny: "Reddet",
+    deleted: "{path} silindi",
+    declined: "{path} silinmesini reddettiniz",
   },
   fr: {
     label: "Agent",
@@ -196,6 +231,11 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     restoreFailed: "Impossible de restaurer les fichiers.",
     checkpointFailed:
       "Impossible d'enregistrer un point de restauration : l'agent n'a pas démarré.",
+    approveDelete: "Autoriser l'agent à supprimer {path} ?",
+    allowOnce: "Autoriser une fois",
+    deny: "Refuser",
+    deleted: "{path} supprimé",
+    declined: "Vous avez refusé la suppression de {path}",
   },
   pt: {
     label: "Agente",
@@ -222,5 +262,10 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     restoreFailed: "Não foi possível restaurar os arquivos.",
     checkpointFailed:
       "Não foi possível salvar um ponto de restauração, então o agente não começou.",
+    approveDelete: "Permitir que o agente exclua {path}?",
+    allowOnce: "Permitir uma vez",
+    deny: "Negar",
+    deleted: "{path} excluído",
+    declined: "Você recusou a exclusão de {path}",
   },
 };
