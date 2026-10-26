@@ -183,6 +183,18 @@ try {
     if (Math.round(await frameWidth()) !== Math.round(fullWidth))
       throw new Error("Desktop viewport does not fill the pane");
   }
+  // Erase local data: after confirming, the saved projects are gone from the welcome screen.
+  step("erase local data");
+  await page.goto(base, { waitUntil: "networkidle" });
+  await page.getByRole("heading", { name: "Your projects" }).waitFor({ timeout: 10000 });
+  page.once("dialog", (d) => void d.accept());
+  await Promise.all([
+    page.waitForEvent("load", { timeout: 20000 }),
+    page.getByRole("button", { name: "Erase all local data" }).click(),
+  ]);
+  await page.waitForLoadState("networkidle");
+  if (await page.getByRole("heading", { name: "Your projects" }).count())
+    throw new Error("Projects are still listed after erasing local data");
   step("locale page");
   await page.goto(`${base}/ja`, { waitUntil: "networkidle" });
 } catch (e) {
@@ -195,6 +207,6 @@ if (problems.length) {
   finish(false);
 }
 console.warn(
-  `Browser check passed: hydrated, Monaco mounted, checkpoint saved${checkPreview ? ", static + React + Tailwind previews ran, viewports switched, new tab opened, console bridged" : ""}, no CSP violations`,
+  `Browser check passed: hydrated, Monaco mounted, checkpoint saved, local data erased${checkPreview ? ", static + React + Tailwind previews ran, viewports switched, new tab opened, console bridged" : ""}, no CSP violations`,
 );
 finish(true);
