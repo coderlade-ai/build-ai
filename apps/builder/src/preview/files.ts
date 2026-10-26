@@ -19,4 +19,5 @@ export const previewMessages = {
   ready: "ladestack:preview-ready",
   files: "ladestack:preview-files",
   loaded: "ladestack:preview-loaded",
+  log: "ladestack:preview-log",
 } as const;

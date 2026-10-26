@@ -32,6 +32,11 @@ export interface WorkspaceStrings {
   previewLoading: string;
   previewFrame: string;
   reloadPreview: string;
+  console: string;
+  consoleEmpty: string;
+  consoleClear: string;
+  debugErrors: string;
+  consoleDebugPrompt: string;
 }
 
 export const workspace: Record<Locale, WorkspaceStrings> = {
@@ -70,6 +75,11 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     previewLoading: "Loading preview…",
     previewFrame: "Preview of your project",
     reloadPreview: "Reload preview",
+    console: "Console",
+    consoleEmpty: "No console messages yet.",
+    consoleClear: "Clear",
+    debugErrors: "Debug these errors",
+    consoleDebugPrompt: "Find the cause of these errors from the project preview:",
   },
   ru: {
     useTemplate: "Использовать шаблон",
@@ -106,6 +116,11 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     previewLoading: "Загрузка предпросмотра…",
     previewFrame: "Предпросмотр вашего проекта",
     reloadPreview: "Обновить предпросмотр",
+    console: "Консоль",
+    consoleEmpty: "Сообщений в консоли пока нет.",
+    consoleClear: "Очистить",
+    debugErrors: "Найти причину ошибок",
+    consoleDebugPrompt: "Найди причину этих ошибок из предпросмотра проекта:",
   },
   ja: {
     useTemplate: "このテンプレートを使う",
@@ -142,6 +157,11 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     previewLoading: "プレビューを読み込み中…",
     previewFrame: "プロジェクトのプレビュー",
     reloadPreview: "プレビューを再読み込み",
+    console: "コンソール",
+    consoleEmpty: "コンソールのメッセージはまだありません。",
+    consoleClear: "クリア",
+    debugErrors: "これらのエラーをデバッグ",
+    consoleDebugPrompt: "プロジェクトのプレビューで出た次のエラーの原因を見つけてください:",
   },
   ko: {
     useTemplate: "이 템플릿 사용",
@@ -178,6 +198,11 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     previewLoading: "미리보기 불러오는 중…",
     previewFrame: "프로젝트 미리보기",
     reloadPreview: "미리보기 새로고침",
+    console: "콘솔",
+    consoleEmpty: "아직 콘솔 메시지가 없습니다.",
+    consoleClear: "지우기",
+    debugErrors: "이 오류 디버그",
+    consoleDebugPrompt: "프로젝트 미리보기에서 나온 다음 오류의 원인을 찾아 주세요:",
   },
   zh: {
     useTemplate: "使用此模板",
@@ -210,6 +235,11 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     previewLoading: "正在加载预览…",
     previewFrame: "你的项目预览",
     reloadPreview: "重新加载预览",
+    console: "控制台",
+    consoleEmpty: "暂无控制台消息。",
+    consoleClear: "清除",
+    debugErrors: "调试这些错误",
+    consoleDebugPrompt: "找出项目预览中这些错误的原因:",
   },
   tr: {
     useTemplate: "Bu şablonu kullan",
@@ -246,6 +276,11 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     previewLoading: "Önizleme yükleniyor…",
     previewFrame: "Projenizin önizlemesi",
     reloadPreview: "Önizlemeyi yenile",
+    console: "Konsol",
+    consoleEmpty: "Henüz konsol mesajı yok.",
+    consoleClear: "Temizle",
+    debugErrors: "Bu hataları ayıkla",
+    consoleDebugPrompt: "Proje önizlemesindeki bu hataların nedenini bul:",
   },
   fr: {
     useTemplate: "Utiliser ce modèle",
@@ -283,6 +318,11 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     previewLoading: "Chargement de l'aperçu…",
     previewFrame: "Aperçu de votre projet",
     reloadPreview: "Recharger l'aperçu",
+    console: "Console",
+    consoleEmpty: "Aucun message dans la console pour l'instant.",
+    consoleClear: "Effacer",
+    debugErrors: "Déboguer ces erreurs",
+    consoleDebugPrompt: "Trouve la cause de ces erreurs de l'aperçu du projet :",
   },
   pt: {
     useTemplate: "Usar este modelo",
@@ -320,5 +360,10 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     previewLoading: "Carregando pré-visualização…",
     previewFrame: "Pré-visualização do seu projeto",
     reloadPreview: "Recarregar pré-visualização",
+    console: "Console",
+    consoleEmpty: "Nenhuma mensagem no console ainda.",
+    consoleClear: "Limpar",
+    debugErrors: "Depurar estes erros",
+    consoleDebugPrompt: "Encontre a causa destes erros da pré-visualização do projeto:",
   },
 };

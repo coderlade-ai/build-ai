@@ -495,3 +495,64 @@
   border: 0;
   background: #fff;
 }
+.console {
+  border-top: 1px solid #3a382f;
+  max-height: 40%;
+  overflow: auto;
+  font-size: 12px;
+  color: #d8d5c8;
+}
+.console summary {
+  cursor: pointer;
+  padding: 6px 16px;
+}
+.consoleErrors {
+  color: #f08c6a;
+}
+.consoleEmpty {
+  margin: 0;
+  padding: 4px 16px 8px;
+  color: #b9b6aa;
+}
+.consoleList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.consoleList li {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  padding: 3px 16px;
+  border-top: 1px solid #2f2d26;
+}
+.consoleList pre {
+  flex: 1;
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+}
+.logLevel {
+  min-width: 3.5em;
+  color: #b9b6aa;
+}
+.logWhere {
+  color: #b9b6aa;
+}
+.log_error {
+  background: #3b2420;
+}
+.log_warn {
+  background: #3a3220;
+}
+.log_info,
+.log_log {
+  background: transparent;
+}
+.consoleActions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  padding: 6px 16px;
+}

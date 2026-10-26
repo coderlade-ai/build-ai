@@ -61,6 +61,7 @@ export function AgentPanel({
   onDraft,
   onFilesChanged,
   onRunningChange,
+  request,
 }: {
   locale: Locale;
   projectId: string;
@@ -69,6 +70,8 @@ export function AgentPanel({
   onDraft?: (draft: { path: string; content: string } | null) => void;
   onFilesChanged: () => void;
   onRunningChange?: (running: boolean) => void;
+  /** A task started from elsewhere in the workspace (the preview console); runs when its id changes. */
+  request?: { id: number; mode: AgentMode; prompt: string };
 }) {
   const a = agentStrings[locale];
   const t = providerStrings[locale];
@@ -103,6 +106,16 @@ export function AgentPanel({
       void run(task.prompt, task.mode);
     }
   }, [session, projectId]);
+  // A task from the preview console: run it now, or leave it in the box when no provider is
+  // connected or a run is going (the user can send it later).
+  const lastRequest = useRef(0);
+  useEffect(() => {
+    if (!request || request.id === lastRequest.current) return;
+    lastRequest.current = request.id;
+    setMode(request.mode);
+    if (session && !running) void run(request.prompt, request.mode);
+    else setPrompt(request.prompt);
+  }, [request]);
   useEffect(() => logEnd.current?.scrollIntoView({ block: "nearest" }), [log]);
 
   const add = (e: LogEntry) => setLog((l) => [...l, e]);

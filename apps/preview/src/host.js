@@ -1,11 +1,21 @@
 // Preview host page: receives project files from the builder, stores them for the service
 // worker, and shows the project in a nested frame on this (isolated) origin. ADR 0016.
 import { allowedParents } from "./config.js";
-import { cacheName, fileHeaders, messageTypes, parseFilesMessage } from "./lib.js";
+import {
+  cacheName,
+  fileHeaders,
+  messageTypes,
+  parseFilesMessage,
+  parseLogMessage,
+  shortWhere,
+} from "./lib.js";
 
 const frame = /** @type {HTMLIFrameElement} */ (document.getElementById("frame"));
 const status = /** @type {HTMLElement} */ (document.getElementById("status"));
 let version = 0;
+/** The builder that sent the current files, and their session. */
+let builder = "";
+let current = "";
 
 async function store(session, files) {
   for (const name of await caches.keys())
@@ -34,10 +44,26 @@ async function start() {
   await navigator.serviceWorker.ready;
 
   window.addEventListener("message", async (event) => {
+    // Console output from the project page: forward it to the builder that sent the files.
+    if (event.source === frame.contentWindow && event.origin === location.origin) {
+      const log = parseLogMessage(event.data);
+      if (log && builder)
+        window.parent.postMessage(
+          {
+            type: messageTypes.log,
+            ...log,
+            where: shortWhere(log.where, location.origin, current),
+          },
+          builder,
+        );
+      return;
+    }
     if (event.source !== window.parent || !allowedParents.includes(event.origin)) return;
     const msg = parseFilesMessage(event.data);
     if (!msg) return;
     await store(msg.session, msg.files);
+    builder = event.origin;
+    current = msg.session;
     status.hidden = true;
     frame.src = `/p/${msg.session}/index.html?v=${++version}`;
     window.parent.postMessage({ type: messageTypes.loaded }, event.origin);

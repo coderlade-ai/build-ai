@@ -44,6 +44,9 @@ export function Workspace({ locale }: { locale: Locale }) {
   const [save, setSave] = useState<Save>("saved");
   // Reload the preview whenever the saved files change.
   const [previewKey, setPreviewKey] = useState(0);
+  const [agentRequest, setAgentRequest] = useState<
+    { id: number; mode: "debug"; prompt: string } | undefined
+  >();
   useEffect(() => {
     if (save === "saved") setPreviewKey((k) => k + 1);
   }, [save, files]);
@@ -323,6 +326,9 @@ export function Workspace({ locale }: { locale: Locale }) {
           projectId={id!}
           paths={files.map((f) => f.path)}
           refreshKey={previewKey}
+          onDebug={(prompt) =>
+            setAgentRequest((r) => ({ id: (r?.id ?? 0) + 1, mode: "debug", prompt }))
+          }
         />
       )}
       <AgentPanel
@@ -334,6 +340,7 @@ export function Workspace({ locale }: { locale: Locale }) {
           setHistoryKey((k) => k + 1);
           void restored();
         }}
+        request={agentRequest}
         onRunningChange={(r) => {
           setAgentBusy(r);
           if (!r) setHistoryKey((k) => k + 1);
