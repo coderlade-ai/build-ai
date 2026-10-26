@@ -10,7 +10,7 @@ import {
   type PreviewLog,
 } from "../preview/console";
 import type { PreviewController } from "../preview/controller";
-import { newPreviewSession, previewKind, previewMessages } from "../preview/files";
+import { newPreviewSession, previewKind, previewMessages, previewPageUrl } from "../preview/files";
 import { previewOrigin } from "../preview/origin";
 import {
   loadViewport,
@@ -154,6 +154,21 @@ export function Preview({
             </button>
           ))}
         </div>
+        <button
+          type="button"
+          className={styles.exportButton}
+          disabled={!loaded}
+          title={w.openPreviewTabHint}
+          onClick={() =>
+            window.open(
+              previewPageUrl(previewOrigin ?? "", session),
+              "_blank",
+              "noopener,noreferrer",
+            )
+          }
+        >
+          {w.openPreviewTab}
+        </button>
         <button
           type="button"
           className={styles.exportButton}

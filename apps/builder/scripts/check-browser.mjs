@@ -116,6 +116,16 @@ try {
     await projectFrame.evaluate(() => console.error("bridge check"));
     await page.getByText("Console (1)").waitFor({ timeout: 5000 });
 
+    // Open in new tab: the project page runs on its own, served by the preview's service worker.
+    step("preview in new tab");
+    const [tab] = await Promise.all([
+      page.context().waitForEvent("page", { timeout: 10000 }),
+      page.getByRole("button", { name: "Open in new tab" }).click(),
+    ]);
+    await tab.getByRole("heading", { name: "Hello" }).waitFor({ timeout: 20000 });
+    if (!new URL(tab.url()).pathname.startsWith("/p/")) throw new Error(`new tab at ${tab.url()}`);
+    await tab.close();
+
     // React + Vite template: bundled with esbuild-wasm on the preview origin, React from esm.sh.
     step("react preview (esbuild-wasm)");
     await page.goto(base, { waitUntil: "networkidle" });
@@ -185,6 +195,6 @@ if (problems.length) {
   finish(false);
 }
 console.warn(
-  `Browser check passed: hydrated, Monaco mounted, checkpoint saved${checkPreview ? ", static + React + Tailwind previews ran, viewports switched, console bridged" : ""}, no CSP violations`,
+  `Browser check passed: hydrated, Monaco mounted, checkpoint saved${checkPreview ? ", static + React + Tailwind previews ran, viewports switched, new tab opened, console bridged" : ""}, no CSP violations`,
 );
 finish(true);

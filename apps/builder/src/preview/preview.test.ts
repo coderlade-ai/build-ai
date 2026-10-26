@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { previewKind } from "./files";
+import { previewKind, previewPageUrl } from "./files";
 import { parsePreviewOrigin } from "./origin";
 
 describe("preview origin", () => {
@@ -28,5 +28,13 @@ describe("preview files", () => {
     expect(previewKind(["index.html", "package.json", "src/main.tsx"])).toBe("bundle");
     expect(previewKind(["package.json", "src/main.tsx"])).toBe("no-entry");
     expect(previewKind(["about.html"])).toBe("no-entry");
+  });
+});
+
+describe("previewPageUrl", () => {
+  it("points at the session's project page on the preview origin", () => {
+    expect(previewPageUrl("https://preview.example/", "abc_-1")).toBe(
+      "https://preview.example/p/abc_-1/index.html",
+    );
   });
 });
