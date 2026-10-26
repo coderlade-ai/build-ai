@@ -1,0 +1,55 @@
+---
+import { localeInfo, localePrefix, type Locale } from "@ladestack/i18n";
+import { publishedArticles } from "../blog";
+import { tp } from "../i18n/pages";
+import DocPage from "./DocPage.astro";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const p = tp(locale);
+const articles = (await publishedArticles()).filter((a) => a.locale === locale);
+const fmt = new Intl.DateTimeFormat(localeInfo[locale].bcp47, { dateStyle: "long", timeZone: "UTC" });
+---
+
+<DocPage locale={locale} path="/blog" title={p.blog.title} description={p.blog.description}>
+  <p>{p.blog.description}</p>
+  {
+    articles.length === 0 ? (
+      <p class="note">{p.blog.empty}</p>
+    ) : (
+      <ul class="posts">
+        {articles.map((a) => (
+          <li>
+            <h2>
+              <a href={`${localePrefix(locale)}/blog/${a.data.slug}`}>{a.data.title}</a>
+            </h2>
+            <p>{a.data.description}</p>
+            <p class="meta">
+              {p.blog.published}{" "}
+              <time datetime={a.data.published.toISOString().slice(0, 10)}>
+                {fmt.format(a.data.published)}
+              </time>
+            </p>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</DocPage>
+
+<style>
+  .posts {
+    list-style: none;
+    padding: 0;
+  }
+  .posts li {
+    border-top: 1px solid var(--color-hairline);
+    padding-block: 8px 16px;
+  }
+  .meta {
+    font-size: 14px;
+  }
+</style>

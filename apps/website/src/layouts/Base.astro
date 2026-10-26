@@ -10,12 +10,15 @@ interface Props {
   path?: string;
   /** Error pages: no canonical, no alternates, not indexed. */
   noindex?: boolean;
+  /** Per-locale paths when they differ by language (blog articles). */
+  alternates?: Partial<Record<Locale, string>>;
 }
 
-const { title, description, locale, path = "/", noindex = false } = Astro.props;
+const { title, description, locale, path = "/", noindex = false, alternates } = Astro.props;
 const info = localeInfo[locale];
 const site = Astro.site ?? new URL("https://build.ladestack.in");
-const urlFor = (l: Locale) => new URL(`${localePrefix(l)}${path}`, site).toString();
+const urlFor = (l: Locale) =>
+  new URL(`${localePrefix(l)}${alternates?.[l] ?? path}`, site).toString();
 ---
 
 <!doctype html>

@@ -91,6 +91,16 @@ export const ja: PagesDictionary = {
       "LadeStack Build は MIT ライセンスのオープンソースです。以下のプロジェクトを利用して作られており、それぞれのライセンスと表示はソースコードと共に保管されています。",
     planned: "予定",
   },
+  blog: {
+    title: "ブログ",
+    description:
+      "LadeStack Build、ローカルファーストの AI 開発、Web プラットフォームに関する記事。",
+    empty:
+      "まだ記事は公開されていません。記事は 8 つの言語すべてで用意でき次第、ここに掲載されます。",
+    published: "公開日",
+    updated: "更新日",
+    allArticles: "すべての記事",
+  },
   notFound: {
     title: "ページが見つかりません",
     description: "お探しのページは存在しません。",

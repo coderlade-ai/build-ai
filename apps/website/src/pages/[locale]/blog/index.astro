@@ -1,0 +1,12 @@
+---
+import { defaultLocale, locales, type Locale } from "@ladestack/i18n";
+import BlogIndex from "../../../components/BlogIndex.astro";
+
+export function getStaticPaths() {
+  return locales.filter((l) => l !== defaultLocale).map((locale) => ({ params: { locale } }));
+}
+
+const locale = Astro.params.locale as Locale;
+---
+
+<BlogIndex locale={locale} />

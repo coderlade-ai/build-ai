@@ -93,6 +93,15 @@ export const fr: PagesDictionary = {
       "LadeStack Build est open source sous licence MIT. Il s'appuie sur les projets ci-dessous ; leurs licences et mentions sont conservées avec le code source.",
     planned: "prévu",
   },
+  blog: {
+    title: "Blog",
+    description: "Articles sur LadeStack Build, la création locale avec l'IA et la plateforme web.",
+    empty:
+      "Aucun article n'a encore été publié. Chaque article apparaîtra ici dès qu'il sera disponible dans les huit langues.",
+    published: "Publié le",
+    updated: "Mis à jour le",
+    allArticles: "Tous les articles",
+  },
   notFound: {
     title: "Page introuvable",
     description: "La page que vous cherchez n'existe pas.",

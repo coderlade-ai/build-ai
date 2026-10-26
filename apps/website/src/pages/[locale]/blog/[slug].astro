@@ -1,0 +1,19 @@
+---
+import { defaultLocale } from "@ladestack/i18n";
+import BlogArticle from "../../../components/BlogArticle.astro";
+import { publishedArticles, type Article } from "../../../blog";
+
+export async function getStaticPaths() {
+  const all = await publishedArticles();
+  return all
+    .filter((a) => a.locale !== defaultLocale)
+    .map((article) => ({
+      params: { locale: article.locale, slug: article.data.slug },
+      props: { article, all },
+    }));
+}
+
+const { article, all } = Astro.props as { article: Article; all: Article[] };
+---
+
+<BlogArticle article={article} all={all} />

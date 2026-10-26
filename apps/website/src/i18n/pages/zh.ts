@@ -90,6 +90,14 @@ export const zh: PagesDictionary = {
       "LadeStack Build 基于 MIT 许可证开源。它使用了以下项目构建,各项目的许可证和声明随源代码一并保留。",
     planned: "计划中",
   },
+  blog: {
+    title: "博客",
+    description: "关于 LadeStack Build、本地优先的 AI 构建和 Web 平台的文章。",
+    empty: "暂无已发布的文章。每篇文章在八种语言版本全部就绪后才会在此发布。",
+    published: "发布于",
+    updated: "更新于",
+    allArticles: "全部文章",
+  },
   notFound: {
     title: "页面未找到",
     description: "你要找的页面不存在。",

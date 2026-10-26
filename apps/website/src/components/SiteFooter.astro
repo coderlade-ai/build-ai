@@ -6,9 +6,10 @@ import { tp } from "../i18n/pages";
 interface Props {
   locale: Locale;
   path: string;
+  alternates?: Partial<Record<Locale, string>>;
 }
 
-const { locale, path } = Astro.props;
+const { locale, path, alternates } = Astro.props;
 const d = t(locale);
 const p = tp(locale);
 const prefix = localePrefix(locale);
@@ -36,6 +37,7 @@ const legal = [
     <nav aria-label={d.footer.product}>
       <p class="foot-h">{d.footer.product}</p>
       {anchors.map((a) => <a href={`${prefix}/#${a.id}`}>{a.label}</a>)}
+      <a href={`${prefix}/blog`}>{p.blog.title}</a>
     </nav>
     <nav aria-label={p.common.legal}>
       <p class="foot-h">{p.common.legal}</p>
@@ -45,7 +47,7 @@ const legal = [
       <p class="foot-h">{d.nav.language}</p>
       {
         locales.map((l) => (
-          <a href={`${localePrefix(l)}${path}`} hreflang={localeInfo[l].bcp47} lang={localeInfo[l].bcp47}>
+          <a href={`${localePrefix(l)}${alternates?.[l] ?? path}`} hreflang={localeInfo[l].bcp47} lang={localeInfo[l].bcp47}>
             {localeInfo[l].nativeName}
           </a>
         ))

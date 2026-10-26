@@ -93,6 +93,15 @@ export const en = {
       "LadeStack Build is open source under the MIT licence. It is built with the projects below; their licences and notices are kept with the source code.",
     planned: "planned",
   },
+  blog: {
+    title: "Blog",
+    description: "Articles about LadeStack Build, local-first AI building and the web platform.",
+    empty:
+      "No articles have been published yet. Each article will appear here once it is available in all eight languages.",
+    published: "Published",
+    updated: "Updated",
+    allArticles: "All articles",
+  },
   notFound: {
     title: "Page not found",
     description: "The page you were looking for does not exist.",
