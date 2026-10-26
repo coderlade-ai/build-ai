@@ -3,6 +3,7 @@
   "private": true,
   "description": "LadeStack Build monorepo: Astro website (/) and Next.js builder (/app).",
   "license": "MIT",
+  "type": "module",
   "packageManager": "pnpm@9.15.9",
   "engines": {
     "node": ">=22"
@@ -13,10 +14,17 @@
     "build": "pnpm -r --if-present build",
     "typecheck": "pnpm -r --if-present typecheck",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "lint": "eslint .",
+    "test": "vitest run"
   },
   "devDependencies": {
+    "@eslint/js": "9.36.0",
+    "eslint": "9.36.0",
+    "globals": "16.4.0",
     "prettier": "3.3.3",
-    "typescript": "5.6.3"
+    "typescript": "5.6.3",
+    "typescript-eslint": "8.44.0",
+    "vitest": "3.2.4"
   }
 }
