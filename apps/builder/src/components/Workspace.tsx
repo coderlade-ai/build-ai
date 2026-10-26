@@ -141,6 +141,21 @@ export function Workspace({ locale }: { locale: Locale }) {
     [id, openFile],
   );
 
+  /** Files were restored from a checkpoint: reload the tree and the open file. */
+  const restored = useCallback(async () => {
+    if (!id) return;
+    const store = await getProjectStore();
+    const list = await store.listFiles(id);
+    setFiles(list);
+    const paths = list.map((f) => f.path);
+    const current = openRef.current?.path;
+    // Unsaved edits stay on screen; saving them later reports a conflict instead of overwriting.
+    if (current && paths.includes(current) && saveRef.current === "dirty") return;
+    const next = current && paths.includes(current) ? current : defaultFile(paths);
+    if (next) await openFile(id, next);
+    else setOpen(null);
+  }, [id, openFile]);
+
   const [exporting, setExporting] = useState<"idle" | "busy" | "error">("idle");
 
   async function exportZip() {
@@ -260,7 +275,12 @@ export function Workspace({ locale }: { locale: Locale }) {
           <p>{w.previewUnavailable}</p>
         </div>
       )}
-      <AgentPanel locale={locale} projectId={id!} onWrite={(p) => void agentWrote(p)} />
+      <AgentPanel
+        locale={locale}
+        projectId={id!}
+        onWrite={(p) => void agentWrote(p)}
+        onRestore={() => void restored()}
+      />
     </div>
   );
 }

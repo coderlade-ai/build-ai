@@ -17,6 +17,12 @@ export interface AgentStrings {
   done: string;
   stopped: string;
   maxSteps: string;
+  undo: string;
+  undoConfirm: string;
+  restored: string;
+  undoRestore: string;
+  restoreFailed: string;
+  checkpointFailed: string;
 }
 
 export const agentStrings: Record<Locale, AgentStrings> = {
@@ -37,6 +43,13 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     stopped: "Stopped. Files already written are saved.",
     maxSteps:
       "Stopped after {steps} steps. Files already written are saved; run again to continue.",
+    undo: "Undo this run",
+    undoConfirm:
+      "Put the project's files back to how they were before this run? You can undo this too.",
+    restored: "Files restored to how they were before this run.",
+    undoRestore: "Undo restore",
+    restoreFailed: "Couldn't restore the files.",
+    checkpointFailed: "Couldn't save a checkpoint, so the agent didn't start.",
   },
   ru: {
     label: "Агент",
@@ -55,6 +68,12 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     stopped: "Остановлено. Уже записанные файлы сохранены.",
     maxSteps:
       "Остановлено после {steps} шагов. Уже записанные файлы сохранены; запустите снова, чтобы продолжить.",
+    undo: "Отменить этот запуск",
+    undoConfirm: "Вернуть файлы проекта к состоянию до этого запуска? Это тоже можно отменить.",
+    restored: "Файлы возвращены к состоянию до этого запуска.",
+    undoRestore: "Отменить восстановление",
+    restoreFailed: "Не удалось восстановить файлы.",
+    checkpointFailed: "Не удалось сохранить контрольную точку, поэтому агент не запущен.",
   },
   ja: {
     label: "エージェント",
@@ -73,6 +92,12 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     stopped: "停止しました。書き込み済みのファイルは保存されています。",
     maxSteps:
       "{steps} ステップで停止しました。書き込み済みのファイルは保存されています。続けるにはもう一度実行してください。",
+    undo: "この実行を元に戻す",
+    undoConfirm: "プロジェクトのファイルをこの実行前の状態に戻しますか？この操作も元に戻せます。",
+    restored: "ファイルをこの実行前の状態に戻しました。",
+    undoRestore: "復元を取り消す",
+    restoreFailed: "ファイルを復元できませんでした。",
+    checkpointFailed: "チェックポイントを保存できなかったため、エージェントは開始しませんでした。",
   },
   ko: {
     label: "에이전트",
@@ -91,6 +116,12 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     stopped: "중지했습니다. 이미 작성한 파일은 저장되어 있습니다.",
     maxSteps:
       "{steps}단계 후 중지했습니다. 이미 작성한 파일은 저장되어 있으며, 계속하려면 다시 실행하세요.",
+    undo: "이번 실행 되돌리기",
+    undoConfirm: "프로젝트 파일을 이번 실행 전 상태로 되돌릴까요? 이 작업도 되돌릴 수 있습니다.",
+    restored: "파일을 이번 실행 전 상태로 되돌렸습니다.",
+    undoRestore: "복원 취소",
+    restoreFailed: "파일을 복원하지 못했습니다.",
+    checkpointFailed: "체크포인트를 저장하지 못해 에이전트를 시작하지 않았습니다.",
   },
   zh: {
     label: "智能体",
@@ -108,6 +139,12 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     done: "已完成。",
     stopped: "已停止。已写入的文件均已保存。",
     maxSteps: "已在 {steps} 步后停止。已写入的文件均已保存；再次运行即可继续。",
+    undo: "撤销本次运行",
+    undoConfirm: "要将项目文件恢复到本次运行之前的状态吗？此操作也可以撤销。",
+    restored: "文件已恢复到本次运行之前的状态。",
+    undoRestore: "撤销恢复",
+    restoreFailed: "无法恢复文件。",
+    checkpointFailed: "无法保存检查点，因此智能体未启动。",
   },
   tr: {
     label: "Ajan",
@@ -126,6 +163,13 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     stopped: "Durduruldu. Yazılmış dosyalar kaydedildi.",
     maxSteps:
       "{steps} adımdan sonra durduruldu. Yazılmış dosyalar kaydedildi; devam etmek için yeniden çalıştırın.",
+    undo: "Bu çalıştırmayı geri al",
+    undoConfirm:
+      "Proje dosyaları bu çalıştırmadan önceki hâline döndürülsün mü? Bunu da geri alabilirsiniz.",
+    restored: "Dosyalar bu çalıştırmadan önceki hâline döndürüldü.",
+    undoRestore: "Geri yüklemeyi geri al",
+    restoreFailed: "Dosyalar geri yüklenemedi.",
+    checkpointFailed: "Kontrol noktası kaydedilemediği için ajan başlatılmadı.",
   },
   fr: {
     label: "Agent",
@@ -144,6 +188,14 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     stopped: "Arrêté. Les fichiers déjà écrits sont enregistrés.",
     maxSteps:
       "Arrêté après {steps} étapes. Les fichiers déjà écrits sont enregistrés ; relancez pour continuer.",
+    undo: "Annuler cette exécution",
+    undoConfirm:
+      "Remettre les fichiers du projet dans leur état d'avant cette exécution ? Vous pourrez aussi annuler ceci.",
+    restored: "Fichiers remis dans leur état d'avant cette exécution.",
+    undoRestore: "Annuler la restauration",
+    restoreFailed: "Impossible de restaurer les fichiers.",
+    checkpointFailed:
+      "Impossible d'enregistrer un point de restauration : l'agent n'a pas démarré.",
   },
   pt: {
     label: "Agente",
@@ -162,5 +214,13 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     stopped: "Parado. Os arquivos já gravados estão salvos.",
     maxSteps:
       "Parado após {steps} etapas. Os arquivos já gravados estão salvos; execute de novo para continuar.",
+    undo: "Desfazer esta execução",
+    undoConfirm:
+      "Voltar os arquivos do projeto para como estavam antes desta execução? Você também pode desfazer isso.",
+    restored: "Arquivos restaurados para como estavam antes desta execução.",
+    undoRestore: "Desfazer restauração",
+    restoreFailed: "Não foi possível restaurar os arquivos.",
+    checkpointFailed:
+      "Não foi possível salvar um ponto de restauração, então o agente não começou.",
   },
 };

@@ -111,3 +111,77 @@ describe("project store", () => {
     }
   });
 });
+
+describe("checkpoints", () => {
+  it("restores files changed, added and deleted after a checkpoint, and can undo the restore", async () => {
+    const p = await store.createProject({ name: "Site", profile: "static", files });
+    const cp = await store.createCheckpoint(p.id, "before AI", "auto-before-ai-edit");
+    const html = (await store.listFiles(p.id)).find((f) => f.path === "index.html")!;
+    await store.writeFile(p.id, "index.html", "<h1>Changed</h1>", html.revision);
+    await store.writeFile(p.id, "app.js", "new", null);
+    const css = (await store.listFiles(p.id)).find((f) => f.path === "styles.css")!;
+    await store.deleteFile(p.id, "styles.css", css.revision);
+
+    const r = await store.restoreCheckpoint(p.id, cp!.id);
+    expect(r).toMatchObject({ ok: true, changed: 3 });
+    expect(await store.readAllFiles(p.id)).toEqual([
+      { path: "index.html", content: "<h1>Hi</h1>" },
+      { path: "styles.css", content: "body{}" },
+    ]);
+    // the editor's old revision now conflicts instead of silently overwriting the restore
+    expect((await store.writeFile(p.id, "index.html", "x", "2")).ok).toBe(false);
+
+    if (!r.ok) throw new Error("restore failed");
+    await store.restoreCheckpoint(p.id, r.safety.id);
+    expect((await store.readAllFiles(p.id)).map((f) => f.path)).toEqual(["app.js", "index.html"]);
+  });
+
+  it("keeps the newest checkpoints, lists newest first, and is removed with the project", async () => {
+    const p = await store.createProject({ name: "Site", profile: "static", files });
+    for (let i = 0; i < 25; i++) await store.createCheckpoint(p.id, `cp ${i}`, "manual");
+    const list = await store.listCheckpoints(p.id);
+    expect(list).toHaveLength(20);
+    expect(list[0]!.label).toBe("cp 24");
+    expect(list[0]!.manifest).toEqual({
+      "index.html": await sha256(files["index.html"]),
+      "styles.css": await sha256(files["styles.css"]),
+    });
+    await store.deleteProject(p.id);
+    expect(await store.listCheckpoints(p.id)).toEqual([]);
+    expect(await store.createCheckpoint(p.id, "x", "manual")).toBeUndefined();
+  });
+
+  it("rejects a checkpoint from another project", async () => {
+    const a = await store.createProject({ name: "A", profile: "static", files });
+    const b = await store.createProject({ name: "B", profile: "static", files });
+    const cp = await store.createCheckpoint(a.id, "a", "manual");
+    expect(await store.restoreCheckpoint(b.id, cp!.id)).toEqual({
+      ok: false,
+      reason: "missing-checkpoint",
+    });
+  });
+
+  it("upgrades a version 1 database without losing projects", async () => {
+    const f = new IDBFactory();
+    await new Promise<void>((resolve, reject) => {
+      const req = f.open("ladestack-build", 1);
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        db.createObjectStore("projects", { keyPath: "id" }).add({ id: "old", name: "Old" });
+        db.createObjectStore("projectFiles", { keyPath: ["projectId", "path"] }).createIndex(
+          "byProject",
+          "projectId",
+        );
+        db.createObjectStore("fileBlobs", { keyPath: "hash" });
+      };
+      req.onsuccess = () => {
+        req.result.close();
+        resolve();
+      };
+      req.onerror = () => reject(req.error);
+    });
+    const upgraded = new ProjectStore(await openProjectDb(f));
+    expect((await upgraded.getProject("old"))?.name).toBe("Old");
+    expect(await upgraded.listCheckpoints("old")).toEqual([]);
+  });
+});

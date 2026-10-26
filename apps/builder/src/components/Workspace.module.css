@@ -325,3 +325,20 @@
   clip: rect(0 0 0 0);
   white-space: nowrap;
 }
+.agentLink {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: #f5b08f;
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.agentLink:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.agentLink:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
