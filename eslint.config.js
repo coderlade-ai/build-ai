@@ -12,6 +12,7 @@ export default tseslint.config(
       "**/.astro/**",
       "**/next-env.d.ts",
       "docs/**",
+      "apps/builder/public/monaco/**",
     ],
   },
   js.configs.recommended,

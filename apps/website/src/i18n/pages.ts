@@ -32,7 +32,7 @@ export const credits = [
     name: "Monaco Editor",
     licence: "MIT",
     url: "https://github.com/microsoft/monaco-editor",
-    planned: true,
+    planned: false,
   },
   { name: "Kilo Code", licence: "MIT", url: "https://github.com/Kilo-Org/kilocode", planned: true },
 ] as const;

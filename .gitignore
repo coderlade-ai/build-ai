@@ -48,3 +48,6 @@ temp/
 .turbo/
 next-env.d.ts
 *.tsbuildinfo
+
+# Self-hosted Monaco bundle, copied from node_modules at dev/build time
+apps/builder/public/monaco/
