@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { localePrefix, type Locale } from "@ladestack/i18n";
 import { format, importZip, type ImportStrings } from "../i18n/importZip";
-import { importLimits, nameFromArchive, parseProjectZip, type RejectReason } from "../import/zip";
+import type { RejectReason } from "../import/zip";
 import { getProjectStore } from "../storage/client";
 import styles from "./Welcome.module.css";
 
@@ -34,6 +34,8 @@ export function ImportZip({ locale }: { locale: Locale }) {
     if (!file) return;
     setState({ kind: "busy" });
     try {
+      // The unzip code loads only when someone actually imports, keeping the welcome screen light.
+      const { importLimits, nameFromArchive, parseProjectZip } = await import("../import/zip");
       if (file.size > importLimits.archiveBytes) {
         setState({ kind: "error", message: t.archiveTooLarge });
         return;
