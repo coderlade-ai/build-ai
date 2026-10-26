@@ -36,6 +36,11 @@ function finish(ok) {
   const text = ok
     ? "Browser check passed"
     : `Browser check failed at: ${stage}\n\n${problems.map((p) => `- ${p}`).join("\n")}`;
+  // A GitHub annotation is visible on the public run page, unlike the logs.
+  if (!ok && process.env.GITHUB_ACTIONS)
+    process.stdout.write(
+      `::error title=Browser check::${text.replace(/%/g, "%25").replace(/\r/g, "%0D").replace(/\n/g, "%0A")}\n`,
+    );
   if (process.env.GITHUB_STEP_SUMMARY)
     appendFileSync(process.env.GITHUB_STEP_SUMMARY, `### Builder browser check\n\n${text}\n`);
   server.kill("SIGKILL");
