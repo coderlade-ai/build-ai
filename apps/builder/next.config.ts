@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { staticSecurityHeaders } from "./src/security/csp";
 
 /**
  * The builder is served under /app on the same domain as the Astro site
@@ -9,6 +10,9 @@ const nextConfig: NextConfig = {
   basePath: "/app",
   reactStrictMode: true,
   poweredByHeader: false,
+  async headers() {
+    return [{ source: "/:path*", headers: staticSecurityHeaders }];
+  },
   transpilePackages: ["@ladestack/design-tokens", "@ladestack/i18n", "@ladestack/shared-types"],
 };
 

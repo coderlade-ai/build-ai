@@ -18,5 +18,6 @@ Phase 0 decisions for LadeStack Build. Each record states the context, the decis
 | [0012](0012-portuguese-locale-variant.md) | Portuguese locale variant | Accepted |
 | [0013](0013-legacy-gb-coder-data-migration.md) | Legacy "GB Coder" data migration | Proposed — awaiting owner |
 | [0014](0014-byok-direct-browser-providers.md) | BYOK provider connections go directly from the browser | Accepted |
+| [0015](0015-builder-content-security-policy.md) | Builder Content-Security-Policy | Accepted |
 
 Open items still needing the owner: GB Coder migration (0013), attachment size limits, official contact details.

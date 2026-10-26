@@ -33,5 +33,5 @@ This verifies browser transport only, not inference with a valid paid key. Anthr
 ## Consequences
 
 - No hosting cost or abuse surface from a relay; the "no LadeStack server sees your key" statement stays true.
-- Same-origin XSS could read a key in `sessionStorage` (as it could read one in memory). A strict CSP for the builder is required before launch.
+- Same-origin XSS could read a key in `sessionStorage` (as it could read one in memory). A strict CSP for the builder is required before launch (done: ADR 0015).
 - Adding a provider without browser CORS support needs a new ADR and a disclosed relay.

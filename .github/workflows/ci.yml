@@ -44,3 +44,12 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+      - name: Builder CSP check
+        run: pnpm --filter @ladestack/builder check:csp
+
+      - name: Install Chromium
+        run: pnpm --filter @ladestack/builder exec playwright install --with-deps chromium
+
+      - name: Builder browser check (CSP, hydration, Monaco)
+        run: pnpm --filter @ladestack/builder check:browser
