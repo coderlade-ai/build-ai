@@ -1,15 +1,13 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
-import { defaultLocale, isLocale, localeInfo, locales } from "@ladestack/i18n";
+import { defaultLocale, isLocale, localeInfo } from "@ladestack/i18n";
 import "@ladestack/design-tokens/tokens.css";
 import "../globals.css";
 
-export const dynamicParams = false;
-
-export function generateStaticParams() {
-  return locales.filter((l) => l !== defaultLocale).map((locale) => ({ locale }));
-}
+// Every response carries a fresh CSP nonce (src/middleware.ts), so pages render per request.
+export const dynamic = "force-dynamic";
+// Unknown locales are rejected below with notFound(), since pages are no longer prerendered.
 
 export const metadata: Metadata = {
   title: "LadeStack Build",

@@ -11,17 +11,35 @@ export interface ProviderInfo {
   name: string;
   /** Where the user creates a key, on the provider's own site. */
   keyUrl: string;
+  /** The only origin the builder calls for this provider; also allowed in the CSP connect-src. */
+  apiOrigin: string;
 }
 
 export const providers: Record<ProviderId, ProviderInfo> = {
-  openai: { id: "openai", name: "OpenAI", keyUrl: "https://platform.openai.com/api-keys" },
+  openai: {
+    id: "openai",
+    name: "OpenAI",
+    keyUrl: "https://platform.openai.com/api-keys",
+    apiOrigin: "https://api.openai.com",
+  },
   anthropic: {
     id: "anthropic",
     name: "Anthropic",
     keyUrl: "https://console.anthropic.com/settings/keys",
+    apiOrigin: "https://api.anthropic.com",
   },
-  gemini: { id: "gemini", name: "Google Gemini", keyUrl: "https://aistudio.google.com/apikey" },
-  openrouter: { id: "openrouter", name: "OpenRouter", keyUrl: "https://openrouter.ai/keys" },
+  gemini: {
+    id: "gemini",
+    name: "Google Gemini",
+    keyUrl: "https://aistudio.google.com/apikey",
+    apiOrigin: "https://generativelanguage.googleapis.com",
+  },
+  openrouter: {
+    id: "openrouter",
+    name: "OpenRouter",
+    keyUrl: "https://openrouter.ai/keys",
+    apiOrigin: "https://openrouter.ai",
+  },
 };
 
 export function isProviderId(value: unknown): value is ProviderId {
