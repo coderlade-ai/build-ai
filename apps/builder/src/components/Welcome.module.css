@@ -19,19 +19,6 @@
 .wordmark span {
   color: var(--color-primary);
 }
-.provider {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--color-body);
-}
-.dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  border: 1.5px solid var(--color-muted);
-}
 .main {
   width: 100%;
   max-width: 760px;

@@ -45,7 +45,7 @@ export const shell: Record<Locale, ShellStrings> = {
     freeNote:
       "LadeStack Build is free. You use your own AI key, and your provider may charge you for what you use.",
     needProvider:
-      "Connect an AI provider to run this prompt. Provider setup is not available yet, so nothing was sent and your draft is still here.",
+      "Connect an AI provider at the top of the page to run this prompt. Nothing was sent and your draft is still here.",
     tooLong: "This prompt is too long. Keep it under 20,000 characters.",
     back: "Back to the homepage",
     templatesTitle: "Start from a template",
@@ -72,7 +72,7 @@ export const shell: Record<Locale, ShellStrings> = {
     freeNote:
       "LadeStack Build бесплатен. Вы используете свой ключ ИИ, и провайдер может взимать плату за использование.",
     needProvider:
-      "Чтобы выполнить запрос, подключите ИИ-провайдера. Настройка провайдера пока недоступна, поэтому ничего не отправлено, а черновик сохранён.",
+      "Чтобы выполнить запрос, подключите ИИ-провайдера вверху страницы. Ничего не отправлено, черновик сохранён.",
     tooLong: "Запрос слишком длинный. Сократите его до 20 000 символов.",
     back: "На главную",
     templatesTitle: "Начать с шаблона",
@@ -99,7 +99,7 @@ export const shell: Record<Locale, ShellStrings> = {
     freeNote:
       "LadeStack Build は無料です。ご自身の AI キーを使うため、利用分はプロバイダーから請求される場合があります。",
     needProvider:
-      "このプロンプトを実行するには AI プロバイダーを接続してください。プロバイダー設定はまだ利用できないため、何も送信されておらず、下書きはそのまま残っています。",
+      "このプロンプトを実行するには、ページ上部で AI プロバイダーを接続してください。何も送信されておらず、下書きはそのまま残っています。",
     tooLong: "プロンプトが長すぎます。20,000 文字以内にしてください。",
     back: "ホームページに戻る",
     templatesTitle: "テンプレートから始める",
@@ -126,7 +126,7 @@ export const shell: Record<Locale, ShellStrings> = {
     freeNote:
       "LadeStack Build는 무료입니다. 직접 AI 키를 사용하며, 사용량에 따라 제공업체가 요금을 청구할 수 있습니다.",
     needProvider:
-      "이 프롬프트를 실행하려면 AI 제공업체를 연결하세요. 제공업체 설정은 아직 사용할 수 없어 아무것도 전송되지 않았고 초안은 그대로 있습니다.",
+      "이 프롬프트를 실행하려면 페이지 상단에서 AI 제공업체를 연결하세요. 아무것도 전송되지 않았고 초안은 그대로 있습니다.",
     tooLong: "프롬프트가 너무 깁니다. 20,000자 이내로 줄여 주세요.",
     back: "홈페이지로 돌아가기",
     templatesTitle: "템플릿으로 시작하기",
@@ -152,7 +152,7 @@ export const shell: Record<Locale, ShellStrings> = {
     providerStatus: "未连接 AI 服务商",
     freeNote: "LadeStack Build 免费使用。你使用自己的 AI 密钥,服务商可能会按用量向你收费。",
     needProvider:
-      "请先连接 AI 服务商才能运行此提示词。服务商设置尚未开放,因此没有发送任何内容,你的草稿仍然保留。",
+      "请先在页面顶部连接 AI 服务商才能运行此提示词。没有发送任何内容,你的草稿仍然保留。",
     tooLong: "提示词过长,请控制在 20,000 个字符以内。",
     back: "返回首页",
     templatesTitle: "从模板开始",
@@ -180,7 +180,7 @@ export const shell: Record<Locale, ShellStrings> = {
     freeNote:
       "LadeStack Build ücretsizdir. Kendi yapay zekâ anahtarınızı kullanırsınız ve sağlayıcınız kullanımınız için ücret alabilir.",
     needProvider:
-      "Bu istemi çalıştırmak için bir yapay zekâ sağlayıcısı bağlayın. Sağlayıcı kurulumu henüz kullanılamıyor; bu yüzden hiçbir şey gönderilmedi ve taslağınız duruyor.",
+      "Bu istemi çalıştırmak için sayfanın üstünden bir yapay zekâ sağlayıcısı bağlayın. Hiçbir şey gönderilmedi ve taslağınız duruyor.",
     tooLong: "Bu istem çok uzun. 20.000 karakterin altında tutun.",
     back: "Ana sayfaya dön",
     templatesTitle: "Bir şablonla başlayın",
@@ -208,7 +208,7 @@ export const shell: Record<Locale, ShellStrings> = {
     freeNote:
       "LadeStack Build est gratuit. Vous utilisez votre propre clé d'IA, et votre fournisseur peut vous facturer votre consommation.",
     needProvider:
-      "Connectez un fournisseur d'IA pour lancer cette requête. La configuration des fournisseurs n'est pas encore disponible : rien n'a été envoyé et votre brouillon est conservé.",
+      "Connectez un fournisseur d'IA en haut de la page pour lancer cette requête. Rien n'a été envoyé et votre brouillon est conservé.",
     tooLong: "Cette requête est trop longue. Limitez-la à 20 000 caractères.",
     back: "Retour à l'accueil",
     templatesTitle: "Partir d'un modèle",
@@ -235,7 +235,7 @@ export const shell: Record<Locale, ShellStrings> = {
     freeNote:
       "O LadeStack Build é gratuito. Você usa sua própria chave de IA, e seu provedor pode cobrar pelo uso.",
     needProvider:
-      "Conecte um provedor de IA para executar este prompt. A configuração de provedores ainda não está disponível, então nada foi enviado e seu rascunho continua aqui.",
+      "Conecte um provedor de IA no topo da página para executar este prompt. Nada foi enviado e seu rascunho continua aqui.",
     tooLong: "Este prompt é muito longo. Mantenha-o abaixo de 20.000 caracteres.",
     back: "Voltar para a página inicial",
     templatesTitle: "Comece com um modelo",

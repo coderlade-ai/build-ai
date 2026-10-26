@@ -1,7 +1,9 @@
 import { localePrefix, type Locale } from "@ladestack/i18n";
 import { shell } from "../i18n/shell";
 import { Composer } from "./Composer";
+import { providerStrings } from "../i18n/providers";
 import { ImportZip } from "./ImportZip";
+import { ProviderSetup } from "./ProviderSetup";
 import { RecentProjects } from "./RecentProjects";
 import { Templates } from "./Templates";
 import styles from "./Welcome.module.css";
@@ -16,15 +18,12 @@ export function Welcome({ locale }: { locale: Locale }) {
         <a className={styles.wordmark} href={`${localePrefix(locale)}/`}>
           LadeStack <span>Build</span>
         </a>
-        <span className={styles.provider}>
-          <span className={styles.dot} aria-hidden="true" />
-          {s.providerStatus}
-        </span>
+        <ProviderSetup locale={locale} idleLabel={s.providerStatus} />
       </header>
       <main className={styles.main}>
         <p className={styles.kicker}>{s.kicker}</p>
         <h1 className={styles.title}>{s.title}</h1>
-        <Composer s={s} />
+        <Composer s={s} agentPending={providerStrings[locale].agentPending} />
         <p className={styles.note}>{s.freeNote}</p>
         <p className={styles.note}>{s.body}</p>
         <RecentProjects locale={locale} />
