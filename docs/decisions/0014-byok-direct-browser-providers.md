@@ -18,6 +18,8 @@ CORS preflight (`OPTIONS` with `Origin: https://build.ladestack.in`) checked on 
 | `generativelanguage.googleapis.com/v1beta/models` | `x-goog-api-key` | echoed origin |
 | `openrouter.ai/api/v1/key` | `Authorization` (and others) | `*` |
 
+Streaming endpoints were checked the same way on 2026-10-26: `api.anthropic.com/v1/messages` (adds `content-type`), `…/models/{model}:streamGenerateContent?alt=sse` (adds `content-type`) and `openrouter.ai/api/v1/chat/completions` all allow `POST` from the builder origin.
+
 This verifies browser transport only, not inference with a valid paid key. Anthropic organisations can disable CORS in their settings; that surfaces as an invalid-key or network error.
 
 ## Decision
