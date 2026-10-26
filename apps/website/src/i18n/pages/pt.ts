@@ -14,6 +14,8 @@ export const pt: PagesDictionary = {
     terms: "Termos",
     disclaimer: "Aviso legal",
     openSource: "Código aberto",
+    about: "Sobre",
+    contact: "Contato",
   },
   privacy: {
     title: "Privacidade",
@@ -93,6 +95,44 @@ export const pt: PagesDictionary = {
     intro:
       "O LadeStack Build é código aberto sob a licença MIT. Ele é construído com os projetos abaixo; suas licenças e avisos são mantidos junto com o código-fonte.",
     planned: "previsto",
+  },
+  about: {
+    title: "Sobre",
+    description: "O que é o LadeStack Build, como ele funciona e em que fase o projeto está.",
+    sections: [
+      {
+        h: "O que é",
+        p: "O LadeStack Build é um criador de sites e aplicativos com IA, gratuito e de código aberto, que roda no seu navegador. Você descreve o que quer, um agente de IA escreve o código, e você pode editar, visualizar e exportar.",
+      },
+      {
+        h: "Como funciona",
+        p: "Não é preciso criar conta. Você usa sua própria chave de um provedor de IA, seus projetos ficam no navegador do seu dispositivo, e você pode baixar seu trabalho em ZIP a qualquer momento.",
+      },
+      {
+        h: "Em que fase está",
+        p: "O LadeStack Build está no início do desenvolvimento. Este site está no ar enquanto o criador ainda está sendo construído, então os recursos são descritos como previstos até serem lançados.",
+      },
+      {
+        h: "Código aberto",
+        p: "O código-fonte é público no GitHub sob a licença MIT. Lá você pode ler o código, relatar problemas e sugerir mudanças.",
+      },
+    ],
+    source: "Ver o código-fonte no GitHub",
+  },
+  contact: {
+    title: "Contato",
+    description: "Como entrar em contato com o projeto LadeStack Build.",
+    sections: [
+      {
+        h: "Dúvidas, bugs e ideias",
+        p: "A melhor forma de falar com o projeto é abrir uma issue no GitHub. As issues são públicas, então nunca inclua chaves de API, senhas ou arquivos de projetos privados.",
+      },
+      {
+        h: "Problemas de segurança",
+        p: "Se você encontrar um problema de segurança, não publique os detalhes em uma issue pública. Abra uma issue pedindo apenas um canal privado e compartilhe os detalhes quando ele estiver disponível.",
+      },
+    ],
+    issues: "Abrir uma issue no GitHub",
   },
   blog: {
     title: "Blog",

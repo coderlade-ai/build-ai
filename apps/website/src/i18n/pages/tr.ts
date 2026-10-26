@@ -12,6 +12,8 @@ export const tr: PagesDictionary = {
     terms: "Koşullar",
     disclaimer: "Sorumluluk reddi",
     openSource: "Açık kaynak",
+    about: "Hakkında",
+    contact: "İletişim",
   },
   privacy: {
     title: "Gizlilik",
@@ -90,6 +92,44 @@ export const tr: PagesDictionary = {
     intro:
       "LadeStack Build, MIT lisansıyla açık kaynaktır. Aşağıdaki projelerle geliştirilmiştir; lisansları ve bildirimleri kaynak koduyla birlikte saklanır.",
     planned: "planlanıyor",
+  },
+  about: {
+    title: "Hakkında",
+    description: "LadeStack Build nedir, nasıl çalışır ve proje hangi aşamada.",
+    sections: [
+      {
+        h: "Nedir",
+        p: "LadeStack Build, tarayıcınızda çalışan ücretsiz ve açık kaynaklı bir yapay zekâ web sitesi ve uygulama oluşturucusudur. Ne istediğinizi anlatırsınız, bir yapay zekâ ajanı kodu yazar; siz de onu düzenleyebilir, önizleyebilir ve dışa aktarabilirsiniz.",
+      },
+      {
+        h: "Nasıl çalışır",
+        p: "Hesap oluşturmanız gerekmez. Kendi yapay zekâ sağlayıcı anahtarınızı kullanırsınız, projeleriniz cihazınızdaki tarayıcıda saklanır ve çalışmanızı istediğiniz zaman ZIP olarak indirebilirsiniz.",
+      },
+      {
+        h: "Şu anki durum",
+        p: "LadeStack Build geliştirmenin erken aşamasında. Bu web sitesi yayında, oluşturucu ise hâlâ geliştiriliyor; bu yüzden özellikler kullanıma sunulana kadar planlanan olarak anlatılıyor.",
+      },
+      {
+        h: "Açık kaynak",
+        p: "Kaynak kodu MIT lisansıyla GitHub'da herkese açıktır. Kodu orada inceleyebilir, sorun bildirebilir ve değişiklik önerebilirsiniz.",
+      },
+    ],
+    source: "Kaynak kodu GitHub'da görüntüle",
+  },
+  contact: {
+    title: "İletişim",
+    description: "LadeStack Build projesine nasıl ulaşılır.",
+    sections: [
+      {
+        h: "Sorular, hatalar ve fikirler",
+        p: "Projeye ulaşmanın en iyi yolu GitHub'da bir issue açmaktır. Issue'lar herkese açıktır; bu yüzden API anahtarı, parola ya da özel proje dosyalarını asla eklemeyin.",
+      },
+      {
+        h: "Güvenlik sorunları",
+        p: "Bir güvenlik sorunu bulursanız ayrıntıları herkese açık bir issue'da paylaşmayın. Yalnızca özel bir iletişim kanalı isteyen bir issue açın ve kanal kurulduğunda ayrıntıları paylaşın.",
+      },
+    ],
+    issues: "GitHub'da issue aç",
   },
   blog: {
     title: "Blog",

@@ -38,6 +38,8 @@ const legal = [
       <p class="foot-h">{d.footer.product}</p>
       {anchors.map((a) => <a href={`${prefix}/#${a.id}`}>{a.label}</a>)}
       <a href={`${prefix}/blog`}>{p.blog.title}</a>
+      <a href={`${prefix}/about`}>{p.links.about}</a>
+      <a href={`${prefix}/contact`}>{p.links.contact}</a>
     </nav>
     <nav aria-label={p.common.legal}>
       <p class="foot-h">{p.common.legal}</p>

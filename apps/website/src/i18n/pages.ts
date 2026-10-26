@@ -37,8 +37,18 @@ export const credits = [
   { name: "Kilo Code", licence: "MIT", url: "https://github.com/Kilo-Org/kilocode", planned: true },
 ] as const;
 
-/** Sub-pages that exist in every locale, in footer order. */
-export const legalPages = ["privacy", "terms", "disclaimer", "open-source"] as const;
+/** Public source repository: the project's only published contact channel. */
+export const repoUrl = "https://github.com/girishlade111/build-ai";
+
+/** Sub-pages that exist in every locale. */
+export const legalPages = [
+  "about",
+  "contact",
+  "privacy",
+  "terms",
+  "disclaimer",
+  "open-source",
+] as const;
 export type LegalPage = (typeof legalPages)[number];
 
 export type { PagesDictionary };

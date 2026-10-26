@@ -13,6 +13,8 @@ export const fr: PagesDictionary = {
     terms: "Conditions",
     disclaimer: "Avertissement",
     openSource: "Open source",
+    about: "À propos",
+    contact: "Contact",
   },
   privacy: {
     title: "Confidentialité",
@@ -92,6 +94,44 @@ export const fr: PagesDictionary = {
     intro:
       "LadeStack Build est open source sous licence MIT. Il s'appuie sur les projets ci-dessous ; leurs licences et mentions sont conservées avec le code source.",
     planned: "prévu",
+  },
+  about: {
+    title: "À propos",
+    description: "Ce qu'est LadeStack Build, comment il fonctionne et où en est le projet.",
+    sections: [
+      {
+        h: "Ce que c'est",
+        p: "LadeStack Build est un créateur de sites et d'applications par IA, gratuit et open source, qui fonctionne dans votre navigateur. Vous décrivez ce que vous voulez, un agent IA écrit le code, et vous pouvez le modifier, le prévisualiser et l'exporter.",
+      },
+      {
+        h: "Comment ça marche",
+        p: "Aucun compte à créer. Vous utilisez votre propre clé de fournisseur d'IA, vos projets restent dans votre navigateur sur votre appareil, et vous pouvez télécharger votre travail en ZIP à tout moment.",
+      },
+      {
+        h: "Où en est le projet",
+        p: "LadeStack Build est en début de développement. Ce site est en ligne pendant que le créateur est encore en construction : les fonctionnalités sont donc présentées comme prévues jusqu'à leur sortie.",
+      },
+      {
+        h: "Open source",
+        p: "Le code source est public sur GitHub sous licence MIT. Vous pouvez y lire le code, signaler des problèmes et proposer des modifications.",
+      },
+    ],
+    source: "Voir le code source sur GitHub",
+  },
+  contact: {
+    title: "Contact",
+    description: "Comment joindre le projet LadeStack Build.",
+    sections: [
+      {
+        h: "Questions, bugs et idées",
+        p: "Le meilleur moyen de joindre le projet est d'ouvrir une issue sur GitHub. Les issues sont publiques : n'y mettez jamais de clés d'API, de mots de passe ni de fichiers de projet privés.",
+      },
+      {
+        h: "Problèmes de sécurité",
+        p: "Si vous trouvez un problème de sécurité, n'en publiez pas les détails dans une issue publique. Ouvrez une issue qui demande seulement un canal privé, puis partagez les détails une fois celui-ci en place.",
+      },
+    ],
+    issues: "Ouvrir une issue sur GitHub",
   },
   blog: {
     title: "Blog",

@@ -14,6 +14,8 @@ export const en = {
     terms: "Terms",
     disclaimer: "Disclaimer",
     openSource: "Open source",
+    about: "About",
+    contact: "Contact",
   },
   privacy: {
     title: "Privacy",
@@ -92,6 +94,44 @@ export const en = {
     intro:
       "LadeStack Build is open source under the MIT licence. It is built with the projects below; their licences and notices are kept with the source code.",
     planned: "planned",
+  },
+  about: {
+    title: "About",
+    description: "What LadeStack Build is, how it works and where the project stands.",
+    sections: [
+      {
+        h: "What it is",
+        p: "LadeStack Build is a free, open-source AI builder for websites and apps that runs in your browser. You describe what you want, an AI agent writes the code, and you can edit, preview and export it.",
+      },
+      {
+        h: "How it works",
+        p: "There is no account to create. You bring your own AI provider key, your projects are kept in your browser on your device, and you can download your work as a ZIP at any time.",
+      },
+      {
+        h: "Where it stands",
+        p: "LadeStack Build is in early development. This website is live while the builder is still being built, so features are described as planned until they ship.",
+      },
+      {
+        h: "Open source",
+        p: "The source code is public on GitHub under the MIT licence. You can read it, report problems and suggest changes there.",
+      },
+    ],
+    source: "View the source on GitHub",
+  },
+  contact: {
+    title: "Contact",
+    description: "How to reach the LadeStack Build project.",
+    sections: [
+      {
+        h: "Questions, bugs and ideas",
+        p: "The best way to reach the project is to open an issue on GitHub. Issues are public, so never include API keys, passwords or private project files.",
+      },
+      {
+        h: "Security problems",
+        p: "If you find a security problem, do not post the details in a public issue. Open an issue that only asks for a private channel, and share the details once one is set up.",
+      },
+    ],
+    issues: "Open an issue on GitHub",
   },
   blog: {
     title: "Blog",

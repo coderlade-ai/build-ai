@@ -12,6 +12,8 @@ export const zh: PagesDictionary = {
     terms: "条款",
     disclaimer: "免责声明",
     openSource: "开源",
+    about: "关于",
+    contact: "联系",
   },
   privacy: {
     title: "隐私",
@@ -89,6 +91,44 @@ export const zh: PagesDictionary = {
     intro:
       "LadeStack Build 基于 MIT 许可证开源。它使用了以下项目构建,各项目的许可证和声明随源代码一并保留。",
     planned: "计划中",
+  },
+  about: {
+    title: "关于",
+    description: "LadeStack Build 是什么、如何运作,以及项目目前的进展。",
+    sections: [
+      {
+        h: "这是什么",
+        p: "LadeStack Build 是一款在浏览器中运行的免费开源 AI 网站和应用构建器。你描述想要的内容,AI 智能体编写代码,你可以编辑、预览并导出。",
+      },
+      {
+        h: "如何运作",
+        p: "无需注册账号。你使用自己的 AI 服务商密钥,项目保存在你设备上的浏览器中,并可随时以 ZIP 格式下载你的作品。",
+      },
+      {
+        h: "当前进展",
+        p: "LadeStack Build 处于早期开发阶段。本网站已上线,但构建器仍在开发中,因此相关功能在正式推出前均标注为计划中。",
+      },
+      {
+        h: "开源",
+        p: "源代码以 MIT 许可证在 GitHub 上公开。你可以在那里阅读代码、报告问题并提出修改建议。",
+      },
+    ],
+    source: "在 GitHub 上查看源代码",
+  },
+  contact: {
+    title: "联系",
+    description: "如何联系 LadeStack Build 项目。",
+    sections: [
+      {
+        h: "问题、缺陷与想法",
+        p: "联系项目的最佳方式是在 GitHub 上提交 issue。issue 是公开的,请勿在其中包含 API 密钥、密码或私有项目文件。",
+      },
+      {
+        h: "安全问题",
+        p: "如果你发现安全问题,请不要在公开 issue 中发布细节。请提交一个仅请求私密联系渠道的 issue,待渠道建立后再分享细节。",
+      },
+    ],
+    issues: "在 GitHub 上提交 issue",
   },
   blog: {
     title: "博客",
