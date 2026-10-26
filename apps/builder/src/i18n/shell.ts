@@ -19,6 +19,13 @@ export interface ShellStrings {
   needProvider: string;
   tooLong: string;
   back: string;
+  templatesTitle: string;
+  templatesNote: string;
+  staticName: string;
+  staticDesc: string;
+  reactName: string;
+  reactDesc: string;
+  showFiles: string;
 }
 
 export const shell: Record<Locale, ShellStrings> = {
@@ -42,6 +49,14 @@ export const shell: Record<Locale, ShellStrings> = {
       "Connect an AI provider to run this prompt. Provider setup is not available yet, so nothing was sent and your draft is still here.",
     tooLong: "This prompt is too long. Keep it under 20,000 characters.",
     back: "Back to the homepage",
+    templatesTitle: "Start from a template",
+    templatesNote:
+      "Browse what each starter contains. Opening one in the editor comes with the workspace.",
+    staticName: "Static site",
+    staticDesc: "HTML, CSS and a little JavaScript. No build step.",
+    reactName: "React + Vite",
+    reactDesc: "A TypeScript React app with Vite, ready for components.",
+    showFiles: "Show files",
   },
   ru: {
     kicker: "Конструктор · в разработке",
@@ -63,6 +78,14 @@ export const shell: Record<Locale, ShellStrings> = {
       "Чтобы выполнить запрос, подключите ИИ-провайдера. Настройка провайдера пока недоступна, поэтому ничего не отправлено, а черновик сохранён.",
     tooLong: "Запрос слишком длинный. Сократите его до 20 000 символов.",
     back: "На главную",
+    templatesTitle: "Начать с шаблона",
+    templatesNote:
+      "Посмотрите, что входит в каждый шаблон. Открыть его в редакторе можно будет, когда появится рабочее пространство.",
+    staticName: "Статический сайт",
+    staticDesc: "HTML, CSS и немного JavaScript. Без сборки.",
+    reactName: "React + Vite",
+    reactDesc: "Приложение React на TypeScript с Vite, готовое для компонентов.",
+    showFiles: "Показать файлы",
   },
   ja: {
     kicker: "ビルダー · 開発中",
@@ -84,6 +107,14 @@ export const shell: Record<Locale, ShellStrings> = {
       "このプロンプトを実行するには AI プロバイダーを接続してください。プロバイダー設定はまだ利用できないため、何も送信されておらず、下書きはそのまま残っています。",
     tooLong: "プロンプトが長すぎます。20,000 文字以内にしてください。",
     back: "ホームページに戻る",
+    templatesTitle: "テンプレートから始める",
+    templatesNote:
+      "各スターターの中身を確認できます。エディタで開く機能はワークスペースとともに提供予定です。",
+    staticName: "静的サイト",
+    staticDesc: "HTML、CSS と少しの JavaScript。ビルド不要です。",
+    reactName: "React + Vite",
+    reactDesc: "Vite を使った TypeScript の React アプリ。すぐにコンポーネントを追加できます。",
+    showFiles: "ファイルを表示",
   },
   ko: {
     kicker: "빌더 · 개발 중",
@@ -105,6 +136,14 @@ export const shell: Record<Locale, ShellStrings> = {
       "이 프롬프트를 실행하려면 AI 제공업체를 연결하세요. 제공업체 설정은 아직 사용할 수 없어 아무것도 전송되지 않았고 초안은 그대로 있습니다.",
     tooLong: "프롬프트가 너무 깁니다. 20,000자 이내로 줄여 주세요.",
     back: "홈페이지로 돌아가기",
+    templatesTitle: "템플릿으로 시작하기",
+    templatesNote:
+      "각 스타터에 무엇이 들어 있는지 살펴보세요. 편집기에서 여는 기능은 작업 공간과 함께 제공됩니다.",
+    staticName: "정적 사이트",
+    staticDesc: "HTML, CSS와 약간의 JavaScript. 빌드 단계가 없습니다.",
+    reactName: "React + Vite",
+    reactDesc: "Vite 기반 TypeScript React 앱으로, 바로 컴포넌트를 만들 수 있습니다.",
+    showFiles: "파일 보기",
   },
   zh: {
     kicker: "构建器 · 开发中",
@@ -125,6 +164,13 @@ export const shell: Record<Locale, ShellStrings> = {
       "请先连接 AI 服务商才能运行此提示词。服务商设置尚未开放,因此没有发送任何内容,你的草稿仍然保留。",
     tooLong: "提示词过长,请控制在 20,000 个字符以内。",
     back: "返回首页",
+    templatesTitle: "从模板开始",
+    templatesNote: "查看每个起始模板包含的内容。在编辑器中打开模板的功能将随工作区一起推出。",
+    staticName: "静态网站",
+    staticDesc: "HTML、CSS 和少量 JavaScript,无需构建。",
+    reactName: "React + Vite",
+    reactDesc: "基于 Vite 的 TypeScript React 应用,可直接编写组件。",
+    showFiles: "显示文件",
   },
   tr: {
     kicker: "Oluşturucu · geliştirme aşamasında",
@@ -147,6 +193,14 @@ export const shell: Record<Locale, ShellStrings> = {
       "Bu istemi çalıştırmak için bir yapay zekâ sağlayıcısı bağlayın. Sağlayıcı kurulumu henüz kullanılamıyor; bu yüzden hiçbir şey gönderilmedi ve taslağınız duruyor.",
     tooLong: "Bu istem çok uzun. 20.000 karakterin altında tutun.",
     back: "Ana sayfaya dön",
+    templatesTitle: "Bir şablonla başlayın",
+    templatesNote:
+      "Her başlangıç şablonunun içeriğine göz atın. Düzenleyicide açma özelliği çalışma alanıyla birlikte gelecek.",
+    staticName: "Statik site",
+    staticDesc: "HTML, CSS ve biraz JavaScript. Derleme adımı yok.",
+    reactName: "React + Vite",
+    reactDesc: "Vite ile TypeScript tabanlı, bileşenlere hazır bir React uygulaması.",
+    showFiles: "Dosyaları göster",
   },
   fr: {
     kicker: "Créateur · en développement",
@@ -169,6 +223,14 @@ export const shell: Record<Locale, ShellStrings> = {
       "Connectez un fournisseur d'IA pour lancer cette requête. La configuration des fournisseurs n'est pas encore disponible : rien n'a été envoyé et votre brouillon est conservé.",
     tooLong: "Cette requête est trop longue. Limitez-la à 20 000 caractères.",
     back: "Retour à l'accueil",
+    templatesTitle: "Partir d'un modèle",
+    templatesNote:
+      "Parcourez le contenu de chaque modèle. L'ouverture dans l'éditeur arrivera avec l'espace de travail.",
+    staticName: "Site statique",
+    staticDesc: "HTML, CSS et un peu de JavaScript. Aucune étape de compilation.",
+    reactName: "React + Vite",
+    reactDesc: "Une application React en TypeScript avec Vite, prête pour vos composants.",
+    showFiles: "Afficher les fichiers",
   },
   pt: {
     kicker: "Criador · em desenvolvimento",
@@ -190,5 +252,13 @@ export const shell: Record<Locale, ShellStrings> = {
       "Conecte um provedor de IA para executar este prompt. A configuração de provedores ainda não está disponível, então nada foi enviado e seu rascunho continua aqui.",
     tooLong: "Este prompt é muito longo. Mantenha-o abaixo de 20.000 caracteres.",
     back: "Voltar para a página inicial",
+    templatesTitle: "Comece com um modelo",
+    templatesNote:
+      "Veja o que cada modelo inicial contém. Abrir no editor vai chegar junto com o espaço de trabalho.",
+    staticName: "Site estático",
+    staticDesc: "HTML, CSS e um pouco de JavaScript. Sem etapa de build.",
+    reactName: "React + Vite",
+    reactDesc: "Um app React em TypeScript com Vite, pronto para componentes.",
+    showFiles: "Mostrar arquivos",
   },
 };

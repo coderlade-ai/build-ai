@@ -1,6 +1,7 @@
 import { localePrefix, type Locale } from "@ladestack/i18n";
 import { shell } from "../i18n/shell";
 import { Composer } from "./Composer";
+import { Templates } from "./Templates";
 import styles from "./Welcome.module.css";
 
 /** Screen A (PRD A.12): the first screen of the builder. Loads no editor or runtime. */
@@ -24,6 +25,7 @@ export function Welcome({ locale }: { locale: Locale }) {
         <Composer s={s} />
         <p className={styles.note}>{s.freeNote}</p>
         <p className={styles.note}>{s.body}</p>
+        <Templates s={s} />
         <a className={styles.back} href={`${localePrefix(locale)}/`}>
           {s.back}
         </a>
