@@ -10,18 +10,19 @@ interface Props {
   title: string;
   description: string;
   noindex?: boolean;
+  alternates?: Partial<Record<Locale, string>>;
 }
 
-const { locale, path, title, description, noindex = false } = Astro.props;
+const { locale, path, title, description, noindex = false, alternates } = Astro.props;
 ---
 
-<Base title={`${title} · LadeStack Build`} description={description} locale={locale} path={path} noindex={noindex}>
-  <SiteHeader locale={locale} path={path} />
+<Base title={`${title} · LadeStack Build`} description={description} locale={locale} path={path} noindex={noindex} alternates={alternates}>
+  <SiteHeader locale={locale} path={path} alternates={alternates} />
   <main id="main" class="wrap doc">
     <h1>{title}</h1>
     <slot />
   </main>
-  <SiteFooter locale={locale} path={path} />
+  <SiteFooter locale={locale} path={path} alternates={alternates} />
 </Base>
 
 <style>

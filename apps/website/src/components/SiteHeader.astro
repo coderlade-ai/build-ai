@@ -6,9 +6,10 @@ interface Props {
   locale: Locale;
   /** Path after the locale prefix, so the switcher keeps the reader on the same page. */
   path: string;
+  alternates?: Partial<Record<Locale, string>>;
 }
 
-const { locale, path } = Astro.props;
+const { locale, path, alternates } = Astro.props;
 const d = t(locale);
 const home = `${localePrefix(locale)}/`;
 const anchors = [
@@ -34,7 +35,7 @@ const anchors = [
             locales.map((l) => (
               <li>
                 <a
-                  href={`${localePrefix(l)}${path}`}
+                  href={`${localePrefix(l)}${alternates?.[l] ?? path}`}
                   hreflang={localeInfo[l].bcp47}
                   lang={localeInfo[l].bcp47}
                   aria-current={l === locale ? "true" : undefined}

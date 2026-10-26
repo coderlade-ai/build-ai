@@ -1,0 +1,49 @@
+---
+import { render } from "astro:content";
+import { localeInfo, localePrefix, type Locale } from "@ladestack/i18n";
+import { articlePaths, type Article } from "../blog";
+import { tp } from "../i18n/pages";
+import DocPage from "./DocPage.astro";
+
+interface Props {
+  article: Article;
+  all: Article[];
+}
+
+const { article, all } = Astro.props;
+const locale: Locale = article.locale;
+const p = tp(locale);
+const { Content } = await render(article);
+const fmt = new Intl.DateTimeFormat(localeInfo[locale].bcp47, { dateStyle: "long", timeZone: "UTC" });
+const iso = (d: Date) => d.toISOString().slice(0, 10);
+---
+
+<DocPage
+  locale={locale}
+  path={`/blog/${article.data.slug}`}
+  title={article.data.title}
+  description={article.data.description}
+  alternates={articlePaths(all, article.translationId)}
+>
+  <p class="meta">
+    {p.blog.published} <time datetime={iso(article.data.published)}>{fmt.format(article.data.published)}</time>
+    {
+      article.data.updated && (
+        <>
+          {" · "}
+          {p.blog.updated} <time datetime={iso(article.data.updated)}>{fmt.format(article.data.updated)}</time>
+        </>
+      )
+    }
+  </p>
+  <article>
+    <Content />
+  </article>
+  <p><a href={`${localePrefix(locale)}/blog`}>{p.blog.allArticles}</a></p>
+</DocPage>
+
+<style>
+  .meta {
+    font-size: 14px;
+  }
+</style>

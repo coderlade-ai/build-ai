@@ -1,0 +1,15 @@
+---
+import BlogArticle from "../../components/BlogArticle.astro";
+import { publishedArticles, type Article } from "../../blog";
+
+export async function getStaticPaths() {
+  const all = await publishedArticles();
+  return all
+    .filter((a) => a.locale === "en")
+    .map((article) => ({ params: { slug: article.data.slug }, props: { article, all } }));
+}
+
+const { article, all } = Astro.props as { article: Article; all: Article[] };
+---
+
+<BlogArticle article={article} all={all} />

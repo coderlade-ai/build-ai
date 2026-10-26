@@ -91,6 +91,16 @@ export const tr: PagesDictionary = {
       "LadeStack Build, MIT lisansıyla açık kaynaktır. Aşağıdaki projelerle geliştirilmiştir; lisansları ve bildirimleri kaynak koduyla birlikte saklanır.",
     planned: "planlanıyor",
   },
+  blog: {
+    title: "Blog",
+    description:
+      "LadeStack Build, yerel öncelikli yapay zekâ ile geliştirme ve web platformu üzerine yazılar.",
+    empty:
+      "Henüz yayımlanmış yazı yok. Her yazı sekiz dilin tamamında hazır olduğunda burada yer alacak.",
+    published: "Yayımlanma",
+    updated: "Güncellenme",
+    allArticles: "Tüm yazılar",
+  },
   notFound: {
     title: "Sayfa bulunamadı",
     description: "Aradığınız sayfa mevcut değil.",
