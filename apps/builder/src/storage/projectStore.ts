@@ -1,4 +1,4 @@
-import type { Project, ProjectFile, ProjectProfile } from "@ladestack/shared-types";
+import type { Checkpoint, Project, ProjectFile, ProjectProfile } from "@ladestack/shared-types";
 import { isSafeProjectPath } from "../templates/validate";
 
 /**
@@ -6,12 +6,15 @@ import { isSafeProjectPath } from "../templates/validate";
  * source of truth; Monaco and the runtime only ever hold copies.
  *
  * Stores: `projects` (Project), `projectFiles` (ProjectFile, key [projectId, path]) and
- * `fileBlobs` (content-addressed by SHA-256). Writes use optimistic concurrency: a caller passes
+ * `fileBlobs` (content-addressed by SHA-256), plus `checkpoints` (path -> hash manifests) since v2.
+ * Blobs are never deleted while any checkpoint may reference them. Writes use optimistic concurrency: a caller passes
  * the revision it edited, and a mismatch is reported as a conflict instead of last-write-wins.
  */
 
 export const dbName = "ladestack-build";
-export const dbVersion = 1;
+export const dbVersion = 2;
+/** Newest checkpoints kept per project; older ones are pruned when a new one is taken. */
+export const maxCheckpoints = 20;
 
 export interface FileBlob {
   hash: string;
@@ -23,18 +26,31 @@ export type WriteResult =
   | { ok: false; reason: "conflict"; current: ProjectFile | undefined }
   | { ok: false; reason: "invalid-path" | "missing-project" };
 
+export type RestoreResult =
+  | { ok: true; changed: number; safety: Checkpoint }
+  | { ok: false; reason: "missing-checkpoint" | "missing-content" };
+
+const newestFirst = (a: Checkpoint, b: Checkpoint) =>
+  a.createdAt < b.createdAt ? 1 : a.createdAt > b.createdAt ? -1 : 0;
+
 export function openProjectDb(
   factory: IDBFactory = indexedDB,
   name = dbName,
 ): Promise<IDBDatabase> {
   return new Promise((resolve, reject) => {
     const req = factory.open(name, dbVersion);
-    req.onupgradeneeded = () => {
+    req.onupgradeneeded = (e) => {
       const db = req.result;
-      db.createObjectStore("projects", { keyPath: "id" });
-      const files = db.createObjectStore("projectFiles", { keyPath: ["projectId", "path"] });
-      files.createIndex("byProject", "projectId");
-      db.createObjectStore("fileBlobs", { keyPath: "hash" });
+      if (e.oldVersion < 1) {
+        db.createObjectStore("projects", { keyPath: "id" });
+        const files = db.createObjectStore("projectFiles", { keyPath: ["projectId", "path"] });
+        files.createIndex("byProject", "projectId");
+        db.createObjectStore("fileBlobs", { keyPath: "hash" });
+      }
+      if (e.oldVersion < 2) {
+        const checkpoints = db.createObjectStore("checkpoints", { keyPath: "id" });
+        checkpoints.createIndex("byProject", "projectId");
+      }
     };
     req.onsuccess = () => resolve(req.result);
     req.onerror = () => reject(req.error);
@@ -248,13 +264,128 @@ export class ProjectStore {
     return updated;
   }
 
-  /** Removes a project and its file records. Callers must confirm with the user first. */
+  /** Removes a project, its file records and checkpoints. Callers must confirm with the user first. */
   async deleteProject(projectId: string): Promise<void> {
-    const tx = this.db.transaction(["projects", "projectFiles"], "readwrite");
+    const tx = this.db.transaction(["projects", "projectFiles", "checkpoints"], "readwrite");
     tx.objectStore("projects").delete(projectId);
-    const files = tx.objectStore("projectFiles");
-    const keys = await request(files.index("byProject").getAllKeys(projectId));
-    for (const key of keys) files.delete(key);
+    for (const name of ["projectFiles", "checkpoints"]) {
+      const store = tx.objectStore(name);
+      const keys = await request(store.index("byProject").getAllKeys(projectId));
+      for (const key of keys) store.delete(key);
+    }
     await done(tx);
+  }
+
+  /**
+   * Records the project's current files as a manifest (PRD A.20 checkpoints). Cheap: blobs are
+   * shared by hash, so only the path -> hash map is stored. Keeps the newest `maxCheckpoints`.
+   */
+  async createCheckpoint(
+    projectId: string,
+    label: string,
+    reason: Checkpoint["reason"],
+  ): Promise<Checkpoint | undefined> {
+    const tx = this.db.transaction(["projects", "projectFiles", "checkpoints"], "readwrite");
+    const project = await request(
+      tx.objectStore("projects").get(projectId) as IDBRequest<Project | undefined>,
+    );
+    if (!project) {
+      tx.abort();
+      return undefined;
+    }
+    const files = await request(
+      tx.objectStore("projectFiles").index("byProject").getAll(projectId) as IDBRequest<
+        ProjectFile[]
+      >,
+    );
+    const checkpoint: Checkpoint = {
+      id: crypto.randomUUID(),
+      projectId,
+      label,
+      createdAt: this.now().toISOString(),
+      reason,
+      manifest: Object.fromEntries(files.map((f) => [f.path, f.contentHash])),
+    };
+    const store = tx.objectStore("checkpoints");
+    const existing = await request(
+      store.index("byProject").getAll(projectId) as IDBRequest<Checkpoint[]>,
+    );
+    store.add(checkpoint);
+    for (const old of existing.sort(newestFirst).slice(maxCheckpoints - 1)) store.delete(old.id);
+    await done(tx);
+    return checkpoint;
+  }
+
+  /** Newest first. */
+  async listCheckpoints(projectId: string): Promise<Checkpoint[]> {
+    const tx = this.db.transaction("checkpoints");
+    const all = await request(
+      tx.objectStore("checkpoints").index("byProject").getAll(projectId) as IDBRequest<
+        Checkpoint[]
+      >,
+    );
+    return all.sort(newestFirst);
+  }
+
+  /**
+   * Puts the project's files back to a checkpoint. A "before-restore" checkpoint is taken first
+   * so the restore itself can be undone. Restoring is an explicit user action, so it replaces
+   * newer revisions; every changed file still gets a new revision so open editors see a conflict.
+   */
+  async restoreCheckpoint(projectId: string, checkpointId: string): Promise<RestoreResult> {
+    const target = await request(
+      this.db.transaction("checkpoints").objectStore("checkpoints").get(checkpointId) as IDBRequest<
+        Checkpoint | undefined
+      >,
+    );
+    if (!target || target.projectId !== projectId)
+      return { ok: false, reason: "missing-checkpoint" };
+    const safety = await this.createCheckpoint(projectId, target.label, "before-restore");
+    if (!safety) return { ok: false, reason: "missing-checkpoint" };
+
+    const tx = this.db.transaction(["projects", "projectFiles", "fileBlobs"], "readwrite");
+    const projects = tx.objectStore("projects");
+    const filesStore = tx.objectStore("projectFiles");
+    const blobs = tx.objectStore("fileBlobs");
+    const project = await request(projects.get(projectId) as IDBRequest<Project | undefined>);
+    const current = await request(
+      filesStore.index("byProject").getAll(projectId) as IDBRequest<ProjectFile[]>,
+    );
+    if (!project) {
+      tx.abort();
+      return { ok: false, reason: "missing-checkpoint" };
+    }
+    const byPath = new Map(current.map((f) => [f.path, f]));
+    let changed = 0;
+    for (const f of current)
+      if (!(f.path in target.manifest)) {
+        filesStore.delete([projectId, f.path]);
+        changed++;
+      }
+    for (const [path, hash] of Object.entries(target.manifest)) {
+      const now = byPath.get(path);
+      if (now?.contentHash === hash) continue;
+      const blob = await request(blobs.get(hash) as IDBRequest<FileBlob | undefined>);
+      if (!blob) {
+        tx.abort();
+        return { ok: false, reason: "missing-content" };
+      }
+      filesStore.put({
+        id: now?.id ?? crypto.randomUUID(),
+        projectId,
+        path,
+        contentHash: hash,
+        size: byteLength(blob.content),
+        revision: nextRevision(now?.revision),
+      } satisfies ProjectFile);
+      changed++;
+    }
+    projects.put({
+      ...project,
+      updatedAt: this.now().toISOString(),
+      headRevision: nextRevision(project.headRevision),
+    });
+    await done(tx);
+    return { ok: true, changed, safety };
   }
 }

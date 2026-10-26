@@ -5,7 +5,7 @@ import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent 
 import { localePrefix, type Locale } from "@ladestack/i18n";
 import { createConversation } from "../agent/adapters";
 import { codeSystemPrompt, runAgent, type AgentOutcome } from "../agent/loop";
-import { takePendingTask } from "../agent/handoff";
+import { projectNameFromPrompt, takePendingTask } from "../agent/handoff";
 import { agentTools } from "../agent/tools";
 import { agentStrings } from "../i18n/agent";
 import { providerStrings, type ProviderStrings } from "../i18n/providers";
@@ -21,7 +21,7 @@ type LogEntry =
   | { kind: "you"; text: string }
   | { kind: "text"; text: string }
   | { kind: "tool"; label: string; error: boolean }
-  | { kind: "end"; text: string; error: boolean };
+  | { kind: "end"; text: string; error: boolean; undo?: { checkpointId: string; label: string } };
 
 const errorKey: Record<Exclude<StreamError, "aborted">, keyof ProviderStrings> = {
   "invalid-key": "invalidKey",
@@ -43,10 +43,12 @@ export function AgentPanel({
   locale,
   projectId,
   onWrite,
+  onRestore,
 }: {
   locale: Locale;
   projectId: string;
   onWrite: (path: string) => void;
+  onRestore: () => void;
 }) {
   const a = agentStrings[locale];
   const t = providerStrings[locale];
@@ -54,6 +56,7 @@ export function AgentPanel({
   const [prompt, setPrompt] = useState("");
   const [log, setLog] = useState<LogEntry[]>([]);
   const [running, setRunning] = useState(false);
+  const [restoring, setRestoring] = useState(false);
   const abort = useRef<AbortController | null>(null);
   const logEnd = useRef<HTMLLIElement>(null);
   const ids = { prompt: useId(), note: useId() };
@@ -98,8 +101,22 @@ export function AgentPanel({
     setRunning(true);
     add({ kind: "you", text: task });
     setPrompt("");
+    let wrote = false;
     try {
       const fs = await getProjectStore();
+      // Checkpoint before any AI edit (PRD A.20): no checkpoint, no run.
+      let checkpointId: string | undefined;
+      try {
+        checkpointId = (
+          await fs.createCheckpoint(projectId, projectNameFromPrompt(task), "auto-before-ai-edit")
+        )?.id;
+      } catch {
+        checkpointId = undefined;
+      }
+      if (!checkpointId) {
+        add({ kind: "end", text: a.checkpointFailed, error: true });
+        return;
+      }
       const outcome = await runAgent({
         conversation: createConversation({
           provider: s.provider,
@@ -123,15 +140,41 @@ export function AgentPanel({
                 ? a.toolFailed.replace("{path}", p)
                 : (call.name === "write_file" ? a.wrote : a.read).replace("{path}", p);
           add({ kind: "tool", label, error: isError });
-          if (call.name === "write_file" && !isError && path) onWrite(path);
+          if (call.name === "write_file" && !isError && path) {
+            wrote = true;
+            onWrite(path);
+          }
         },
       });
-      add(endText(outcome));
+      const end = endText(outcome);
+      add(wrote && end.kind === "end" ? { ...end, undo: { checkpointId, label: a.undo } } : end);
     } catch {
       add({ kind: "end", text: t.unexpected, error: true });
     } finally {
       if (abort.current === controller) abort.current = null;
       setRunning(false);
+    }
+  }
+
+  async function restore(checkpointId: string) {
+    if (running || restoring || !window.confirm(a.undoConfirm)) return;
+    setRestoring(true);
+    try {
+      const fs = await getProjectStore();
+      const r = await fs.restoreCheckpoint(projectId, checkpointId);
+      if (r.ok) {
+        add({
+          kind: "end",
+          text: a.restored,
+          error: false,
+          undo: { checkpointId: r.safety.id, label: a.undoRestore },
+        });
+        onRestore();
+      } else add({ kind: "end", text: a.restoreFailed, error: true });
+    } catch {
+      add({ kind: "end", text: a.restoreFailed, error: true });
+    } finally {
+      setRestoring(false);
     }
   }
 
@@ -164,6 +207,19 @@ export function AgentPanel({
           {log.map((e, i) => (
             <li key={i} data-kind={e.kind} data-error={"error" in e ? e.error : undefined}>
               {e.kind === "tool" ? e.label : e.text}
+              {e.kind === "end" && e.undo ? (
+                <>
+                  {" "}
+                  <button
+                    type="button"
+                    className={styles.agentLink}
+                    disabled={running || restoring}
+                    onClick={() => void restore(e.undo!.checkpointId)}
+                  >
+                    {e.undo.label}
+                  </button>
+                </>
+              ) : null}
             </li>
           ))}
           {running ? <li data-kind="working">{a.working}</li> : null}
