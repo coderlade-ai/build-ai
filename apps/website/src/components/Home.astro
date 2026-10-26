@@ -1,6 +1,8 @@
 ---
-import { builderPath, localeInfo, localePrefix, locales, type Locale } from "@ladestack/i18n";
+import { builderPath, type Locale } from "@ladestack/i18n";
 import Base from "../layouts/Base.astro";
+import SiteFooter from "./SiteFooter.astro";
+import SiteHeader from "./SiteHeader.astro";
 import { t } from "../i18n";
 
 interface Props {
@@ -9,54 +11,11 @@ interface Props {
 
 const { locale } = Astro.props;
 const d = t(locale);
-const home = `${localePrefix(locale)}/`;
 const app = builderPath(locale);
-const anchors = [
-  { id: "features", label: d.nav.features },
-  { id: "use-cases", label: d.nav.useCases },
-  { id: "how-it-works", label: d.nav.howItWorks },
-  { id: "technology", label: d.nav.technology },
-];
 ---
 
 <Base title={d.meta.title} description={d.meta.description} locale={locale}>
-  <a class="skip" href="#main">{d.skipToContent}</a>
-  <header class="site-header">
-    <div class="wrap bar">
-      <a class="wordmark" href={home}>LadeStack <span>Build</span></a>
-      <nav class="primary" aria-label={d.nav.menu}>
-        {anchors.map((a) => <a href={`#${a.id}`}>{a.label}</a>)}
-      </nav>
-      <div class="actions">
-        <details class="lang">
-          <summary aria-label={d.nav.language}>{localeInfo[locale].nativeName}</summary>
-          <ul>
-            {
-              locales.map((l) => (
-                <li>
-                  <a
-                    href={`${localePrefix(l)}/`}
-                    hreflang={localeInfo[l].bcp47}
-                    lang={localeInfo[l].bcp47}
-                    aria-current={l === locale ? "true" : undefined}
-                  >
-                    {localeInfo[l].nativeName}
-                  </a>
-                </li>
-              ))
-            }
-          </ul>
-        </details>
-        <a class="btn" href={app}>{d.nav.start}</a>
-        <details class="mobile-nav">
-          <summary>{d.nav.menu}</summary>
-          <nav aria-label={d.nav.menu}>
-            {anchors.map((a) => <a href={`#${a.id}`}>{a.label}</a>)}
-          </nav>
-        </details>
-      </div>
-    </div>
-  </header>
+  <SiteHeader locale={locale} path="/" />
 
   <main id="main">
     <p class="status wrap" role="note">{d.status}</p>
@@ -168,161 +127,10 @@ const anchors = [
     </section>
   </main>
 
-  <footer class="site-footer">
-    <div class="wrap foot">
-      <div>
-        <p class="wordmark">LadeStack <span>Build</span></p>
-        <p class="muted">{d.footer.tagline}</p>
-        <p class="muted">{d.footer.licence}</p>
-      </div>
-      <nav aria-label={d.footer.product}>
-        <p class="foot-h">{d.footer.product}</p>
-        {anchors.map((a) => <a href={`#${a.id}`}>{a.label}</a>)}
-      </nav>
-      <nav aria-label={d.nav.language}>
-        <p class="foot-h">{d.nav.language}</p>
-        {
-          locales.map((l) => (
-            <a href={`${localePrefix(l)}/`} hreflang={localeInfo[l].bcp47} lang={localeInfo[l].bcp47}>
-              {localeInfo[l].nativeName}
-            </a>
-          ))
-        }
-      </nav>
-    </div>
-  </footer>
+  <SiteFooter locale={locale} path="/" />
 </Base>
 
 <style>
-  .wrap {
-    max-width: var(--content-max-width);
-    margin: 0 auto;
-    padding-inline: 24px;
-  }
-  .skip {
-    position: absolute;
-    left: -9999px;
-  }
-  .skip:focus {
-    left: 16px;
-    top: 16px;
-    background: var(--color-surface-card);
-    padding: 8px 12px;
-    border-radius: var(--radius-md);
-    z-index: 10;
-  }
-  .site-header {
-    border-bottom: 1px solid var(--color-hairline);
-    background: var(--color-canvas);
-    position: sticky;
-    top: 0;
-    z-index: 5;
-  }
-  .bar {
-    display: flex;
-    align-items: center;
-    gap: 24px;
-    min-height: 64px;
-  }
-  .wordmark {
-    font-weight: 600;
-    text-decoration: none;
-    letter-spacing: -0.01em;
-    margin: 0;
-  }
-  .wordmark span {
-    color: var(--color-primary);
-  }
-  .primary {
-    display: flex;
-    gap: 20px;
-    flex: 1;
-  }
-  .primary a,
-  .foot a {
-    text-decoration: none;
-    color: var(--color-body);
-    font-size: 14px;
-  }
-  .primary a:hover,
-  .foot a:hover {
-    color: var(--color-ink);
-  }
-  .actions {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-left: auto;
-  }
-  details > summary {
-    cursor: pointer;
-  }
-  .lang,
-  .mobile-nav {
-    position: relative;
-    font-size: 14px;
-  }
-  .lang summary,
-  .mobile-nav summary {
-    list-style: none;
-    padding: 8px 10px;
-    border: 1px solid var(--color-hairline-strong);
-    border-radius: var(--radius-md);
-  }
-  .lang summary::-webkit-details-marker,
-  .mobile-nav summary::-webkit-details-marker {
-    display: none;
-  }
-  .lang ul,
-  .mobile-nav nav {
-    position: absolute;
-    right: 0;
-    top: calc(100% + 6px);
-    margin: 0;
-    padding: 6px;
-    list-style: none;
-    background: var(--color-surface-card);
-    border: 1px solid var(--color-hairline);
-    border-radius: var(--radius-lg);
-    min-width: 180px;
-    display: flex;
-    flex-direction: column;
-  }
-  .lang a,
-  .mobile-nav a {
-    display: block;
-    padding: 8px 10px;
-    border-radius: var(--radius-sm);
-    text-decoration: none;
-  }
-  .lang a:hover,
-  .mobile-nav a:hover,
-  .lang a[aria-current="true"] {
-    background: var(--color-canvas-soft);
-  }
-  .mobile-nav {
-    display: none;
-  }
-  .btn,
-  .btn-ghost {
-    display: inline-block;
-    padding: 10px 16px;
-    border-radius: var(--radius-md);
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 15px;
-    white-space: nowrap;
-  }
-  .btn {
-    background: var(--color-primary);
-    color: var(--color-on-primary);
-  }
-  .btn:hover {
-    background: var(--color-primary-active);
-  }
-  .btn-ghost {
-    border: 1px solid var(--color-hairline-strong);
-  }
   .status {
     margin-top: 24px;
     margin-bottom: 0;
@@ -363,12 +171,6 @@ const anchors = [
     padding-block: var(--section-rhythm);
     border-top: 1px solid var(--color-hairline);
     scroll-margin-top: 72px;
-  }
-  h2 {
-    font-weight: 400;
-    font-size: clamp(26px, 3.5vw, 36px);
-    letter-spacing: -0.02em;
-    margin: 0 0 8px;
   }
   .intro {
     color: var(--color-body);
@@ -427,6 +229,7 @@ const anchors = [
   }
   .faq summary {
     font-weight: 500;
+    cursor: pointer;
   }
   .faq p {
     color: var(--color-body);
@@ -439,54 +242,16 @@ const anchors = [
     color: var(--color-body);
     margin: 0 0 24px;
   }
-  .site-footer {
-    border-top: 1px solid var(--color-hairline);
-    background: var(--color-canvas-soft);
-  }
-  .foot {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
-    gap: 32px;
-    padding-block: 48px;
-  }
-  .foot nav {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .foot-h {
-    font-size: 13px;
-    font-weight: 600;
-    margin: 0 0 4px;
-  }
-  .muted {
-    color: var(--color-muted);
-    font-size: 14px;
-    margin: 6px 0 0;
-  }
   @media (max-width: 960px) {
-    .primary {
-      display: none;
-    }
-    .mobile-nav {
-      display: block;
-    }
     .grid,
     .steps {
       grid-template-columns: repeat(2, 1fr);
     }
   }
   @media (max-width: 640px) {
-    .bar {
-      gap: 12px;
-    }
-    .actions .btn {
-      display: none;
-    }
     .grid,
     .grid.two,
-    .steps,
-    .foot {
+    .steps {
       grid-template-columns: 1fr;
     }
   }

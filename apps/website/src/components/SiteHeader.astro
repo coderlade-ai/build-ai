@@ -1,0 +1,169 @@
+---
+import { builderPath, localeInfo, localePrefix, locales, type Locale } from "@ladestack/i18n";
+import { t } from "../i18n";
+
+interface Props {
+  locale: Locale;
+  /** Path after the locale prefix, so the switcher keeps the reader on the same page. */
+  path: string;
+}
+
+const { locale, path } = Astro.props;
+const d = t(locale);
+const home = `${localePrefix(locale)}/`;
+const anchors = [
+  { id: "features", label: d.nav.features },
+  { id: "use-cases", label: d.nav.useCases },
+  { id: "how-it-works", label: d.nav.howItWorks },
+  { id: "technology", label: d.nav.technology },
+];
+---
+
+<a class="skip" href="#main">{d.skipToContent}</a>
+<header class="site-header">
+  <div class="wrap bar">
+    <a class="wordmark" href={home}>LadeStack <span>Build</span></a>
+    <nav class="primary" aria-label={d.nav.menu}>
+      {anchors.map((a) => <a href={`${home}#${a.id}`}>{a.label}</a>)}
+    </nav>
+    <div class="actions">
+      <details class="pop">
+        <summary aria-label={d.nav.language}>{localeInfo[locale].nativeName}</summary>
+        <ul>
+          {
+            locales.map((l) => (
+              <li>
+                <a
+                  href={`${localePrefix(l)}${path}`}
+                  hreflang={localeInfo[l].bcp47}
+                  lang={localeInfo[l].bcp47}
+                  aria-current={l === locale ? "true" : undefined}
+                >
+                  {localeInfo[l].nativeName}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </details>
+      <a class="btn start" href={builderPath(locale)}>{d.nav.start}</a>
+      <details class="pop mobile-nav">
+        <summary>{d.nav.menu}</summary>
+        <ul>
+          {
+            anchors.map((a) => (
+              <li>
+                <a href={`${home}#${a.id}`}>{a.label}</a>
+              </li>
+            ))
+          }
+          <li>
+            <a href={builderPath(locale)}>{d.nav.start}</a>
+          </li>
+        </ul>
+      </details>
+    </div>
+  </div>
+</header>
+
+<style>
+  .skip {
+    position: absolute;
+    left: -9999px;
+  }
+  .skip:focus {
+    left: 16px;
+    top: 16px;
+    background: var(--color-surface-card);
+    padding: 8px 12px;
+    border-radius: var(--radius-md);
+    z-index: 10;
+  }
+  .site-header {
+    border-bottom: 1px solid var(--color-hairline);
+    background: var(--color-canvas);
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    min-height: 64px;
+  }
+  .primary {
+    display: flex;
+    gap: 20px;
+    flex: 1;
+  }
+  .primary a {
+    text-decoration: none;
+    color: var(--color-body);
+    font-size: 14px;
+  }
+  .primary a:hover {
+    color: var(--color-ink);
+  }
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+  }
+  .pop {
+    position: relative;
+    font-size: 14px;
+  }
+  .pop summary {
+    cursor: pointer;
+    list-style: none;
+    padding: 8px 10px;
+    border: 1px solid var(--color-hairline-strong);
+    border-radius: var(--radius-md);
+  }
+  .pop summary::-webkit-details-marker {
+    display: none;
+  }
+  .pop ul {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 6px);
+    margin: 0;
+    padding: 6px;
+    list-style: none;
+    background: var(--color-surface-card);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-lg);
+    min-width: 180px;
+  }
+  .pop a {
+    display: block;
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+  }
+  .pop a:hover,
+  .pop a[aria-current="true"] {
+    background: var(--color-canvas-soft);
+  }
+  .mobile-nav {
+    display: none;
+  }
+  @media (max-width: 960px) {
+    .primary {
+      display: none;
+    }
+    .mobile-nav {
+      display: block;
+    }
+  }
+  @media (max-width: 640px) {
+    .bar {
+      gap: 12px;
+    }
+    .start {
+      display: none;
+    }
+  }
+</style>

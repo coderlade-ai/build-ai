@@ -1,0 +1,23 @@
+---
+import { localePrefix, type Locale } from "@ladestack/i18n";
+import { tp } from "../i18n/pages";
+import DocPage from "./DocPage.astro";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const p = tp(locale);
+---
+
+<DocPage
+  locale={locale}
+  path="/404"
+  title={p.notFound.title}
+  description={p.notFound.description}
+  noindex
+>
+  <p>{p.notFound.body}</p>
+  <p><a class="btn" href={`${localePrefix(locale)}/`}>{p.common.backHome}</a></p>
+</DocPage>

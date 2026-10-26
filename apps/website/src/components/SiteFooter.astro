@@ -1,0 +1,101 @@
+---
+import { localeInfo, localePrefix, locales, type Locale } from "@ladestack/i18n";
+import { t } from "../i18n";
+import { tp } from "../i18n/pages";
+
+interface Props {
+  locale: Locale;
+  path: string;
+}
+
+const { locale, path } = Astro.props;
+const d = t(locale);
+const p = tp(locale);
+const prefix = localePrefix(locale);
+const anchors = [
+  { id: "features", label: d.nav.features },
+  { id: "use-cases", label: d.nav.useCases },
+  { id: "how-it-works", label: d.nav.howItWorks },
+  { id: "technology", label: d.nav.technology },
+];
+const legal = [
+  { href: `${prefix}/privacy`, label: p.links.privacy },
+  { href: `${prefix}/terms`, label: p.links.terms },
+  { href: `${prefix}/disclaimer`, label: p.links.disclaimer },
+  { href: `${prefix}/open-source`, label: p.links.openSource },
+];
+---
+
+<footer class="site-footer">
+  <div class="wrap foot">
+    <div>
+      <p class="wordmark">LadeStack <span>Build</span></p>
+      <p class="muted">{d.footer.tagline}</p>
+      <p class="muted">{d.footer.licence}</p>
+    </div>
+    <nav aria-label={d.footer.product}>
+      <p class="foot-h">{d.footer.product}</p>
+      {anchors.map((a) => <a href={`${prefix}/#${a.id}`}>{a.label}</a>)}
+    </nav>
+    <nav aria-label={p.common.legal}>
+      <p class="foot-h">{p.common.legal}</p>
+      {legal.map((l) => <a href={l.href}>{l.label}</a>)}
+    </nav>
+    <nav aria-label={d.nav.language}>
+      <p class="foot-h">{d.nav.language}</p>
+      {
+        locales.map((l) => (
+          <a href={`${localePrefix(l)}${path}`} hreflang={localeInfo[l].bcp47} lang={localeInfo[l].bcp47}>
+            {localeInfo[l].nativeName}
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    border-top: 1px solid var(--color-hairline);
+    background: var(--color-canvas-soft);
+  }
+  .foot {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 32px;
+    padding-block: 48px;
+  }
+  .foot nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .foot a {
+    text-decoration: none;
+    color: var(--color-body);
+    font-size: 14px;
+  }
+  .foot a:hover {
+    color: var(--color-ink);
+  }
+  .foot-h {
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  .muted {
+    color: var(--color-muted);
+    font-size: 14px;
+    margin: 6px 0 0;
+  }
+  @media (max-width: 960px) {
+    .foot {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (max-width: 640px) {
+    .foot {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

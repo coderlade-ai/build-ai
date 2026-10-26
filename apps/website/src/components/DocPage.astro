@@ -1,0 +1,54 @@
+---
+import type { Locale } from "@ladestack/i18n";
+import Base from "../layouts/Base.astro";
+import SiteFooter from "./SiteFooter.astro";
+import SiteHeader from "./SiteHeader.astro";
+
+interface Props {
+  locale: Locale;
+  path: string;
+  title: string;
+  description: string;
+  noindex?: boolean;
+}
+
+const { locale, path, title, description, noindex = false } = Astro.props;
+---
+
+<Base title={`${title} · LadeStack Build`} description={description} locale={locale} path={path} noindex={noindex}>
+  <SiteHeader locale={locale} path={path} />
+  <main id="main" class="wrap doc">
+    <h1>{title}</h1>
+    <slot />
+  </main>
+  <SiteFooter locale={locale} path={path} />
+</Base>
+
+<style>
+  .doc {
+    max-width: 760px;
+    padding-block: 56px var(--section-rhythm);
+    min-height: 60vh;
+  }
+  h1 {
+    font-weight: 400;
+    font-size: clamp(32px, 5vw, 48px);
+    letter-spacing: -0.02em;
+    margin: 0 0 16px;
+  }
+  .doc :global(h2) {
+    font-size: 22px;
+    margin-top: 32px;
+  }
+  .doc :global(p),
+  .doc :global(li) {
+    color: var(--color-body);
+  }
+  .doc :global(.note) {
+    font-size: 14px;
+    padding: 12px 16px;
+    border: 1px solid var(--color-hairline-strong);
+    border-radius: var(--radius-md);
+    background: var(--color-surface-card);
+  }
+</style>
