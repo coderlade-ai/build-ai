@@ -23,3 +23,10 @@ marks what a runtime does not offer as `unsupported`, and leaves browser-only sc
 plus R07–R10 for runtimes with processes) as `manual`. Hard gates R02, R11, R15 and the licence
 block selection unless proven. First results: `docs/benchmarks/runtime-contract-2026-10-26.md`.
 No Node runtime candidate has been benchmarked yet; the decision above still stands.
+
+## Addendum (2026-10-26): candidate licence review
+
+Desk review in `docs/research/runtime-candidates-2026-10.md`. On paper, almostnode (MIT) is the
+first candidate worth an adapter; WebContainers needs a written answer from StackBlitz; Lifo needs
+a LICENSE file; Wasmer SDK is not an npm/Vite runtime; Nodebox's Sustainable Use License excludes
+it without legal sign-off. No runtime is selected.
