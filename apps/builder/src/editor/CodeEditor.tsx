@@ -1,7 +1,7 @@
 "use client";
 
 import Editor, { loader, type OnMount } from "@monaco-editor/react";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { languageForPath, monacoBasePath } from "./language";
 
 // Must run before the first editor mounts, or the loader falls back to its CDN default.
@@ -13,14 +13,31 @@ export interface CodeEditorProps {
   loadingLabel: string;
   onChange: (value: string) => void;
   onSave: () => void;
+  /** Showing the agent's file as it streams in: not editable, and kept scrolled to the end. */
+  readOnly?: boolean;
 }
 
 /** Monaco, self-hosted. Presentation only: the project store stays the source of truth. */
-export function CodeEditor({ path, value, loadingLabel, onChange, onSave }: CodeEditorProps) {
+export function CodeEditor({
+  path,
+  value,
+  loadingLabel,
+  onChange,
+  onSave,
+  readOnly = false,
+}: CodeEditorProps) {
   const save = useRef(onSave);
   save.current = onSave;
+  const editorRef = useRef<Parameters<OnMount>[0] | null>(null);
+
+  useEffect(() => {
+    const editor = editorRef.current;
+    const lines = editor?.getModel()?.getLineCount();
+    if (readOnly && editor && lines) editor.revealLine(lines);
+  }, [readOnly, value]);
 
   const onMount: OnMount = (editor, monaco) => {
+    editorRef.current = editor;
     editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => save.current());
     // Generated projects are type-checked by their own toolchain; keep the editor quiet but useful.
     monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
@@ -55,6 +72,8 @@ export function CodeEditor({ path, value, loadingLabel, onChange, onSave }: Code
         wordWrap: "off",
         renderWhitespace: "selection",
         padding: { top: 12, bottom: 64 },
+        readOnly,
+        domReadOnly: readOnly,
       }}
     />
   );

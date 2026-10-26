@@ -15,6 +15,7 @@ import {
 } from "../agent/loop";
 import { projectNameFromPrompt, takePendingTask } from "../agent/handoff";
 import { toolsForMode, type AgentMode } from "../agent/tools";
+import { partialStringField } from "../agent/partialJson";
 import { agentStrings } from "../i18n/agent";
 import { providerStrings, type ProviderStrings } from "../i18n/providers";
 import { isSubmitShortcut } from "../composer/draft";
@@ -57,12 +58,15 @@ export function AgentPanel({
   locale,
   projectId,
   onWrite,
+  onDraft,
   onFilesChanged,
   onRunningChange,
 }: {
   locale: Locale;
   projectId: string;
   onWrite: (path: string) => void;
+  /** The file being written, as it streams in; null when it is done. */
+  onDraft?: (draft: { path: string; content: string } | null) => void;
   onFilesChanged: () => void;
   onRunningChange?: (running: boolean) => void;
 }) {
@@ -102,6 +106,33 @@ export function AgentPanel({
   useEffect(() => logEnd.current?.scrollIntoView({ block: "nearest" }), [log]);
 
   const add = (e: LogEntry) => setLog((l) => [...l, e]);
+
+  // Live progress of the current turn. Draft updates are batched so Monaco isn't re-set per token.
+  const [live, setLive] = useState<string | null>(null);
+  const draftCb = useRef(onDraft);
+  draftCb.current = onDraft;
+  const pendingDraft = useRef<{ path: string; content: string } | null>(null);
+  const draftTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  function queueDraft(d: { path: string; content: string }) {
+    pendingDraft.current = d;
+    if (draftTimer.current) return;
+    draftTimer.current = setTimeout(() => {
+      draftTimer.current = null;
+      if (pendingDraft.current) draftCb.current?.(pendingDraft.current);
+    }, 80);
+  }
+  function clearDraft() {
+    if (draftTimer.current) clearTimeout(draftTimer.current);
+    draftTimer.current = null;
+    pendingDraft.current = null;
+    draftCb.current?.(null);
+  }
+  useEffect(
+    () => () => {
+      if (draftTimer.current) clearTimeout(draftTimer.current);
+    },
+    [],
+  );
 
   function endText(o: AgentOutcome): LogEntry {
     switch (o.reason) {
@@ -163,11 +194,21 @@ export function AgentPanel({
         projectId,
         mode: runMode,
         signal: controller.signal,
+        onDelta: (d) => {
+          if (d.type === "text") return setLive(d.text);
+          if (d.name !== "write_file") return;
+          const path = partialStringField(d.args, "path");
+          const content = partialStringField(d.args, "content");
+          if (path) setLive(a.writing.replace("{path}", path));
+          if (path && content !== undefined) queueDraft({ path, content });
+        },
         onEvent: (e) => {
+          setLive(null);
           if (e.type === "text") {
             plan = e.text;
             return add({ kind: "text", text: e.text });
           }
+          clearDraft();
           const { call, isError, path } = e.result;
           const p = path ?? "?";
           const done: Record<string, string> = {
@@ -217,6 +258,8 @@ export function AgentPanel({
       add({ kind: "end", text: t.unexpected, error: true });
     } finally {
       if (abort.current === controller) abort.current = null;
+      setLive(null);
+      clearDraft();
       setRunning(false);
     }
   }
@@ -310,6 +353,7 @@ export function AgentPanel({
               ) : null}
             </li>
           ))}
+          {running && live ? <li data-kind="text">{live}</li> : null}
           {running ? <li data-kind="working">{a.working}</li> : null}
           <li ref={logEnd} aria-hidden="true" />
         </ol>

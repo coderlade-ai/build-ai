@@ -25,6 +25,8 @@ export interface WorkspaceStrings {
   exportZip: string;
   exporting: string;
   exportError: string;
+  followEdits: string;
+  agentWriting: string;
 }
 
 export const workspace: Record<Locale, WorkspaceStrings> = {
@@ -56,6 +58,8 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     exportZip: "Export ZIP",
     exporting: "Exporting…",
     exportError: "Export failed. Your files are still saved in this browser.",
+    followEdits: "Follow AI edits",
+    agentWriting: "Agent is writing…",
   },
   ru: {
     useTemplate: "Использовать шаблон",
@@ -85,6 +89,8 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     exportZip: "Экспорт ZIP",
     exporting: "Экспорт…",
     exportError: "Не удалось экспортировать. Файлы по-прежнему сохранены в этом браузере.",
+    followEdits: "Следить за правками ИИ",
+    agentWriting: "Агент пишет…",
   },
   ja: {
     useTemplate: "このテンプレートを使う",
@@ -114,6 +120,8 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     exportZip: "ZIPでエクスポート",
     exporting: "エクスポート中…",
     exportError: "エクスポートに失敗しました。ファイルはこのブラウザに保存されたままです。",
+    followEdits: "AI の編集を追跡",
+    agentWriting: "エージェントが書き込み中…",
   },
   ko: {
     useTemplate: "이 템플릿 사용",
@@ -143,6 +151,8 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     exportZip: "ZIP 내보내기",
     exporting: "내보내는 중…",
     exportError: "내보내기에 실패했습니다. 파일은 이 브라우저에 그대로 저장되어 있습니다.",
+    followEdits: "AI 편집 따라가기",
+    agentWriting: "에이전트가 작성 중…",
   },
   zh: {
     useTemplate: "使用此模板",
@@ -168,6 +178,8 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     exportZip: "导出 ZIP",
     exporting: "正在导出…",
     exportError: "导出失败。你的文件仍保存在此浏览器中。",
+    followEdits: "跟随 AI 编辑",
+    agentWriting: "智能体正在写入…",
   },
   tr: {
     useTemplate: "Bu şablonu kullan",
@@ -197,6 +209,8 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     exportZip: "ZIP olarak dışa aktar",
     exporting: "Dışa aktarılıyor…",
     exportError: "Dışa aktarma başarısız. Dosyalarınız bu tarayıcıda kayıtlı olmaya devam ediyor.",
+    followEdits: "Yapay zekâ düzenlemelerini izle",
+    agentWriting: "Ajan yazıyor…",
   },
   fr: {
     useTemplate: "Utiliser ce modèle",
@@ -226,6 +240,8 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     exportZip: "Exporter en ZIP",
     exporting: "Exportation…",
     exportError: "L'exportation a échoué. Vos fichiers restent enregistrés dans ce navigateur.",
+    followEdits: "Suivre les modifications de l'IA",
+    agentWriting: "L'agent écrit…",
   },
   pt: {
     useTemplate: "Usar este modelo",
@@ -255,5 +271,7 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     exportZip: "Exportar ZIP",
     exporting: "Exportando…",
     exportError: "Falha na exportação. Seus arquivos continuam salvos neste navegador.",
+    followEdits: "Acompanhar edições da IA",
+    agentWriting: "O agente está escrevendo…",
   },
 };
