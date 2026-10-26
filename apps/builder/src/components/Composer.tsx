@@ -15,6 +15,8 @@ import {
 } from "../composer/draft";
 import type { ShellStrings } from "../i18n/shell";
 import styles from "./Welcome.module.css";
+import { providers } from "../providers/registry";
+import { getSession } from "../providers/session";
 
 /** Mode names are product terms and stay in English; their hints are localized. */
 const modeNames: Record<AlphaMode, string> = {
@@ -24,7 +26,7 @@ const modeNames: Record<AlphaMode, string> = {
   debug: "Debug",
 };
 
-export function Composer({ s }: { s: ShellStrings }) {
+export function Composer({ s, agentPending }: { s: ShellStrings; agentPending: string }) {
   const [draft, setDraft] = useState<Draft>(emptyDraft);
   const [loaded, setLoaded] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
@@ -67,8 +69,13 @@ export function Composer({ s }: { s: ShellStrings }) {
 
   function submit() {
     if (!canSubmit(draft.prompt)) return;
-    // No provider adapter exists yet (BYOK lands in a later phase): send nothing, keep the draft.
-    setNotice(s.needProvider);
+    // The agent core is a later unit: even with a provider connected, send nothing and keep the draft.
+    const session = getSession();
+    setNotice(
+      session
+        ? agentPending.replace("{provider}", providers[session.provider].name)
+        : s.needProvider,
+    );
   }
 
   function onSubmit(e: FormEvent) {
