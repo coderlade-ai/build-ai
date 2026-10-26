@@ -1,5 +1,5 @@
 import { ProviderStreamError, type StreamError } from "../providers/stream";
-import type { Conversation } from "./adapters";
+import type { Conversation, StepDelta } from "./adapters";
 import { runTool, type AgentFs, type ToolContext, type ToolResult } from "./tools";
 
 export type AgentEvent = { type: "text"; text: string } | { type: "tool"; result: ToolResult };
@@ -26,13 +26,15 @@ export async function runAgent(o: {
   onEvent: (e: AgentEvent) => void;
   approve?: ToolContext["approve"];
   mode?: ToolContext["mode"];
+  /** Streams each turn and reports progress (live text, files being written). */
+  onDelta?: (d: StepDelta) => void;
 }): Promise<AgentOutcome> {
   const maxSteps = o.maxSteps ?? defaultMaxSteps;
   for (let step = 0; step < maxSteps; step++) {
     if (o.signal?.aborted) return { reason: "stopped" };
     let result;
     try {
-      result = await o.conversation.step(o.signal);
+      result = await o.conversation.step(o.signal, o.onDelta);
     } catch (e) {
       const code = e instanceof ProviderStreamError ? e.code : "unexpected";
       return code === "aborted" ? { reason: "stopped" } : { reason: "error", code };

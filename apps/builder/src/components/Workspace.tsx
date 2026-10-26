@@ -37,6 +37,9 @@ export function Workspace({ locale }: { locale: Locale }) {
   const [load, setLoad] = useState<Load>({ state: "loading" });
   const [files, setFiles] = useState<ProjectFile[]>([]);
   const [open, setOpen] = useState<OpenFile | null>(null);
+  // The file the agent is writing right now, as it streams in (PRD: Monaco live streaming).
+  const [draft, setDraft] = useState<{ path: string; content: string } | null>(null);
+  const [follow, setFollow] = useState(true);
   const [save, setSave] = useState<Save>("saved");
   const [view, setView] = useState<"code" | "preview">("code");
   const [agentBusy, setAgentBusy] = useState(false);
@@ -252,6 +255,14 @@ export function Workspace({ locale }: { locale: Locale }) {
         <div className={styles.code}>
           <nav className={styles.explorer} aria-label={w.files}>
             <p className={styles.explorerTitle}>{w.files}</p>
+            <label className={styles.follow}>
+              <input
+                type="checkbox"
+                checked={follow}
+                onChange={(e) => setFollow(e.target.checked)}
+              />
+              {w.followEdits}
+            </label>
             <Tree
               nodes={buildFileTree(files.map((f) => f.path))}
               active={open?.path}
@@ -259,7 +270,27 @@ export function Workspace({ locale }: { locale: Locale }) {
             />
           </nav>
           <section className={styles.editorPane}>
-            {open ? (
+            {draft && follow && save !== "dirty" ? (
+              <>
+                <p className={styles.breadcrumb}>
+                  {draft.path}
+                  <span className={styles.writing} role="status">
+                    {" "}
+                    · {w.agentWriting}
+                  </span>
+                </p>
+                <div className={styles.editor}>
+                  <CodeEditor
+                    path={draft.path}
+                    value={draft.content}
+                    loadingLabel={w.editorLoading}
+                    onChange={() => {}}
+                    onSave={() => {}}
+                    readOnly
+                  />
+                </div>
+              </>
+            ) : open ? (
               <>
                 <p className={styles.breadcrumb}>
                   {open.path}
@@ -289,6 +320,7 @@ export function Workspace({ locale }: { locale: Locale }) {
         locale={locale}
         projectId={id!}
         onWrite={(p) => void agentWrote(p)}
+        onDraft={setDraft}
         onFilesChanged={() => {
           setHistoryKey((k) => k + 1);
           void restored();

@@ -38,6 +38,7 @@ export interface AgentStrings {
   debugPlaceholder: string;
   debugNote: string;
   applyFix: string;
+  writing: string;
 }
 
 export const agentStrings: Record<Locale, AgentStrings> = {
@@ -81,6 +82,7 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     debugNote:
       "Debug mode reads your files and explains the cause. It can't run the app yet and never changes files.",
     applyFix: "Apply this fix",
+    writing: "Writing {path}…",
   },
   ru: {
     label: "Агент",
@@ -121,6 +123,7 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     debugNote:
       "Режим «Отладка» читает файлы и объясняет причину. Он пока не может запускать приложение и никогда не меняет файлы.",
     applyFix: "Применить исправление",
+    writing: "Пишу {path}…",
   },
   ja: {
     label: "エージェント",
@@ -161,6 +164,7 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     debugNote:
       "デバッグモードはファイルを読んで原因を説明します。まだアプリを実行できず、ファイルを変更することもありません。",
     applyFix: "この修正を適用",
+    writing: "{path} を書き込み中…",
   },
   ko: {
     label: "에이전트",
@@ -201,6 +205,7 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     debugNote:
       "디버그 모드는 파일을 읽고 원인을 설명합니다. 아직 앱을 실행할 수 없으며 파일을 절대 변경하지 않습니다.",
     applyFix: "이 수정 적용",
+    writing: "{path} 작성 중…",
   },
   zh: {
     label: "智能体",
@@ -239,6 +244,7 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     debugPlaceholder: "描述错误或出了什么问题…",
     debugNote: "调试模式会读取你的文件并解释原因。它暂时无法运行应用，也从不修改文件。",
     applyFix: "应用此修复",
+    writing: "正在写入 {path}…",
   },
   tr: {
     label: "Ajan",
@@ -280,6 +286,7 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     debugNote:
       "Hata ayıklama modu dosyalarınızı okur ve nedeni açıklar. Henüz uygulamayı çalıştıramaz ve dosyaları asla değiştirmez.",
     applyFix: "Bu düzeltmeyi uygula",
+    writing: "{path} yazılıyor…",
   },
   fr: {
     label: "Agent",
@@ -322,6 +329,7 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     debugNote:
       "Le mode Débogage lit vos fichiers et explique la cause. Il ne peut pas encore lancer l'application et ne modifie jamais les fichiers.",
     applyFix: "Appliquer ce correctif",
+    writing: "Écriture de {path}…",
   },
   pt: {
     label: "Agente",
@@ -364,5 +372,6 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     debugNote:
       "O modo Depuração lê seus arquivos e explica a causa. Ele ainda não executa o app e nunca altera arquivos.",
     applyFix: "Aplicar esta correção",
+    writing: "Escrevendo {path}…",
   },
 };
