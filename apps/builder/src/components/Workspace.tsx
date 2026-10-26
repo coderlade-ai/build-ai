@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { AgentPanel } from "./AgentPanel";
+import { CheckpointHistory } from "./CheckpointHistory";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { localePrefix, type Locale } from "@ladestack/i18n";
@@ -38,6 +39,8 @@ export function Workspace({ locale }: { locale: Locale }) {
   const [open, setOpen] = useState<OpenFile | null>(null);
   const [save, setSave] = useState<Save>("saved");
   const [view, setView] = useState<"code" | "preview">("code");
+  const [agentBusy, setAgentBusy] = useState(false);
+  const [historyKey, setHistoryKey] = useState(0);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const openRef = useRef(open);
   openRef.current = open;
@@ -219,6 +222,13 @@ export function Workspace({ locale }: { locale: Locale }) {
         >
           {exporting === "busy" ? w.exporting : w.exportZip}
         </button>
+        <CheckpointHistory
+          locale={locale}
+          projectId={id!}
+          busy={agentBusy}
+          refreshKey={historyKey}
+          onRestored={() => void restored()}
+        />
         <p className={styles.saveState} role="status" data-state={save}>
           {save === "conflict" || save === "error" ? null : status[save]}
         </p>
@@ -279,7 +289,14 @@ export function Workspace({ locale }: { locale: Locale }) {
         locale={locale}
         projectId={id!}
         onWrite={(p) => void agentWrote(p)}
-        onFilesChanged={() => void restored()}
+        onFilesChanged={() => {
+          setHistoryKey((k) => k + 1);
+          void restored();
+        }}
+        onRunningChange={(r) => {
+          setAgentBusy(r);
+          if (!r) setHistoryKey((k) => k + 1);
+        }}
       />
     </div>
   );

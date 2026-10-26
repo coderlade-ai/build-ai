@@ -44,11 +44,13 @@ export function AgentPanel({
   projectId,
   onWrite,
   onFilesChanged,
+  onRunningChange,
 }: {
   locale: Locale;
   projectId: string;
   onWrite: (path: string) => void;
   onFilesChanged: () => void;
+  onRunningChange?: (running: boolean) => void;
 }) {
   const a = agentStrings[locale];
   const t = providerStrings[locale];
@@ -57,6 +59,11 @@ export function AgentPanel({
   const [log, setLog] = useState<LogEntry[]>([]);
   const [running, setRunning] = useState(false);
   const [restoring, setRestoring] = useState(false);
+  // Latest callback in a ref so an inline prop doesn't re-fire the effect on every render.
+  const runningChange = useRef(onRunningChange);
+  runningChange.current = onRunningChange;
+  const busy = running || restoring;
+  useEffect(() => runningChange.current?.(busy), [busy]);
   const [approval, setApproval] = useState<{ path: string; decide: (ok: boolean) => void } | null>(
     null,
   );
