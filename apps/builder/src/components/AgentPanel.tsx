@@ -4,9 +4,15 @@ import Link from "next/link";
 import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import { localePrefix, type Locale } from "@ladestack/i18n";
 import { createConversation } from "../agent/adapters";
-import { codeSystemPrompt, runAgent, type AgentOutcome } from "../agent/loop";
+import {
+  buildFromPlanPrompt,
+  codeSystemPrompt,
+  planSystemPrompt,
+  runAgent,
+  type AgentOutcome,
+} from "../agent/loop";
 import { projectNameFromPrompt, takePendingTask } from "../agent/handoff";
-import { agentTools } from "../agent/tools";
+import { toolsForMode, type AgentMode } from "../agent/tools";
 import { agentStrings } from "../i18n/agent";
 import { providerStrings, type ProviderStrings } from "../i18n/providers";
 import { isSubmitShortcut } from "../composer/draft";
@@ -21,7 +27,13 @@ type LogEntry =
   | { kind: "you"; text: string }
   | { kind: "text"; text: string }
   | { kind: "tool"; label: string; error: boolean }
-  | { kind: "end"; text: string; error: boolean; undo?: { checkpointId: string; label: string } };
+  | {
+      kind: "end";
+      text: string;
+      error: boolean;
+      undo?: { checkpointId: string; label: string };
+      build?: { request: string; plan: string };
+    };
 
 const errorKey: Record<Exclude<StreamError, "aborted">, keyof ProviderStrings> = {
   "invalid-key": "invalidKey",
@@ -58,6 +70,7 @@ export function AgentPanel({
   const [prompt, setPrompt] = useState("");
   const [log, setLog] = useState<LogEntry[]>([]);
   const [running, setRunning] = useState(false);
+  const [mode, setMode] = useState<AgentMode>("code");
   const [restoring, setRestoring] = useState(false);
   // Latest callback in a ref so an inline prop doesn't re-fire the effect on every render.
   const runningChange = useRef(onRunningChange);
@@ -79,7 +92,10 @@ export function AgentPanel({
     if (started.current || !session) return;
     started.current = true;
     const task = takePendingTask(projectId);
-    if (task) void run(task);
+    if (task) {
+      setMode(task.mode);
+      void run(task.prompt, task.mode);
+    }
   }, [session, projectId]);
   useEffect(() => logEnd.current?.scrollIntoView({ block: "nearest" }), [log]);
 
@@ -102,7 +118,7 @@ export function AgentPanel({
     }
   }
 
-  async function run(text = prompt) {
+  async function run(text = prompt, runMode: AgentMode = mode) {
     const s = getSession();
     const task = text.trim();
     if (!s || !task || running || task.length > maxPrompt) return;
@@ -114,33 +130,40 @@ export function AgentPanel({
     let wrote = false;
     try {
       const fs = await getProjectStore();
-      // Checkpoint before any AI edit (PRD A.20): no checkpoint, no run.
+      // Checkpoint before any AI edit (PRD A.20): no checkpoint, no run. Plan mode never edits.
       let checkpointId: string | undefined;
-      try {
-        checkpointId = (
-          await fs.createCheckpoint(projectId, projectNameFromPrompt(task), "auto-before-ai-edit")
-        )?.id;
-      } catch {
-        checkpointId = undefined;
+      if (runMode === "code") {
+        try {
+          checkpointId = (
+            await fs.createCheckpoint(projectId, projectNameFromPrompt(task), "auto-before-ai-edit")
+          )?.id;
+        } catch {
+          checkpointId = undefined;
+        }
+        if (!checkpointId) {
+          add({ kind: "end", text: a.checkpointFailed, error: true });
+          return;
+        }
       }
-      if (!checkpointId) {
-        add({ kind: "end", text: a.checkpointFailed, error: true });
-        return;
-      }
+      let plan = "";
       const outcome = await runAgent({
         conversation: createConversation({
           provider: s.provider,
           key: s.key,
           model: s.model,
-          system: codeSystemPrompt,
+          system: runMode === "plan" ? planSystemPrompt : codeSystemPrompt,
           prompt: task,
-          tools: agentTools,
+          tools: toolsForMode(runMode),
         }),
         fs,
         projectId,
+        mode: runMode,
         signal: controller.signal,
         onEvent: (e) => {
-          if (e.type === "text") return add({ kind: "text", text: e.text });
+          if (e.type === "text") {
+            plan = e.text;
+            return add({ kind: "text", text: e.text });
+          }
           const { call, isError, path } = e.result;
           const p = path ?? "?";
           const done: Record<string, string> = {
@@ -181,7 +204,11 @@ export function AgentPanel({
           }),
       });
       const end = endText(outcome);
-      add(wrote && end.kind === "end" ? { ...end, undo: { checkpointId, label: a.undo } } : end);
+      if (end.kind !== "end") add(end);
+      else if (runMode === "plan" && outcome.reason === "done" && plan)
+        add({ ...end, build: { request: task, plan } });
+      else if (wrote && checkpointId) add({ ...end, undo: { checkpointId, label: a.undo } });
+      else add(end);
     } catch {
       add({ kind: "end", text: t.unexpected, error: true });
     } finally {
@@ -241,6 +268,22 @@ export function AgentPanel({
           {log.map((e, i) => (
             <li key={i} data-kind={e.kind} data-error={"error" in e ? e.error : undefined}>
               {e.kind === "tool" ? e.label : e.text}
+              {e.kind === "end" && e.build ? (
+                <>
+                  {" "}
+                  <button
+                    type="button"
+                    className={styles.agentLink}
+                    disabled={running || restoring}
+                    onClick={() => {
+                      setMode("code");
+                      void run(buildFromPlanPrompt(e.build!.request, e.build!.plan), "code");
+                    }}
+                  >
+                    {a.buildPlan}
+                  </button>
+                </>
+              ) : null}
               {e.kind === "end" && e.undo ? (
                 <>
                   {" "}
@@ -280,6 +323,20 @@ export function AgentPanel({
           </button>
         </div>
       ) : null}
+      <div className={styles.agentModes} role="group" aria-label={a.modeLabel}>
+        {(["code", "plan"] as const).map((m) => (
+          <button
+            key={m}
+            type="button"
+            aria-pressed={mode === m}
+            className={styles.agentMode}
+            disabled={running}
+            onClick={() => setMode(m)}
+          >
+            {m === "code" ? a.modeCode : a.modePlan}
+          </button>
+        ))}
+      </div>
       <form className={styles.agentForm} onSubmit={onSubmit}>
         <label htmlFor={ids.prompt} className={styles.srOnly}>
           {a.label}
@@ -289,7 +346,7 @@ export function AgentPanel({
           className={styles.agentInput}
           rows={2}
           value={prompt}
-          placeholder={a.placeholder}
+          placeholder={mode === "plan" ? a.planPlaceholder : a.placeholder}
           maxLength={maxPrompt}
           aria-describedby={ids.note}
           onChange={(e) => setPrompt(e.target.value)}
@@ -311,6 +368,7 @@ export function AgentPanel({
         )}
       </form>
       <p id={ids.note} className={styles.agentNote}>
+        {mode === "plan" ? `${a.planNote} ` : null}
         {a.note.replace("{provider}", `${providers[session.provider].name} · ${session.model}`)}
       </p>
     </section>

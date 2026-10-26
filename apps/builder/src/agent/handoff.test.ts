@@ -13,10 +13,16 @@ function memory() {
 describe("code-mode handoff", () => {
   it("is taken exactly once", () => {
     const s = memory();
-    setPendingTask("p1", "build a landing page", s);
+    setPendingTask("p1", { mode: "plan", prompt: "build a landing page" }, s);
     expect(takePendingTask("p2", s)).toBeNull();
-    expect(takePendingTask("p1", s)).toBe("build a landing page");
+    expect(takePendingTask("p1", s)).toEqual({ mode: "plan", prompt: "build a landing page" });
     expect(takePendingTask("p1", s)).toBeNull();
+    s.setItem("ladestack.agentTask.p3", "plain old prompt");
+    expect(takePendingTask("p3", s)).toEqual({ mode: "code", prompt: "plain old prompt" });
+    s.setItem("ladestack.agentTask.p4", JSON.stringify({ mode: "evil", prompt: "x" }));
+    expect(takePendingTask("p4", s)).toEqual({ mode: "code", prompt: "x" });
+    s.setItem("ladestack.agentTask.p5", JSON.stringify({ mode: "plan" }));
+    expect(takePendingTask("p5", s)).toBeNull();
   });
 
   it("names projects from the first line, by characters", () => {

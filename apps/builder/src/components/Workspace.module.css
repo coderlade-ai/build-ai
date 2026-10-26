@@ -432,3 +432,30 @@
   font-size: 13px;
   color: #5a574c;
 }
+.agentModes {
+  display: flex;
+  gap: 4px;
+}
+.agentMode {
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid #5a574c;
+  border-radius: 8px;
+  background: transparent;
+  color: #e9e7df;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+.agentMode[aria-pressed="true"] {
+  border-color: var(--color-primary);
+  background: #3a2a20;
+}
+.agentMode:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.agentMode:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}

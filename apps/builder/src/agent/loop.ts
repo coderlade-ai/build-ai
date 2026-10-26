@@ -25,6 +25,7 @@ export async function runAgent(o: {
   maxSteps?: number;
   onEvent: (e: AgentEvent) => void;
   approve?: ToolContext["approve"];
+  mode?: ToolContext["mode"];
 }): Promise<AgentOutcome> {
   const maxSteps = o.maxSteps ?? defaultMaxSteps;
   for (let step = 0; step < maxSteps; step++) {
@@ -43,7 +44,7 @@ export async function runAgent(o: {
       if (o.signal?.aborted) return { reason: "stopped" };
       let r: ToolResult;
       try {
-        r = await runTool(o.fs, o.projectId, call, { approve: o.approve });
+        r = await runTool(o.fs, o.projectId, call, { approve: o.approve, mode: o.mode });
       } catch {
         r = { call, output: "Tool failed unexpectedly.", isError: true };
       }
@@ -65,3 +66,16 @@ export const codeSystemPrompt = [
   "You cannot run commands, install packages or preview yet: never claim you did. Never write .env files or API keys.",
   "Do only what the user asked. When finished, reply with a short summary of the files you changed, in the user's language.",
 ].join(" ");
+
+export const planSystemPrompt = [
+  "You are the Plan mode agent of LadeStack Build, a browser-based builder for websites and web apps.",
+  "Plan mode is read-only: you can only use list_files and read_file. Never try to write or delete files.",
+  "Start by listing files and read what matters. If the project is empty, plan a React + TypeScript + Vite app unless the user asks for plain HTML.",
+  "Reply with a concise implementation plan in the user's language: the goal, the files to create or change (with paths) and what each will contain, and any open questions.",
+  "Do not write the full code. You cannot run commands or preview: never claim you did.",
+].join(" ");
+
+/** The Code-mode task that builds an approved plan. */
+export function buildFromPlanPrompt(request: string, plan: string): string {
+  return `Implement this plan for my request.\n\nRequest:\n${request}\n\nPlan:\n${plan}`;
+}
