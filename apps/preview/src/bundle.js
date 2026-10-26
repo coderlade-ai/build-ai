@@ -95,22 +95,24 @@ export function isTailwindCss(css) {
 }
 
 /**
- * Turns Tailwind source into what the browser compiler reads: the v3 directives become one v4
- * import, and v4 `@import "tailwindcss"` is kept once.
+ * Splits Tailwind source for the browser compiler. The compiler adds `@import "tailwindcss"` itself
+ * when the source has no `@import`, and an `@import` left in the page's styles makes Chrome fetch
+ * it, so every `@import` is taken out: remote ones (fonts) go to a plain stylesheet, the Tailwind
+ * import and v3 directives are dropped, and other local imports are not followed.
  * @param {string} css
+ * @returns {{ tailwind: string, remote: string[] }}
  */
-export function toTailwindBrowserCss(css) {
-  let seen = false;
-  return css
-    .replace(
-      /@tailwind\s+(base|components|utilities)\s*;?|@import\s+(url\()?["']tailwindcss["']\)?[^;]*;?/g,
-      () => {
-        if (seen) return "";
-        seen = true;
-        return '@import "tailwindcss";';
-      },
-    )
+export function splitTailwindCss(css) {
+  /** @type {string[]} */
+  const remote = [];
+  const tailwind = css
+    .replace(/@tailwind\s+(base|components|utilities)\s*;?/g, "")
+    .replace(/@import\s+(?:url\(\s*)?["']?([^"')\s;]+)["']?\s*\)?[^;]*;?/g, (rule, target) => {
+      if (/^https?:\/\//.test(target)) remote.push(rule.trim().replace(/;?$/, ";"));
+      return "";
+    })
     .replace(/<\/style/gi, "<\\/style");
+  return { tailwind, remote: remote.map((r) => r.replace(/<\/style/gi, "")) };
 }
 
 /** A page shown in the preview when the build fails. @param {string[]} errors */
@@ -150,6 +152,8 @@ export async function bundleProject(esbuild, files, options = {}) {
   const cssLinks = [];
   /** Tailwind stylesheets, compiled in the page by @tailwindcss/browser. @type {string[]} */
   const tailwindCss = [];
+  /** `@import`s of remote CSS (fonts) found in Tailwind stylesheets. @type {string[]} */
+  const remoteImports = [];
   const plugin = {
     name: "ladestack-project",
     setup(build) {
@@ -176,7 +180,9 @@ export async function bundleProject(esbuild, files, options = {}) {
         const ext = args.path.split(".").pop()?.toLowerCase() ?? "";
         const contents = files[args.path] ?? "";
         if (ext === "css" && options.tailwindScript && isTailwindCss(contents)) {
-          tailwindCss.push(toTailwindBrowserCss(contents));
+          const { tailwind, remote } = splitTailwindCss(contents);
+          tailwindCss.push(tailwind);
+          remoteImports.push(...remote);
           return { contents: "", loader: "js" };
         }
         const loader = args.path.endsWith(".module.css") ? "local-css" : (loaders[ext] ?? "text");
@@ -243,6 +249,7 @@ export async function bundleProject(esbuild, files, options = {}) {
   let links = cssLinks.map((u) => `<link rel="stylesheet" href="${escapeHtml(u)}">`).join("");
   if (tailwindCss.length && options.tailwindScript) {
     out[`${bundleDir}/tailwind.js`] = await options.tailwindScript();
+    if (remoteImports.length) links += `<style>${remoteImports.join("\n")}</style>`;
     links += `<style type="text/tailwindcss">${tailwindCss.join("\n")}</style><script src="/${bundleDir}/tailwind.js"></script>`;
   }
   let page = html.replace(

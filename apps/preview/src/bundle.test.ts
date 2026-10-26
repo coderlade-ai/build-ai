@@ -5,7 +5,7 @@ import {
   errorPage,
   findModuleEntry,
   isTailwindCss,
-  toTailwindBrowserCss,
+  splitTailwindCss,
   packageUrl,
   resolveLocal,
   splitPackage,
@@ -99,9 +99,20 @@ describe("Tailwind in bundled previews", () => {
     expect(isTailwindCss("@tailwind base;\n@tailwind utilities;")).toBe(true);
     expect(isTailwindCss("body { color: red }")).toBe(false);
     expect(
-      toTailwindBrowserCss("@tailwind base;\n@tailwind components;\n@tailwind utilities;\n.x{}"),
-    ).toBe('@import "tailwindcss";\n\n\n.x{}');
-    expect(toTailwindBrowserCss("a{}</style><script>")).not.toContain("</style>");
+      splitTailwindCss("@tailwind base;\n@tailwind components;\n@tailwind utilities;\n.x{}"),
+    ).toEqual({
+      tailwind: "\n\n\n.x{}",
+      remote: [],
+    });
+    expect(
+      splitTailwindCss(
+        `@import url("https://fonts.googleapis.com/css2?family=Inter");\n@import "tailwindcss";\n@import "./local.css";\n@theme { --x: 1; }`,
+      ),
+    ).toEqual({
+      tailwind: "\n\n\n@theme { --x: 1; }",
+      remote: ['@import url("https://fonts.googleapis.com/css2?family=Inter");'],
+    });
+    expect(splitTailwindCss("a{}</style><script>").tailwind).not.toContain("</style>");
   });
 
   it("compiles Tailwind stylesheets in the page with the self-hosted browser build", async () => {
@@ -118,9 +129,8 @@ describe("Tailwind in bundled previews", () => {
     );
     if (!r.ok) throw new Error(JSON.stringify(r.errors));
     expect(r.files["__ladestack/tailwind.js"]).toBe("/* tw */");
-    expect(r.files["index.html"]).toContain(
-      '<style type="text/tailwindcss">@import "tailwindcss";',
-    );
+    expect(r.files["index.html"]).toContain('<style type="text/tailwindcss">');
+    expect(r.files["index.html"]).not.toContain("@import");
     expect(r.files["index.html"]).toContain("--color-brand: #f54e00");
     expect(r.files["index.html"]).toContain('src="/__ladestack/tailwind.js"');
     expect(r.files["__ladestack/bundle.css"]).toContain("margin: 0");
