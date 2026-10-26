@@ -1,5 +1,5 @@
-import { ShellPage } from "../../components/ShellPage";
+import { Welcome } from "../../components/Welcome";
 
 export default function BuilderHome() {
-  return <ShellPage locale="en" />;
+  return <Welcome locale="en" />;
 }

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { defaultLocale, isLocale } from "@ladestack/i18n";
-import { ShellPage } from "../../components/ShellPage";
+import { Welcome } from "../../components/Welcome";
 
 export default async function LocalizedBuilderHome({
   params,
@@ -9,5 +9,5 @@ export default async function LocalizedBuilderHome({
 }) {
   const { locale } = await params;
   if (!isLocale(locale) || locale === defaultLocale) notFound();
-  return <ShellPage locale={locale} />;
+  return <Welcome locale={locale} />;
 }
