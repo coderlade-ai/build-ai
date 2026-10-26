@@ -273,3 +273,64 @@
     transition: none !important;
   }
 }
+.recentList {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface-card);
+}
+.recentItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px 4px 0;
+}
+.recentItem + .recentItem {
+  border-top: 1px solid var(--color-hairline);
+}
+.recentLink {
+  flex: 1;
+  min-width: 0;
+  min-height: 56px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: 8px 16px;
+  color: var(--color-ink);
+  text-decoration: none;
+  border-radius: var(--radius-md);
+}
+.recentLink:hover .templateName {
+  text-decoration: underline;
+}
+.recentLink:focus-visible,
+.recentRemove:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+.recentLink .templateName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.recentMeta {
+  font-size: 13px;
+  color: var(--color-body);
+}
+.recentRemove {
+  min-height: 44px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: var(--color-body);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+}
+.recentRemove:hover:not(:disabled) {
+  color: var(--color-error, #b42318);
+}

@@ -1,6 +1,7 @@
 import { localePrefix, type Locale } from "@ladestack/i18n";
 import { shell } from "../i18n/shell";
 import { Composer } from "./Composer";
+import { RecentProjects } from "./RecentProjects";
 import { Templates } from "./Templates";
 import styles from "./Welcome.module.css";
 
@@ -25,6 +26,7 @@ export function Welcome({ locale }: { locale: Locale }) {
         <Composer s={s} />
         <p className={styles.note}>{s.freeNote}</p>
         <p className={styles.note}>{s.body}</p>
+        <RecentProjects locale={locale} />
         <Templates s={s} locale={locale} />
         <a className={styles.back} href={`${localePrefix(locale)}/`}>
           {s.back}
