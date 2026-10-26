@@ -1,6 +1,7 @@
 import { localePrefix, type Locale } from "@ladestack/i18n";
 import { shell } from "../i18n/shell";
 import { Composer } from "./Composer";
+import { EraseData } from "./EraseData";
 import { ImportZip } from "./ImportZip";
 import { ProviderSetup } from "./ProviderSetup";
 import { RecentProjects } from "./RecentProjects";
@@ -28,6 +29,7 @@ export function Welcome({ locale }: { locale: Locale }) {
         <RecentProjects locale={locale} />
         <Templates s={s} locale={locale} />
         <ImportZip locale={locale} />
+        <EraseData locale={locale} />
         <a className={styles.back} href={`${localePrefix(locale)}/`}>
           {s.back}
         </a>
