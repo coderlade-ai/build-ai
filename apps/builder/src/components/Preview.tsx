@@ -12,6 +12,13 @@ import {
 import type { PreviewController } from "../preview/controller";
 import { newPreviewSession, previewKind, previewMessages } from "../preview/files";
 import { previewOrigin } from "../preview/origin";
+import {
+  loadViewport,
+  saveViewport,
+  type Viewport,
+  viewportWidth,
+  viewports,
+} from "../preview/viewport";
 import { getProjectStore } from "../storage/client";
 import styles from "./Workspace.module.css";
 
@@ -47,6 +54,8 @@ export function Preview({
   const [frameKey, setFrameKey] = useState(0);
   const [logs, setLogs] = useState<PreviewLog[]>([]);
   const [reloadNonce, setReloadNonce] = useState(0);
+  const [viewport, setViewport] = useState<Viewport>("desktop");
+  useEffect(() => setViewport(loadViewport(window.sessionStorage)), []);
   const control = useRef(controller);
   control.current = controller;
 
@@ -126,6 +135,25 @@ export function Preview({
         {kind === "bundle" ? (
           <span className={styles.previewNote}>{w.previewBundleNote}</span>
         ) : null}
+        <div className={styles.viewports} role="group" aria-label={w.viewportLabel}>
+          {viewports.map((v) => (
+            <button
+              key={v}
+              type="button"
+              aria-pressed={viewport === v}
+              onClick={() => {
+                setViewport(v);
+                saveViewport(typeof window === "undefined" ? undefined : window.sessionStorage, v);
+              }}
+            >
+              {
+                { desktop: w.viewportDesktop, tablet: w.viewportTablet, mobile: w.viewportMobile }[
+                  v
+                ]
+              }
+            </button>
+          ))}
+        </div>
         <button
           type="button"
           className={styles.exportButton}
@@ -138,16 +166,19 @@ export function Preview({
           {w.reloadPreview}
         </button>
       </div>
-      <iframe
-        key={frameKey}
-        ref={frame}
-        className={styles.previewFrame}
-        title={w.previewFrame}
-        src={`${previewOrigin}/`}
-        // Cross-origin, so allow-same-origin only gives the preview its own origin's storage.
-        sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-popups"
-        referrerPolicy="no-referrer"
-      />
+      <div className={styles.frameStage}>
+        <iframe
+          key={frameKey}
+          ref={frame}
+          className={styles.previewFrame}
+          title={w.previewFrame}
+          src={`${previewOrigin}/`}
+          // Cross-origin, so allow-same-origin only gives the preview its own origin's storage.
+          sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-popups"
+          referrerPolicy="no-referrer"
+          style={{ width: viewportWidth[viewport] }}
+        />
+      </div>
       <details className={styles.console}>
         <summary>
           {w.console} ({logs.length})
