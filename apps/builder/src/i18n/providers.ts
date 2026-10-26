@@ -30,7 +30,7 @@ export interface ProviderStrings {
   noModels: string;
   unexpected: string;
   rejected: string;
-  agentPending: string;
+  modePending: string;
 }
 
 export const providerStrings: Record<Locale, ProviderStrings> = {
@@ -68,8 +68,8 @@ export const providerStrings: Record<Locale, ProviderStrings> = {
     unexpected: "Something unexpected went wrong. Try again.",
     rejected:
       "The provider rejected the request. This model may not support tool calling; pick one marked “tools”.",
-    agentPending:
-      "{provider} is connected. The agent that turns prompts into code is still being built, so nothing was sent and your draft is still here.",
+    modePending:
+      "{provider} is connected. {mode} mode isn't built yet, so nothing was sent and your draft is still here. Code and Ask work now.",
   },
   ru: {
     connect: "Подключить ИИ-провайдера",
@@ -104,8 +104,8 @@ export const providerStrings: Record<Locale, ProviderStrings> = {
     unexpected: "Произошла непредвиденная ошибка. Повторите попытку.",
     rejected:
       "Провайдер отклонил запрос. Возможно, модель не поддерживает вызов инструментов; выберите модель с пометкой «инструменты».",
-    agentPending:
-      "{provider} подключён. Агент, превращающий запросы в код, ещё в разработке, поэтому ничего не отправлено, а черновик сохранён.",
+    modePending:
+      "{provider} подключён. Режим {mode} пока не готов, поэтому ничего не отправлено, а черновик сохранён. Code и Ask уже работают.",
   },
   ja: {
     connect: "AI プロバイダーに接続",
@@ -142,8 +142,8 @@ export const providerStrings: Record<Locale, ProviderStrings> = {
     unexpected: "予期しないエラーが発生しました。もう一度お試しください。",
     rejected:
       "プロバイダーがリクエストを拒否しました。このモデルはツール呼び出しに対応していない可能性があります。「ツール」と表示されたモデルを選んでください。",
-    agentPending:
-      "{provider} に接続済みです。プロンプトをコードに変えるエージェントはまだ開発中のため、何も送信されず、下書きはそのまま残っています。",
+    modePending:
+      "{provider} に接続済みです。{mode} モードはまだ準備中のため何も送信されず、下書きはそのまま残っています。Code と Ask は利用できます。",
   },
   ko: {
     connect: "AI 제공업체 연결",
@@ -178,8 +178,8 @@ export const providerStrings: Record<Locale, ProviderStrings> = {
     unexpected: "예기치 않은 오류가 발생했습니다. 다시 시도하세요.",
     rejected:
       "제공업체가 요청을 거부했습니다. 이 모델은 도구 호출을 지원하지 않을 수 있습니다. ‘도구’ 표시가 있는 모델을 선택하세요.",
-    agentPending:
-      "{provider}에 연결되었습니다. 프롬프트를 코드로 바꾸는 에이전트는 아직 개발 중이라 아무것도 전송되지 않았고 초안은 그대로 있습니다.",
+    modePending:
+      "{provider}에 연결되었습니다. {mode} 모드는 아직 준비 중이라 아무것도 보내지 않았고 초안은 그대로 있습니다. Code와 Ask는 지금 사용할 수 있습니다.",
   },
   zh: {
     connect: "连接 AI 服务商",
@@ -212,8 +212,8 @@ export const providerStrings: Record<Locale, ProviderStrings> = {
     noModels: "此密钥有效，但没有找到可用的对话模型。",
     unexpected: "发生意外错误。请重试。",
     rejected: "服务商拒绝了该请求。此模型可能不支持工具调用；请选择标有“工具”的模型。",
-    agentPending:
-      "{provider} 已连接。将提示转换为代码的智能体仍在开发中，因此没有发送任何内容，草稿仍然保留。",
+    modePending:
+      "已连接 {provider}。{mode} 模式尚未完成，因此未发送任何内容，草稿仍保留。Code 和 Ask 现在可用。",
   },
   tr: {
     connect: "Yapay zekâ sağlayıcısı bağla",
@@ -250,8 +250,8 @@ export const providerStrings: Record<Locale, ProviderStrings> = {
     unexpected: "Beklenmeyen bir hata oluştu. Tekrar deneyin.",
     rejected:
       "Sağlayıcı isteği reddetti. Bu model araç çağrısını desteklemiyor olabilir; “araçlar” etiketli bir model seçin.",
-    agentPending:
-      "{provider} bağlı. İstemleri koda dönüştüren ajan hâlâ geliştiriliyor; bu yüzden hiçbir şey gönderilmedi ve taslağınız duruyor.",
+    modePending:
+      "{provider} bağlı. {mode} modu henüz hazır değil; hiçbir şey gönderilmedi ve taslağınız duruyor. Code ve Ask şu an çalışıyor.",
   },
   fr: {
     connect: "Connecter un fournisseur d'IA",
@@ -289,8 +289,8 @@ export const providerStrings: Record<Locale, ProviderStrings> = {
     unexpected: "Une erreur inattendue s'est produite. Réessayez.",
     rejected:
       "Le fournisseur a refusé la requête. Ce modèle ne prend peut-être pas en charge l'appel d'outils ; choisissez-en un marqué « outils ».",
-    agentPending:
-      "{provider} est connecté. L'agent qui transforme les prompts en code est encore en développement : rien n'a été envoyé et votre brouillon est conservé.",
+    modePending:
+      "{provider} est connecté. Le mode {mode} n'est pas encore prêt : rien n'a été envoyé et votre brouillon est conservé. Code et Ask fonctionnent déjà.",
   },
   pt: {
     connect: "Conectar provedor de IA",
@@ -326,7 +326,7 @@ export const providerStrings: Record<Locale, ProviderStrings> = {
     unexpected: "Algo inesperado deu errado. Tente novamente.",
     rejected:
       "O provedor recusou a solicitação. Este modelo pode não ter suporte a chamada de ferramentas; escolha um marcado como “ferramentas”.",
-    agentPending:
-      "{provider} está conectado. O agente que transforma prompts em código ainda está em desenvolvimento, então nada foi enviado e seu rascunho continua aqui.",
+    modePending:
+      "{provider} está conectado. O modo {mode} ainda não está pronto, então nada foi enviado e seu rascunho continua aqui. Code e Ask já funcionam.",
   },
 };
