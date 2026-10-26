@@ -110,6 +110,11 @@ try {
     await project.getByRole("heading", { name: "Hello" }).waitFor({ timeout: 20000 });
     await project.getByRole("button", { name: "Say hello" }).click();
     await project.getByText("Hello from script.js").waitFor({ timeout: 5000 });
+    // Console bridge: an error in the project page reaches the builder's console panel.
+    const projectFrame = page.frames().find((f) => f.url().includes("/p/"));
+    if (!projectFrame) throw new Error("project frame not found");
+    await projectFrame.evaluate(() => console.error("bridge check"));
+    await page.getByText("Console (1)").waitFor({ timeout: 5000 });
   }
   step("locale page");
   await page.goto(`${base}/ja`, { waitUntil: "networkidle" });
@@ -123,6 +128,6 @@ if (problems.length) {
   finish(false);
 }
 console.warn(
-  `Browser check passed: hydrated, Monaco mounted, checkpoint saved${checkPreview ? ", preview ran" : ""}, no CSP violations`,
+  `Browser check passed: hydrated, Monaco mounted, checkpoint saved${checkPreview ? ", preview ran with console" : ""}, no CSP violations`,
 );
 finish(true);

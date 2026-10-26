@@ -3,6 +3,9 @@ import {
   cacheName,
   contentTypeFor,
   fileHeaders,
+  injectBridge,
+  parseLogMessage,
+  shortWhere,
   isSafePreviewPath,
   limits,
   messageTypes,
@@ -82,5 +85,43 @@ describe("builder and preview agree", () => {
   it("on message types and session ids", () => {
     expect(previewMessages).toEqual(messageTypes);
     for (let i = 0; i < 20; i++) expect(isValidSession(newPreviewSession())).toBe(true);
+  });
+});
+
+describe("preview console bridge", () => {
+  it("runs first in the page", () => {
+    const head = injectBridge(
+      '<!doctype html><html lang="en"><head><title>x</title></head></html>',
+    );
+    expect(head.indexOf("data-ladestack-preview")).toBeGreaterThan(head.indexOf("<head>"));
+    expect(head.indexOf("data-ladestack-preview")).toBeLessThan(head.indexOf("<title>"));
+    const htmlOnly = injectBridge("<html><body>x</body></html>");
+    expect(htmlOnly.startsWith("<html><script data-ladestack-preview>")).toBe(true);
+    expect(injectBridge("<p>x</p>").startsWith("<script data-ladestack-preview>")).toBe(true);
+    expect(injectBridge("<header>x</header>").startsWith("<script")).toBe(true);
+  });
+
+  it("is valid JavaScript", () => {
+    const src = injectBridge("")
+      .replace(/^<script[^>]*>/, "")
+      .replace(/<\/script>$/, "");
+    expect(() => new Function(src)).not.toThrow();
+  });
+
+  it("validates and trims console messages", () => {
+    const ok = { type: messageTypes.log, level: "error", text: "boom", where: "x" };
+    expect(parseLogMessage(ok)).toEqual({ level: "error", text: "boom", where: "x" });
+    expect(parseLogMessage({ ...ok, level: "trace" })).toBeNull();
+    expect(parseLogMessage({ ...ok, text: {} })).toBeNull();
+    expect(parseLogMessage({ ...ok, text: "x".repeat(3000) })?.text).toHaveLength(2000);
+  });
+
+  it("shortens locations to project paths", () => {
+    expect(
+      shortWhere(`https://p.example/p/${session}/src/a.js:3`, "https://p.example", session),
+    ).toBe("src/a.js:3");
+    expect(
+      shortWhere(`https://p.example/p/${session}/index.html?v=4:12`, "https://p.example", session),
+    ).toBe("index.html:12");
   });
 });

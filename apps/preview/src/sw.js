@@ -1,7 +1,7 @@
 // Serves the current project's files from Cache Storage under /p/<session>/ (ADR 0016).
 // The host page writes the cache; this worker only reads it, so nothing is lost if it is stopped.
 import { allowedParents } from "./config.js";
-import { cacheName, fileHeaders, previewTarget } from "./lib.js";
+import { cacheName, contentTypeFor, fileHeaders, injectBridge, previewTarget } from "./lib.js";
 
 self.addEventListener("install", () => self.skipWaiting());
 self.addEventListener("activate", (event) => event.waitUntil(self.clients.claim()));
@@ -14,7 +14,11 @@ async function serve(session, file) {
       status: 404,
       headers: fileHeaders("x.txt", allowedParents),
     });
-  return new Response(hit.body, { status: 200, headers: fileHeaders(file, allowedParents) });
+  const headers = fileHeaders(file, allowedParents);
+  // HTML pages get the console bridge so the builder can show the project's errors.
+  if (contentTypeFor(file).startsWith("text/html"))
+    return new Response(injectBridge(await hit.text()), { status: 200, headers });
+  return new Response(hit.body, { status: 200, headers });
 }
 
 self.addEventListener("fetch", (event) => {
