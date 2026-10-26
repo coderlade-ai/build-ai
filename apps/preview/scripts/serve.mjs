@@ -4,6 +4,7 @@ import { readFile } from "node:fs/promises";
 import { createServer } from "node:http";
 import { contentTypeFor } from "../src/lib.js";
 import { hostHeaders, parseParents } from "./headers.mjs";
+import { esbuildFiles } from "./vendor.mjs";
 
 const arg = (name, fallback) => {
   const i = process.argv.indexOf(`--${name}`);
@@ -11,7 +12,7 @@ const arg = (name, fallback) => {
 };
 const port = Number(arg("port", "4322"));
 const parents = parseParents(arg("parents", "http://localhost:3001"));
-const files = new Set(["index.html", "host.js", "lib.js", "sw.js"]);
+const files = new Set(["index.html", "host.js", "lib.js", "sw.js", "bundle.js"]);
 
 createServer(async (req, res) => {
   const path = new URL(req.url ?? "/", "http://x").pathname.slice(1) || "index.html";
@@ -19,6 +20,9 @@ createServer(async (req, res) => {
   if (path === "config.js") {
     res.writeHead(200, { ...headers, "Content-Type": contentTypeFor(path) });
     res.end(`export const allowedParents = ${JSON.stringify(parents)};\n`);
+  } else if (path.startsWith("vendor/esbuild/") && path.slice(15) in esbuildFiles) {
+    res.writeHead(200, { ...headers, "Content-Type": contentTypeFor(path) });
+    res.end(await readFile(esbuildFiles[path.slice(15)]));
   } else if (files.has(path)) {
     res.writeHead(200, { ...headers, "Content-Type": contentTypeFor(path) });
     res.end(await readFile(new URL(`../src/${path}`, import.meta.url)));

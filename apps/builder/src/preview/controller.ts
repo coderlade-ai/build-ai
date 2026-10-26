@@ -37,7 +37,8 @@ export class PreviewController {
   private waiting: (() => void) | null = null;
 
   constructor(
-    private readonly timing = { loadTimeoutMs: 10_000, settleMs: 1_500 },
+    // package.json projects build first and fetch packages, so allow longer than a static page.
+    private readonly timing = { loadTimeoutMs: 20_000, settleMs: 1_500 },
     private readonly sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms)),
   ) {}
 
@@ -78,7 +79,7 @@ export class PreviewController {
     this.reloader();
     if (!(await loaded)) {
       this.waiting = null;
-      return "The preview did not finish loading within 10 seconds.";
+      return "The preview did not finish loading within 20 seconds.";
     }
     await this.sleep(this.timing.settleMs);
     return formatPreviewReport(this.logs);

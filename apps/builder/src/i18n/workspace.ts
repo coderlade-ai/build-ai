@@ -11,7 +11,7 @@ export interface WorkspaceStrings {
   files: string;
   code: string;
   preview: string;
-  previewUnavailable: string;
+  previewBundleNote: string;
   selectFile: string;
   saved: string;
   unsaved: string;
@@ -52,8 +52,8 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     files: "Files",
     code: "Code",
     preview: "Preview",
-    previewUnavailable:
-      "Preview needs the project runtime, which isn't built yet. Your files are saved and ready.",
+    previewBundleNote:
+      "Experimental: your code is bundled in the browser and npm packages load from esm.sh. There is no npm install or dev server yet.",
     selectFile: "Select a file to edit.",
     saved: "Saved",
     unsaved: "Unsaved changes",
@@ -93,8 +93,8 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     files: "Файлы",
     code: "Код",
     preview: "Превью",
-    previewUnavailable:
-      "Для превью нужна среда выполнения проекта, она ещё в разработке. Ваши файлы сохранены и готовы.",
+    previewBundleNote:
+      "Экспериментально: код собирается в браузере, а npm-пакеты загружаются с esm.sh. npm install и dev-сервера пока нет.",
     selectFile: "Выберите файл для редактирования.",
     saved: "Сохранено",
     unsaved: "Есть несохранённые изменения",
@@ -134,8 +134,8 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     files: "ファイル",
     code: "コード",
     preview: "プレビュー",
-    previewUnavailable:
-      "プレビューにはプロジェクトの実行環境が必要ですが、まだ開発中です。ファイルは保存済みで準備ができています。",
+    previewBundleNote:
+      "試験的機能：コードはブラウザ内でバンドルされ、npm パッケージは esm.sh から読み込まれます。npm install や開発サーバーはまだありません。",
     selectFile: "編集するファイルを選んでください。",
     saved: "保存済み",
     unsaved: "未保存の変更があります",
@@ -175,8 +175,8 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     files: "파일",
     code: "코드",
     preview: "미리보기",
-    previewUnavailable:
-      "미리보기에는 프로젝트 런타임이 필요하며 아직 개발 중입니다. 파일은 저장되어 준비되었습니다.",
+    previewBundleNote:
+      "실험 기능: 코드는 브라우저에서 번들되고 npm 패키지는 esm.sh에서 불러옵니다. 아직 npm install이나 개발 서버는 없습니다.",
     selectFile: "편집할 파일을 선택하세요.",
     saved: "저장됨",
     unsaved: "저장되지 않은 변경 사항",
@@ -214,7 +214,8 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     files: "文件",
     code: "代码",
     preview: "预览",
-    previewUnavailable: "预览需要项目运行环境,目前仍在开发中。你的文件已保存,随时可用。",
+    previewBundleNote:
+      "实验功能:代码在浏览器中打包,npm 包从 esm.sh 加载。目前还没有 npm install 或开发服务器。",
     selectFile: "选择要编辑的文件。",
     saved: "已保存",
     unsaved: "有未保存的更改",
@@ -253,8 +254,8 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     files: "Dosyalar",
     code: "Kod",
     preview: "Önizleme",
-    previewUnavailable:
-      "Önizleme için proje çalışma ortamı gerekiyor ve bu henüz hazır değil. Dosyalarınız kaydedildi ve hazır.",
+    previewBundleNote:
+      "Deneysel: kodunuz tarayıcıda paketlenir ve npm paketleri esm.sh'den yüklenir. Henüz npm install veya geliştirme sunucusu yok.",
     selectFile: "Düzenlemek için bir dosya seçin.",
     saved: "Kaydedildi",
     unsaved: "Kaydedilmemiş değişiklikler",
@@ -294,8 +295,8 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     files: "Fichiers",
     code: "Code",
     preview: "Aperçu",
-    previewUnavailable:
-      "L'aperçu a besoin de l'environnement d'exécution du projet, qui n'est pas encore prêt. Vos fichiers sont enregistrés.",
+    previewBundleNote:
+      "Expérimental : votre code est empaqueté dans le navigateur et les paquets npm sont chargés depuis esm.sh. Pas encore de npm install ni de serveur de développement.",
     selectFile: "Sélectionnez un fichier à modifier.",
     saved: "Enregistré",
     unsaved: "Modifications non enregistrées",
@@ -336,8 +337,8 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     files: "Arquivos",
     code: "Código",
     preview: "Prévia",
-    previewUnavailable:
-      "A prévia precisa do ambiente de execução do projeto, que ainda está em desenvolvimento. Seus arquivos estão salvos.",
+    previewBundleNote:
+      "Experimental: seu código é empacotado no navegador e os pacotes npm são carregados do esm.sh. Ainda não há npm install nem servidor de desenvolvimento.",
     selectFile: "Selecione um arquivo para editar.",
     saved: "Salvo",
     unsaved: "Alterações não salvas",
