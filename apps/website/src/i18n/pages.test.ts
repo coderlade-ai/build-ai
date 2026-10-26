@@ -15,7 +15,12 @@ function leaves(node: Json, path = ""): Record<string, string> {
 }
 
 const english = leaves(pageDictionaries.en as unknown as Json);
-const allowedSame = new Set(["links.openSource", "openSource.title"]);
+const allowedSame = new Set([
+  "links.openSource",
+  "openSource.title",
+  "links.contact",
+  "contact.title",
+]);
 
 describe("legal and error page dictionaries", () => {
   it("exist for all eight locales", () => {

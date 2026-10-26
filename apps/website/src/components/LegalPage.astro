@@ -1,6 +1,6 @@
 ---
 import { localeInfo, type Locale } from "@ladestack/i18n";
-import { credits, legalUpdated, tp, type LegalPage } from "../i18n/pages";
+import { credits, legalUpdated, repoUrl, tp, type LegalPage } from "../i18n/pages";
 import DocPage from "./DocPage.astro";
 
 interface Props {
@@ -15,6 +15,7 @@ const updated = new Intl.DateTimeFormat(localeInfo[locale].bcp47, {
   dateStyle: "long",
   timeZone: "UTC",
 }).format(new Date(`${legalUpdated}T00:00:00Z`));
+const info = page === "about" ? p.about : page === "contact" ? p.contact : null;
 const doc =
   page === "privacy"
     ? p.privacy
@@ -26,7 +27,27 @@ const doc =
 ---
 
 {
-  doc ? (
+  info ? (
+    <DocPage locale={locale} path={path} title={info.title} description={info.description}>
+      {info.sections.map((s) => (
+        <section>
+          <h2>{s.h}</h2>
+          <p>{s.p}</p>
+        </section>
+      ))}
+      <p>
+        {page === "about" ? (
+          <a href={repoUrl} rel="noopener">
+            {p.about.source}
+          </a>
+        ) : (
+          <a href={`${repoUrl}/issues`} rel="noopener">
+            {p.contact.issues}
+          </a>
+        )}
+      </p>
+    </DocPage>
+  ) : doc ? (
     <DocPage locale={locale} path={path} title={doc.title} description={doc.description}>
       <p class="note" role="note">
         {p.common.draft}
