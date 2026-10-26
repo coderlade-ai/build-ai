@@ -158,6 +158,20 @@ try {
     }
     if (!sizes) throw new Error("Tailwind was not applied in the preview");
     if (sizes[0] !== sizes[1]) throw new Error(`Tailwind preflight not applied: h1 ${sizes[0]}`);
+
+    // Device sizes: Mobile narrows the frame to 390px, Desktop fills the pane again.
+    step("preview viewports");
+    const frameWidth = () =>
+      page
+        .locator("iframe[sandbox]")
+        .first()
+        .evaluate((f) => f.getBoundingClientRect().width);
+    const fullWidth = await frameWidth();
+    await page.getByRole("button", { name: "Mobile", exact: true }).click();
+    if (Math.round(await frameWidth()) !== 390) throw new Error("Mobile viewport is not 390px");
+    await page.getByRole("button", { name: "Desktop", exact: true }).click();
+    if (Math.round(await frameWidth()) !== Math.round(fullWidth))
+      throw new Error("Desktop viewport does not fill the pane");
   }
   step("locale page");
   await page.goto(`${base}/ja`, { waitUntil: "networkidle" });
@@ -171,6 +185,6 @@ if (problems.length) {
   finish(false);
 }
 console.warn(
-  `Browser check passed: hydrated, Monaco mounted, checkpoint saved${checkPreview ? ", static + React + Tailwind previews ran, console bridged" : ""}, no CSP violations`,
+  `Browser check passed: hydrated, Monaco mounted, checkpoint saved${checkPreview ? ", static + React + Tailwind previews ran, viewports switched, console bridged" : ""}, no CSP violations`,
 );
 finish(true);

@@ -32,6 +32,10 @@ export interface WorkspaceStrings {
   previewLoading: string;
   previewFrame: string;
   reloadPreview: string;
+  viewportLabel: string;
+  viewportDesktop: string;
+  viewportTablet: string;
+  viewportMobile: string;
   console: string;
   consoleEmpty: string;
   consoleClear: string;
@@ -75,6 +79,10 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     previewLoading: "Loading preview…",
     previewFrame: "Preview of your project",
     reloadPreview: "Reload preview",
+    viewportLabel: "Preview size",
+    viewportDesktop: "Desktop",
+    viewportTablet: "Tablet",
+    viewportMobile: "Mobile",
     console: "Console",
     consoleEmpty: "No console messages yet.",
     consoleClear: "Clear",
@@ -116,6 +124,10 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     previewLoading: "Загрузка предпросмотра…",
     previewFrame: "Предпросмотр вашего проекта",
     reloadPreview: "Обновить предпросмотр",
+    viewportLabel: "Размер предпросмотра",
+    viewportDesktop: "Компьютер",
+    viewportTablet: "Планшет",
+    viewportMobile: "Телефон",
     console: "Консоль",
     consoleEmpty: "Сообщений в консоли пока нет.",
     consoleClear: "Очистить",
@@ -157,6 +169,10 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     previewLoading: "プレビューを読み込み中…",
     previewFrame: "プロジェクトのプレビュー",
     reloadPreview: "プレビューを再読み込み",
+    viewportLabel: "プレビューのサイズ",
+    viewportDesktop: "デスクトップ",
+    viewportTablet: "タブレット",
+    viewportMobile: "モバイル",
     console: "コンソール",
     consoleEmpty: "コンソールのメッセージはまだありません。",
     consoleClear: "クリア",
@@ -198,6 +214,10 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     previewLoading: "미리보기 불러오는 중…",
     previewFrame: "프로젝트 미리보기",
     reloadPreview: "미리보기 새로고침",
+    viewportLabel: "미리보기 크기",
+    viewportDesktop: "데스크톱",
+    viewportTablet: "태블릿",
+    viewportMobile: "모바일",
     console: "콘솔",
     consoleEmpty: "아직 콘솔 메시지가 없습니다.",
     consoleClear: "지우기",
@@ -236,6 +256,10 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     previewLoading: "正在加载预览…",
     previewFrame: "你的项目预览",
     reloadPreview: "重新加载预览",
+    viewportLabel: "预览尺寸",
+    viewportDesktop: "桌面",
+    viewportTablet: "平板",
+    viewportMobile: "手机",
     console: "控制台",
     consoleEmpty: "暂无控制台消息。",
     consoleClear: "清除",
@@ -277,6 +301,10 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     previewLoading: "Önizleme yükleniyor…",
     previewFrame: "Projenizin önizlemesi",
     reloadPreview: "Önizlemeyi yenile",
+    viewportLabel: "Önizleme boyutu",
+    viewportDesktop: "Masaüstü",
+    viewportTablet: "Tablet",
+    viewportMobile: "Mobil",
     console: "Konsol",
     consoleEmpty: "Henüz konsol mesajı yok.",
     consoleClear: "Temizle",
@@ -319,6 +347,10 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     previewLoading: "Chargement de l'aperçu…",
     previewFrame: "Aperçu de votre projet",
     reloadPreview: "Recharger l'aperçu",
+    viewportLabel: "Taille de l'aperçu",
+    viewportDesktop: "Ordinateur",
+    viewportTablet: "Tablette",
+    viewportMobile: "Mobile",
     console: "Console",
     consoleEmpty: "Aucun message dans la console pour l'instant.",
     consoleClear: "Effacer",
@@ -361,6 +393,10 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     previewLoading: "Carregando pré-visualização…",
     previewFrame: "Pré-visualização do seu projeto",
     reloadPreview: "Recarregar pré-visualização",
+    viewportLabel: "Tamanho da pré-visualização",
+    viewportDesktop: "Computador",
+    viewportTablet: "Tablet",
+    viewportMobile: "Celular",
     console: "Console",
     consoleEmpty: "Nenhuma mensagem no console ainda.",
     consoleClear: "Limpar",
