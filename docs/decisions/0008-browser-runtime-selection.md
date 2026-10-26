@@ -30,3 +30,12 @@ Desk review in `docs/research/runtime-candidates-2026-10.md`. On paper, almostno
 first candidate worth an adapter; WebContainers needs a written answer from StackBlitz; Lifo needs
 a LICENSE file; Wasmer SDK is not an npm/Vite runtime; Nodebox's Sustainable Use License excludes
 it without legal sign-off. No runtime is selected.
+
+## Addendum (2026-10-26): almostnode contract benchmark
+
+`apps/builder/src/runtime/almostnode.ts` adapts almostnode 0.2.14 (injected, not a dependency).
+Evidence in `docs/benchmarks/almostnode-2026-10-26.md`: R01, R02, R05, R11, R12 pass, but npm
+install of fixture F1 fails (resolver bug on an `=x.y.z` range under `@vitejs/plugin-react`), its
+dev server is a Vite emulation without plugins, and preview/isolation are not yet tested in a
+browser. almostnode is not selected; it would need an upstream resolver fix and a preview-origin
+integration before a browser run.
