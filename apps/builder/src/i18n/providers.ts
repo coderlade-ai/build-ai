@@ -30,7 +30,7 @@ export interface ProviderStrings {
   noModels: string;
   unexpected: string;
   rejected: string;
-  modePending: string;
+  debugInProject: string;
 }
 
 export const providerStrings: Record<Locale, ProviderStrings> = {
@@ -68,8 +68,8 @@ export const providerStrings: Record<Locale, ProviderStrings> = {
     unexpected: "Something unexpected went wrong. Try again.",
     rejected:
       "The provider rejected the request. This model may not support tool calling; pick one marked “tools”.",
-    modePending:
-      "{provider} is connected. {mode} mode isn't built yet, so nothing was sent and your draft is still here. Code, Plan and Ask work now.",
+    debugInProject:
+      "Debug works inside a project. Open one from your recent projects or import a ZIP, then choose Debug in the agent panel. Your draft is still here.",
   },
   ru: {
     connect: "Подключить ИИ-провайдера",
@@ -104,8 +104,8 @@ export const providerStrings: Record<Locale, ProviderStrings> = {
     unexpected: "Произошла непредвиденная ошибка. Повторите попытку.",
     rejected:
       "Провайдер отклонил запрос. Возможно, модель не поддерживает вызов инструментов; выберите модель с пометкой «инструменты».",
-    modePending:
-      "{provider} подключён. Режим {mode} пока не готов, поэтому ничего не отправлено, а черновик сохранён. Code, Plan и Ask уже работают.",
+    debugInProject:
+      "Отладка работает внутри проекта. Откройте проект из недавних или импортируйте ZIP, затем выберите «Отладка» в панели агента. Черновик сохранён.",
   },
   ja: {
     connect: "AI プロバイダーに接続",
@@ -142,8 +142,8 @@ export const providerStrings: Record<Locale, ProviderStrings> = {
     unexpected: "予期しないエラーが発生しました。もう一度お試しください。",
     rejected:
       "プロバイダーがリクエストを拒否しました。このモデルはツール呼び出しに対応していない可能性があります。「ツール」と表示されたモデルを選んでください。",
-    modePending:
-      "{provider} に接続済みです。{mode} モードはまだ準備中のため何も送信されず、下書きはそのまま残っています。Code、Plan、Ask は利用できます。",
+    debugInProject:
+      "デバッグはプロジェクト内で使えます。最近のプロジェクトから開くか ZIP をインポートし、エージェントパネルで「デバッグ」を選んでください。下書きはそのまま残っています。",
   },
   ko: {
     connect: "AI 제공업체 연결",
@@ -178,8 +178,8 @@ export const providerStrings: Record<Locale, ProviderStrings> = {
     unexpected: "예기치 않은 오류가 발생했습니다. 다시 시도하세요.",
     rejected:
       "제공업체가 요청을 거부했습니다. 이 모델은 도구 호출을 지원하지 않을 수 있습니다. ‘도구’ 표시가 있는 모델을 선택하세요.",
-    modePending:
-      "{provider}에 연결되었습니다. {mode} 모드는 아직 준비 중이라 아무것도 보내지 않았고 초안은 그대로 있습니다. Code, Plan, Ask는 지금 사용할 수 있습니다.",
+    debugInProject:
+      "디버그는 프로젝트 안에서 사용할 수 있습니다. 최근 프로젝트에서 열거나 ZIP을 가져온 뒤 에이전트 패널에서 디버그를 선택하세요. 초안은 그대로 있습니다.",
   },
   zh: {
     connect: "连接 AI 服务商",
@@ -212,8 +212,8 @@ export const providerStrings: Record<Locale, ProviderStrings> = {
     noModels: "此密钥有效，但没有找到可用的对话模型。",
     unexpected: "发生意外错误。请重试。",
     rejected: "服务商拒绝了该请求。此模型可能不支持工具调用；请选择标有“工具”的模型。",
-    modePending:
-      "已连接 {provider}。{mode} 模式尚未完成，因此未发送任何内容，草稿仍保留。Code、Plan 和 Ask 现在可用。",
+    debugInProject:
+      "调试需要在项目中使用。请从最近的项目中打开一个或导入 ZIP，然后在智能体面板中选择“调试”。草稿仍保留。",
   },
   tr: {
     connect: "Yapay zekâ sağlayıcısı bağla",
@@ -250,8 +250,8 @@ export const providerStrings: Record<Locale, ProviderStrings> = {
     unexpected: "Beklenmeyen bir hata oluştu. Tekrar deneyin.",
     rejected:
       "Sağlayıcı isteği reddetti. Bu model araç çağrısını desteklemiyor olabilir; “araçlar” etiketli bir model seçin.",
-    modePending:
-      "{provider} bağlı. {mode} modu henüz hazır değil; hiçbir şey gönderilmedi ve taslağınız duruyor. Code, Plan ve Ask şu an çalışıyor.",
+    debugInProject:
+      "Hata ayıklama bir proje içinde çalışır. Son projelerinizden birini açın veya bir ZIP içe aktarın, ardından ajan panelinde Hata ayıklama'yı seçin. Taslağınız duruyor.",
   },
   fr: {
     connect: "Connecter un fournisseur d'IA",
@@ -289,8 +289,8 @@ export const providerStrings: Record<Locale, ProviderStrings> = {
     unexpected: "Une erreur inattendue s'est produite. Réessayez.",
     rejected:
       "Le fournisseur a refusé la requête. Ce modèle ne prend peut-être pas en charge l'appel d'outils ; choisissez-en un marqué « outils ».",
-    modePending:
-      "{provider} est connecté. Le mode {mode} n'est pas encore prêt : rien n'a été envoyé et votre brouillon est conservé. Code, Plan et Ask fonctionnent déjà.",
+    debugInProject:
+      "Le débogage fonctionne dans un projet. Ouvrez-en un depuis vos projets récents ou importez un ZIP, puis choisissez Débogage dans le panneau de l'agent. Votre brouillon est conservé.",
   },
   pt: {
     connect: "Conectar provedor de IA",
@@ -326,7 +326,7 @@ export const providerStrings: Record<Locale, ProviderStrings> = {
     unexpected: "Algo inesperado deu errado. Tente novamente.",
     rejected:
       "O provedor recusou a solicitação. Este modelo pode não ter suporte a chamada de ferramentas; escolha um marcado como “ferramentas”.",
-    modePending:
-      "{provider} está conectado. O modo {mode} ainda não está pronto, então nada foi enviado e seu rascunho continua aqui. Code, Plan e Ask já funcionam.",
+    debugInProject:
+      "A depuração funciona dentro de um projeto. Abra um dos seus projetos recentes ou importe um ZIP e escolha Depuração no painel do agente. Seu rascunho continua aqui.",
   },
 };

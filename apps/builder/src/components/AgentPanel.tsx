@@ -5,8 +5,10 @@ import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent 
 import { localePrefix, type Locale } from "@ladestack/i18n";
 import { createConversation } from "../agent/adapters";
 import {
+  applyFixPrompt,
   buildFromPlanPrompt,
   codeSystemPrompt,
+  debugSystemPrompt,
   planSystemPrompt,
   runAgent,
   type AgentOutcome,
@@ -32,7 +34,7 @@ type LogEntry =
       text: string;
       error: boolean;
       undo?: { checkpointId: string; label: string };
-      build?: { request: string; plan: string };
+      build?: { request: string; plan: string; mode: "plan" | "debug" };
     };
 
 const errorKey: Record<Exclude<StreamError, "aborted">, keyof ProviderStrings> = {
@@ -151,7 +153,9 @@ export function AgentPanel({
           provider: s.provider,
           key: s.key,
           model: s.model,
-          system: runMode === "plan" ? planSystemPrompt : codeSystemPrompt,
+          system: { code: codeSystemPrompt, plan: planSystemPrompt, debug: debugSystemPrompt }[
+            runMode
+          ],
           prompt: task,
           tools: toolsForMode(runMode),
         }),
@@ -205,8 +209,8 @@ export function AgentPanel({
       });
       const end = endText(outcome);
       if (end.kind !== "end") add(end);
-      else if (runMode === "plan" && outcome.reason === "done" && plan)
-        add({ ...end, build: { request: task, plan } });
+      else if (runMode !== "code" && outcome.reason === "done" && plan)
+        add({ ...end, build: { request: task, plan, mode: runMode } });
       else if (wrote && checkpointId) add({ ...end, undo: { checkpointId, label: a.undo } });
       else add(end);
     } catch {
@@ -277,10 +281,17 @@ export function AgentPanel({
                     disabled={running || restoring}
                     onClick={() => {
                       setMode("code");
-                      void run(buildFromPlanPrompt(e.build!.request, e.build!.plan), "code");
+                      const b = e.build!;
+                      void run(
+                        (b.mode === "debug" ? applyFixPrompt : buildFromPlanPrompt)(
+                          b.request,
+                          b.plan,
+                        ),
+                        "code",
+                      );
                     }}
                   >
-                    {a.buildPlan}
+                    {e.build.mode === "debug" ? a.applyFix : a.buildPlan}
                   </button>
                 </>
               ) : null}
@@ -324,7 +335,7 @@ export function AgentPanel({
         </div>
       ) : null}
       <div className={styles.agentModes} role="group" aria-label={a.modeLabel}>
-        {(["code", "plan"] as const).map((m) => (
+        {(["code", "plan", "debug"] as const).map((m) => (
           <button
             key={m}
             type="button"
@@ -333,7 +344,7 @@ export function AgentPanel({
             disabled={running}
             onClick={() => setMode(m)}
           >
-            {m === "code" ? a.modeCode : a.modePlan}
+            {{ code: a.modeCode, plan: a.modePlan, debug: a.modeDebug }[m]}
           </button>
         ))}
       </div>
@@ -346,7 +357,9 @@ export function AgentPanel({
           className={styles.agentInput}
           rows={2}
           value={prompt}
-          placeholder={mode === "plan" ? a.planPlaceholder : a.placeholder}
+          placeholder={
+            { code: a.placeholder, plan: a.planPlaceholder, debug: a.debugPlaceholder }[mode]
+          }
           maxLength={maxPrompt}
           aria-describedby={ids.note}
           onChange={(e) => setPrompt(e.target.value)}
@@ -368,7 +381,7 @@ export function AgentPanel({
         )}
       </form>
       <p id={ids.note} className={styles.agentNote}>
-        {mode === "plan" ? `${a.planNote} ` : null}
+        {mode === "code" ? null : `${mode === "plan" ? a.planNote : a.debugNote} `}
         {a.note.replace("{provider}", `${providers[session.provider].name} · ${session.model}`)}
       </p>
     </section>

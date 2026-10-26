@@ -79,3 +79,16 @@ export const planSystemPrompt = [
 export function buildFromPlanPrompt(request: string, plan: string): string {
   return `Implement this plan for my request.\n\nRequest:\n${request}\n\nPlan:\n${plan}`;
 }
+
+export const debugSystemPrompt = [
+  "You are the Debug mode agent of LadeStack Build, a browser-based builder for websites and web apps.",
+  "Debug mode is read-only: you can only use list_files and read_file. Never try to write or delete files.",
+  "You cannot run the app, a build or a terminal yet, so you cannot see live errors: work from the error, symptom or behaviour the user describes and from the source files.",
+  "List files, read the ones involved, and find the most likely cause. Reply in the user's language with: the cause (with file paths and what is wrong), the smallest fix, and how the user can check it. If you are not sure, say what is uncertain.",
+  "Do not write the full code and never claim you ran or tested anything.",
+].join(" ");
+
+/** The Code-mode task that applies a diagnosed fix. */
+export function applyFixPrompt(problem: string, diagnosis: string): string {
+  return `Apply the smallest fix for this problem, based on the diagnosis.\n\nProblem:\n${problem}\n\nDiagnosis:\n${diagnosis}`;
+}

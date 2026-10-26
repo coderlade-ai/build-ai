@@ -53,13 +53,19 @@ export const agentTools: ToolSpec[] = [
   },
 ];
 
-/** Agent modes with a permission contract (PRD MODE-01). Plan is read-only. */
-export type AgentMode = "code" | "plan";
+/**
+ * Agent modes with a permission contract (PRD MODE-01). Plan and Debug are read-only: Debug edits
+ * only through the user's explicit "Apply this fix", which starts a Code run.
+ */
+export type AgentMode = "code" | "plan" | "debug";
 
 const modeTools: Record<AgentMode, readonly ToolName[]> = {
   code: toolNames,
   plan: ["list_files", "read_file"],
+  debug: ["list_files", "read_file"],
 };
+
+const modeLabel: Record<AgentMode, string> = { code: "Code", plan: "Plan", debug: "Debug" };
 
 /** The tool specs a mode may offer the model. */
 export function toolsForMode(mode: AgentMode): ToolSpec[] {
@@ -149,7 +155,7 @@ export async function runTool(
   )
     return fail(
       call,
-      `${call.name} is not allowed in ${mode === "plan" ? "Plan" : mode} mode, which is read-only. Describe the change in your plan instead; the user can switch to Code mode to build it.`,
+      `${call.name} is not allowed in ${modeLabel[mode]} mode, which is read-only. Describe the change in your reply instead; the user can switch to Code mode to make it.`,
       stringArg(call.args, "path"),
     );
   switch (call.name) {

@@ -126,8 +126,8 @@ export function Composer({ s, locale }: { s: ShellStrings; locale: Locale }) {
       return;
     }
     if (draft.mode !== "ask") {
-      // Debug is a later unit: send nothing and keep the draft.
-      setNotice(t.modePending.replace("{provider}", name).replace("{mode}", modeNames[draft.mode]));
+      // Debug needs an existing project: send nothing and keep the draft.
+      setNotice(t.debugInProject);
       return;
     }
     if (busy) return;
