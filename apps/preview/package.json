@@ -9,6 +9,7 @@
     "serve": "node scripts/serve.mjs"
   },
   "dependencies": {
+    "@tailwindcss/browser": "4.3.3",
     "esbuild-wasm": "0.28.2"
   }
 }

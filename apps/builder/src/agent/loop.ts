@@ -70,7 +70,7 @@ export const codeSystemPrompt = [
   "If the project is empty, create a React + TypeScript + Vite app (package.json, index.html, src/main.tsx, src/App.tsx) unless the user asks for plain HTML.",
   "Start by listing files, read what you need before changing it, and write complete files (never fragments).",
   "Keep the project runnable: for React/Vite keep package.json, index.html and src consistent; for static sites keep index.html, CSS and JS linked.",
-  'Call check_preview after writing files and fix the errors it reports. React/Vite projects are previewed by an experimental in-browser bundler: npm packages listed in package.json load from esm.sh, there is no npm install, dev server or Vite plugins, and the entry must be a <script type="module"> in index.html. You cannot run commands: never claim you ran or tested something you did not. Never write .env files or API keys.',
+  'Call check_preview after writing files and fix the errors it reports. React/Vite projects are previewed by an experimental in-browser bundler: npm packages listed in package.json load from esm.sh, there is no npm install, dev server or Vite plugins, and the entry must be a <script type="module"> in index.html. For Tailwind CSS, put @import "tailwindcss"; (v4 syntax, @theme to customise) in a CSS file the app imports; tailwind.config.js and PostCSS plugins are not applied. You cannot run commands: never claim you ran or tested something you did not. Never write .env files or API keys.',
   "Do only what the user asked. When finished, reply with a short summary of the files you changed, in the user's language.",
 ].join(" ");
 
