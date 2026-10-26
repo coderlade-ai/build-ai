@@ -9,7 +9,6 @@ export interface AskStrings {
   stopped: string;
   interrupted: string;
   notSaved: string;
-  askWorks: string;
 }
 
 export const askStrings: Record<Locale, AskStrings> = {
@@ -22,7 +21,6 @@ export const askStrings: Record<Locale, AskStrings> = {
     interrupted:
       "The answer was cut off before it finished. What arrived is kept; ask again to retry.",
     notSaved: "Ask mode answers aren't saved yet and disappear when you leave this page.",
-    askWorks: "Ask mode already works: switch to Ask to get an answer now.",
   },
   ru: {
     question: "Ваш вопрос",
@@ -33,7 +31,6 @@ export const askStrings: Record<Locale, AskStrings> = {
     interrupted:
       "Ответ прервался, не завершившись. Полученная часть сохранена; спросите снова, чтобы повторить.",
     notSaved: "Ответы режима Ask пока не сохраняются и исчезнут, когда вы покинете страницу.",
-    askWorks: "Режим Ask уже работает: переключитесь на Ask, чтобы получить ответ сейчас.",
   },
   ja: {
     question: "あなたの質問",
@@ -44,7 +41,6 @@ export const askStrings: Record<Locale, AskStrings> = {
     interrupted:
       "回答が途中で途切れました。受信した部分は残っています。もう一度質問すると再試行できます。",
     notSaved: "Ask モードの回答はまだ保存されず、このページを離れると消えます。",
-    askWorks: "Ask モードはすでに使えます。Ask に切り替えるとすぐに回答を得られます。",
   },
   ko: {
     question: "질문",
@@ -55,7 +51,6 @@ export const askStrings: Record<Locale, AskStrings> = {
     interrupted:
       "답변이 끝나기 전에 끊겼습니다. 받은 부분은 남아 있으며, 다시 질문하면 재시도합니다.",
     notSaved: "Ask 모드 답변은 아직 저장되지 않으며 이 페이지를 떠나면 사라집니다.",
-    askWorks: "Ask 모드는 이미 사용할 수 있습니다. Ask로 바꾸면 바로 답변을 받을 수 있습니다.",
   },
   zh: {
     question: "你的问题",
@@ -65,7 +60,6 @@ export const askStrings: Record<Locale, AskStrings> = {
     stopped: "已停止。已收到的回答会保留。",
     interrupted: "回答在完成前中断了。已收到的内容会保留；再次提问即可重试。",
     notSaved: "Ask 模式的回答暂不保存，离开此页面后会消失。",
-    askWorks: "Ask 模式已可使用：切换到 Ask 即可立即获得回答。",
   },
   tr: {
     question: "Sorunuz",
@@ -76,7 +70,6 @@ export const askStrings: Record<Locale, AskStrings> = {
     interrupted:
       "Yanıt bitmeden kesildi. Gelen kısım korunuyor; yeniden denemek için tekrar sorun.",
     notSaved: "Ask modu yanıtları henüz kaydedilmiyor ve bu sayfadan ayrıldığınızda kaybolur.",
-    askWorks: "Ask modu zaten çalışıyor: hemen yanıt almak için Ask'a geçin.",
   },
   fr: {
     question: "Votre question",
@@ -88,7 +81,6 @@ export const askStrings: Record<Locale, AskStrings> = {
       "La réponse a été coupée avant la fin. Ce qui est arrivé est conservé ; reposez la question pour réessayer.",
     notSaved:
       "Les réponses du mode Ask ne sont pas encore enregistrées et disparaissent quand vous quittez cette page.",
-    askWorks: "Le mode Ask fonctionne déjà : passez en Ask pour obtenir une réponse maintenant.",
   },
   pt: {
     question: "Sua pergunta",
@@ -99,6 +91,5 @@ export const askStrings: Record<Locale, AskStrings> = {
     interrupted:
       "A resposta foi interrompida antes de terminar. O que chegou foi mantido; pergunte de novo para tentar outra vez.",
     notSaved: "As respostas do modo Ask ainda não são salvas e somem quando você sai desta página.",
-    askWorks: "O modo Ask já funciona: mude para Ask para receber uma resposta agora.",
   },
 };

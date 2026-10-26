@@ -15,7 +15,11 @@ import {
 } from "../composer/draft";
 import type { ShellStrings } from "../i18n/shell";
 import styles from "./Welcome.module.css";
-import type { Locale } from "@ladestack/i18n";
+import { localePrefix, type Locale } from "@ladestack/i18n";
+import { useRouter } from "next/navigation";
+import { projectNameFromPrompt, setPendingTask } from "../agent/handoff";
+import { workspace } from "../i18n/workspace";
+import { getProjectStore } from "../storage/client";
 import { askStrings } from "../i18n/ask";
 import { providerStrings, type ProviderStrings } from "../i18n/providers";
 import { providers } from "../providers/registry";
@@ -64,6 +68,9 @@ export function Composer({ s, locale }: { s: ShellStrings; locale: Locale }) {
   const [notice, setNotice] = useState<string | null>(null);
   const [turn, setTurn] = useState<AskTurn | null>(null);
   const abort = useRef<AbortController | null>(null);
+  const router = useRouter();
+  const w = workspace[locale];
+  const [creating, setCreating] = useState(false);
   const textarea = useRef<HTMLTextAreaElement>(null);
   const t = providerStrings[locale];
   const a = askStrings[locale];
@@ -114,13 +121,38 @@ export function Composer({ s, locale }: { s: ShellStrings; locale: Locale }) {
       return;
     }
     const name = providers[session.provider].name;
+    if (draft.mode === "code") {
+      void startCode(draft.prompt.trim());
+      return;
+    }
     if (draft.mode !== "ask") {
-      // The file-editing agent is a later unit: send nothing and keep the draft.
-      setNotice(`${t.agentPending.replace("{provider}", name)} ${a.askWorks}`);
+      // Plan and Debug are later units: send nothing and keep the draft.
+      setNotice(t.modePending.replace("{provider}", name).replace("{mode}", modeNames[draft.mode]));
       return;
     }
     if (busy) return;
     void ask(session, name, draft.prompt.trim());
+  }
+
+  /** Code mode: a new empty local project, then the workspace agent picks up the prompt. */
+  async function startCode(prompt: string) {
+    if (creating) return;
+    setCreating(true);
+    setNotice(w.creating);
+    try {
+      const store = await getProjectStore();
+      const project = await store.createProject({
+        name: projectNameFromPrompt(prompt),
+        profile: "react-vite",
+        files: {},
+      });
+      setPendingTask(project.id, prompt);
+      setDraft((d) => ({ ...d, prompt: "" }));
+      router.push(`${localePrefix(locale)}/project?id=${encodeURIComponent(project.id)}`);
+    } catch {
+      setNotice(w.createError);
+      setCreating(false);
+    }
   }
 
   async function ask(
@@ -210,7 +242,11 @@ export function Composer({ s, locale }: { s: ShellStrings; locale: Locale }) {
             {a.stop}
           </button>
         ) : (
-          <button type="submit" className={styles.submit} disabled={!canSubmit(draft.prompt)}>
+          <button
+            type="submit"
+            className={styles.submit}
+            disabled={!canSubmit(draft.prompt) || creating}
+          >
             {s.submit}
           </button>
         )}

@@ -5,6 +5,7 @@ import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent 
 import { localePrefix, type Locale } from "@ladestack/i18n";
 import { createConversation } from "../agent/adapters";
 import { codeSystemPrompt, runAgent, type AgentOutcome } from "../agent/loop";
+import { takePendingTask } from "../agent/handoff";
 import { agentTools } from "../agent/tools";
 import { agentStrings } from "../i18n/agent";
 import { providerStrings, type ProviderStrings } from "../i18n/providers";
@@ -58,6 +59,15 @@ export function AgentPanel({
   const ids = { prompt: useId(), note: useId() };
 
   useEffect(() => () => abort.current?.abort(), []);
+
+  // A Code-mode prompt handed over from the welcome composer runs once, on arrival.
+  const started = useRef(false);
+  useEffect(() => {
+    if (started.current || !session) return;
+    started.current = true;
+    const task = takePendingTask(projectId);
+    if (task) void run(task);
+  }, [session, projectId]);
   useEffect(() => logEnd.current?.scrollIntoView({ block: "nearest" }), [log]);
 
   const add = (e: LogEntry) => setLog((l) => [...l, e]);
@@ -79,9 +89,9 @@ export function AgentPanel({
     }
   }
 
-  async function run() {
+  async function run(text = prompt) {
     const s = getSession();
-    const task = prompt.trim();
+    const task = text.trim();
     if (!s || !task || running || task.length > maxPrompt) return;
     const controller = new AbortController();
     abort.current = controller;
