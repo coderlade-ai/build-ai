@@ -2,7 +2,7 @@ import { IDBFactory } from "fake-indexeddb";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { openProjectDb, ProjectStore } from "../storage/projectStore";
 import { createConversation, type Conversation, type StepResult } from "./adapters";
-import { buildFromPlanPrompt, runAgent } from "./loop";
+import { applyFixPrompt, buildFromPlanPrompt, runAgent } from "./loop";
 import { agentTools, maxWriteBytes, runTool, toolsForMode, type ToolCall } from "./tools";
 
 let store: ProjectStore;
@@ -360,5 +360,22 @@ describe("Plan mode", () => {
     const p = buildFromPlanPrompt("a cafe site", "1. index.html");
     expect(p).toContain("a cafe site");
     expect(p).toContain("1. index.html");
+  });
+});
+
+describe("Debug mode", () => {
+  it("is read-only like Plan", async () => {
+    expect(toolsForMode("debug").map((t) => t.name)).toEqual(["list_files", "read_file"]);
+    const r = await runTool(store, projectId, call("write_file", { path: "z.txt", content: "z" }), {
+      mode: "debug",
+    });
+    expect(r.output).toMatch(/not allowed in Debug mode/);
+    expect(await store.readFile(projectId, "z.txt")).toBeUndefined();
+  });
+
+  it("builds a Code task from the diagnosis", () => {
+    const p = applyFixPrompt("button does nothing", "onClick missing in App.tsx");
+    expect(p).toContain("button does nothing");
+    expect(p).toContain("onClick missing in App.tsx");
   });
 });
