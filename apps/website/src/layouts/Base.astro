@@ -8,9 +8,11 @@ interface Props {
   locale: Locale;
   /** Path after the locale prefix, e.g. "/" or "/about". */
   path?: string;
+  /** Error pages: no canonical, no alternates, not indexed. */
+  noindex?: boolean;
 }
 
-const { title, description, locale, path = "/" } = Astro.props;
+const { title, description, locale, path = "/", noindex = false } = Astro.props;
 const info = localeInfo[locale];
 const site = Astro.site ?? new URL("https://build.ladestack.in");
 const urlFor = (l: Locale) => new URL(`${localePrefix(l)}${path}`, site).toString();
@@ -23,9 +25,19 @@ const urlFor = (l: Locale) => new URL(`${localePrefix(l)}${path}`, site).toStrin
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={urlFor(locale)} />
-    {locales.map((l) => <link rel="alternate" hreflang={localeInfo[l].bcp47} href={urlFor(l)} />)}
-    <link rel="alternate" hreflang="x-default" href={urlFor("en")} />
+    {
+      noindex ? (
+        <meta name="robots" content="noindex" />
+      ) : (
+        <>
+          <link rel="canonical" href={urlFor(locale)} />
+          {locales.map((l) => (
+            <link rel="alternate" hreflang={localeInfo[l].bcp47} href={urlFor(l)} />
+          ))}
+          <link rel="alternate" hreflang="x-default" href={urlFor("en")} />
+        </>
+      )
+    }
     <link rel="sitemap" href="/sitemap.xml" />
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
@@ -60,6 +72,46 @@ const urlFor = (l: Locale) => new URL(`${localePrefix(l)}${path}`, site).toStrin
   :focus-visible {
     outline: 2px solid var(--color-primary);
     outline-offset: 2px;
+  }
+  .wrap {
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+    padding-inline: 24px;
+  }
+  .wordmark {
+    font-weight: 600;
+    text-decoration: none;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  .wordmark span {
+    color: var(--color-primary);
+  }
+  .btn,
+  .btn-ghost {
+    display: inline-block;
+    padding: 10px 16px;
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 15px;
+    white-space: nowrap;
+  }
+  .btn {
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+  }
+  .btn:hover {
+    background: var(--color-primary-active);
+  }
+  .btn-ghost {
+    border: 1px solid var(--color-hairline-strong);
+  }
+  h2 {
+    font-weight: 400;
+    font-size: clamp(26px, 3.5vw, 36px);
+    letter-spacing: -0.02em;
+    margin: 0 0 8px;
   }
   @media (prefers-reduced-motion: reduce) {
     html {

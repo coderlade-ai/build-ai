@@ -1,0 +1,12 @@
+---
+import LegalPage from "../components/LegalPage.astro";
+import { legalPages, type LegalPage as Page } from "../i18n/pages";
+
+export function getStaticPaths() {
+  return legalPages.map((page) => ({ params: { page } }));
+}
+
+const page = Astro.params.page as Page;
+---
+
+<LegalPage locale="en" page={page} />

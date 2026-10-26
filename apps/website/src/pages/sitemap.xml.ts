@@ -1,8 +1,10 @@
 import type { APIRoute } from "astro";
 import { localeInfo, localePrefix, locales } from "@ladestack/i18n";
 
-/** Pages that exist in every locale. Extend as About, Contact, legal and blog land. */
-const paths = ["/"];
+import { legalPages } from "../i18n/pages";
+
+/** Pages that exist in every locale. Extend as About, Contact and blog land. */
+const paths = ["/", ...legalPages.map((p) => `/${p}`)];
 
 export const GET: APIRoute = ({ site }) => {
   const base = site ?? new URL("https://build.ladestack.in");

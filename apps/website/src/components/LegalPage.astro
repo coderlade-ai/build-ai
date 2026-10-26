@@ -1,0 +1,65 @@
+---
+import { localeInfo, type Locale } from "@ladestack/i18n";
+import { credits, legalUpdated, tp, type LegalPage } from "../i18n/pages";
+import DocPage from "./DocPage.astro";
+
+interface Props {
+  locale: Locale;
+  page: LegalPage;
+}
+
+const { locale, page } = Astro.props;
+const p = tp(locale);
+const path = `/${page}`;
+const updated = new Intl.DateTimeFormat(localeInfo[locale].bcp47, {
+  dateStyle: "long",
+  timeZone: "UTC",
+}).format(new Date(`${legalUpdated}T00:00:00Z`));
+const doc =
+  page === "privacy"
+    ? p.privacy
+    : page === "terms"
+      ? p.terms
+      : page === "disclaimer"
+        ? p.disclaimer
+        : null;
+---
+
+{
+  doc ? (
+    <DocPage locale={locale} path={path} title={doc.title} description={doc.description}>
+      <p class="note" role="note">
+        {p.common.draft}
+      </p>
+      <p>
+        {p.common.updated}: <time datetime={legalUpdated}>{updated}</time>
+      </p>
+      {doc.sections.map((s) => (
+        <section>
+          <h2>{s.h}</h2>
+          <p>{s.p}</p>
+        </section>
+      ))}
+    </DocPage>
+  ) : (
+    <DocPage
+      locale={locale}
+      path={path}
+      title={p.openSource.title}
+      description={p.openSource.description}
+    >
+      <p>{p.openSource.intro}</p>
+      <ul>
+        {credits.map((c) => (
+          <li>
+            <a href={c.url} rel="noopener">
+              {c.name}
+            </a>{" "}
+            · {c.licence}
+            {c.planned ? ` · ${p.openSource.planned}` : ""}
+          </li>
+        ))}
+      </ul>
+    </DocPage>
+  )
+}

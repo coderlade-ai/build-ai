@@ -1,0 +1,15 @@
+---
+import { defaultLocale, locales, type Locale } from "@ladestack/i18n";
+import LegalPage from "../../components/LegalPage.astro";
+import { legalPages, type LegalPage as Page } from "../../i18n/pages";
+
+export function getStaticPaths() {
+  return locales
+    .filter((l) => l !== defaultLocale)
+    .flatMap((locale) => legalPages.map((page) => ({ params: { locale, page } })));
+}
+
+const { locale, page } = Astro.params as { locale: Locale; page: Page };
+---
+
+<LegalPage locale={locale} page={page} />
