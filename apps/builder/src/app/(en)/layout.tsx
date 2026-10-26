@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import "@ladestack/design-tokens/tokens.css";
-import "./globals.css";
+import "../globals.css";
 
 export const metadata: Metadata = {
   title: "LadeStack Build",

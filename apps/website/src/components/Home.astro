@@ -1,0 +1,493 @@
+---
+import { builderPath, localeInfo, localePrefix, locales, type Locale } from "@ladestack/i18n";
+import Base from "../layouts/Base.astro";
+import { t } from "../i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const d = t(locale);
+const home = `${localePrefix(locale)}/`;
+const app = builderPath(locale);
+const anchors = [
+  { id: "features", label: d.nav.features },
+  { id: "use-cases", label: d.nav.useCases },
+  { id: "how-it-works", label: d.nav.howItWorks },
+  { id: "technology", label: d.nav.technology },
+];
+---
+
+<Base title={d.meta.title} description={d.meta.description} locale={locale}>
+  <a class="skip" href="#main">{d.skipToContent}</a>
+  <header class="site-header">
+    <div class="wrap bar">
+      <a class="wordmark" href={home}>LadeStack <span>Build</span></a>
+      <nav class="primary" aria-label={d.nav.menu}>
+        {anchors.map((a) => <a href={`#${a.id}`}>{a.label}</a>)}
+      </nav>
+      <div class="actions">
+        <details class="lang">
+          <summary aria-label={d.nav.language}>{localeInfo[locale].nativeName}</summary>
+          <ul>
+            {
+              locales.map((l) => (
+                <li>
+                  <a
+                    href={`${localePrefix(l)}/`}
+                    hreflang={localeInfo[l].bcp47}
+                    lang={localeInfo[l].bcp47}
+                    aria-current={l === locale ? "true" : undefined}
+                  >
+                    {localeInfo[l].nativeName}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </details>
+        <a class="btn" href={app}>{d.nav.start}</a>
+        <details class="mobile-nav">
+          <summary>{d.nav.menu}</summary>
+          <nav aria-label={d.nav.menu}>
+            {anchors.map((a) => <a href={`#${a.id}`}>{a.label}</a>)}
+          </nav>
+        </details>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <p class="status wrap" role="note">{d.status}</p>
+
+    <section class="hero wrap">
+      <p class="eyebrow">{d.hero.eyebrow}</p>
+      <h1>{d.hero.title}</h1>
+      <p class="lead">{d.hero.subtitle}</p>
+      <div class="cta-row">
+        <a class="btn" href={app}>{d.hero.primary}</a>
+        <a class="btn-ghost" href="#how-it-works">{d.hero.secondary}</a>
+      </div>
+    </section>
+
+    <section id="features" class="wrap section" aria-labelledby="features-h">
+      <h2 id="features-h">{d.features.title}</h2>
+      <p class="intro">{d.features.intro}</p>
+      <ul class="grid">
+        {
+          d.features.items.map((i) => (
+            <li class="card">
+              <h3>{i.title}</h3>
+              <p>{i.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section id="use-cases" class="wrap section" aria-labelledby="use-cases-h">
+      <h2 id="use-cases-h">{d.useCases.title}</h2>
+      <p class="intro">{d.useCases.intro}</p>
+      <ul class="grid">
+        {
+          d.useCases.items.map((i) => (
+            <li class="card">
+              <h3>{i.title}</h3>
+              <p>{i.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section id="how-it-works" class="wrap section" aria-labelledby="how-h">
+      <h2 id="how-h">{d.howItWorks.title}</h2>
+      <ol class="steps">
+        {
+          d.howItWorks.steps.map((s, n) => (
+            <li>
+              <span class="num" aria-hidden="true">
+                {String(n + 1).padStart(2, "0")}
+              </span>
+              <h3>{s.title}</h3>
+              <p>{s.body}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section id="technology" class="wrap section" aria-labelledby="tech-h">
+      <h2 id="tech-h">{d.technology.title}</h2>
+      <p class="intro">{d.technology.intro}</p>
+      <ul class="grid two">
+        {
+          d.technology.items.map((i) => (
+            <li class="card">
+              <h3>{i.title}</h3>
+              <p>{i.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="wrap section" aria-labelledby="byok-h">
+      <h2 id="byok-h">{d.byok.title}</h2>
+      <ul class="grid">
+        {
+          d.byok.items.map((i) => (
+            <li class="card">
+              <h3>{i.title}</h3>
+              <p>{i.body}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <section class="wrap section" aria-labelledby="faq-h">
+      <h2 id="faq-h">{d.faq.title}</h2>
+      <div class="faq">
+        {
+          d.faq.items.map((f) => (
+            <details>
+              <summary>{f.q}</summary>
+              <p>{f.a}</p>
+            </details>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="wrap section final" aria-labelledby="cta-h">
+      <h2 id="cta-h">{d.cta.title}</h2>
+      <p>{d.cta.body}</p>
+      <a class="btn" href={app}>{d.cta.button}</a>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap foot">
+      <div>
+        <p class="wordmark">LadeStack <span>Build</span></p>
+        <p class="muted">{d.footer.tagline}</p>
+        <p class="muted">{d.footer.licence}</p>
+      </div>
+      <nav aria-label={d.footer.product}>
+        <p class="foot-h">{d.footer.product}</p>
+        {anchors.map((a) => <a href={`#${a.id}`}>{a.label}</a>)}
+      </nav>
+      <nav aria-label={d.nav.language}>
+        <p class="foot-h">{d.nav.language}</p>
+        {
+          locales.map((l) => (
+            <a href={`${localePrefix(l)}/`} hreflang={localeInfo[l].bcp47} lang={localeInfo[l].bcp47}>
+              {localeInfo[l].nativeName}
+            </a>
+          ))
+        }
+      </nav>
+    </div>
+  </footer>
+</Base>
+
+<style>
+  .wrap {
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+    padding-inline: 24px;
+  }
+  .skip {
+    position: absolute;
+    left: -9999px;
+  }
+  .skip:focus {
+    left: 16px;
+    top: 16px;
+    background: var(--color-surface-card);
+    padding: 8px 12px;
+    border-radius: var(--radius-md);
+    z-index: 10;
+  }
+  .site-header {
+    border-bottom: 1px solid var(--color-hairline);
+    background: var(--color-canvas);
+    position: sticky;
+    top: 0;
+    z-index: 5;
+  }
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    min-height: 64px;
+  }
+  .wordmark {
+    font-weight: 600;
+    text-decoration: none;
+    letter-spacing: -0.01em;
+    margin: 0;
+  }
+  .wordmark span {
+    color: var(--color-primary);
+  }
+  .primary {
+    display: flex;
+    gap: 20px;
+    flex: 1;
+  }
+  .primary a,
+  .foot a {
+    text-decoration: none;
+    color: var(--color-body);
+    font-size: 14px;
+  }
+  .primary a:hover,
+  .foot a:hover {
+    color: var(--color-ink);
+  }
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-left: auto;
+  }
+  details > summary {
+    cursor: pointer;
+  }
+  .lang,
+  .mobile-nav {
+    position: relative;
+    font-size: 14px;
+  }
+  .lang summary,
+  .mobile-nav summary {
+    list-style: none;
+    padding: 8px 10px;
+    border: 1px solid var(--color-hairline-strong);
+    border-radius: var(--radius-md);
+  }
+  .lang summary::-webkit-details-marker,
+  .mobile-nav summary::-webkit-details-marker {
+    display: none;
+  }
+  .lang ul,
+  .mobile-nav nav {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 6px);
+    margin: 0;
+    padding: 6px;
+    list-style: none;
+    background: var(--color-surface-card);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-lg);
+    min-width: 180px;
+    display: flex;
+    flex-direction: column;
+  }
+  .lang a,
+  .mobile-nav a {
+    display: block;
+    padding: 8px 10px;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+  }
+  .lang a:hover,
+  .mobile-nav a:hover,
+  .lang a[aria-current="true"] {
+    background: var(--color-canvas-soft);
+  }
+  .mobile-nav {
+    display: none;
+  }
+  .btn,
+  .btn-ghost {
+    display: inline-block;
+    padding: 10px 16px;
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 15px;
+    white-space: nowrap;
+  }
+  .btn {
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+  }
+  .btn:hover {
+    background: var(--color-primary-active);
+  }
+  .btn-ghost {
+    border: 1px solid var(--color-hairline-strong);
+  }
+  .status {
+    margin-top: 24px;
+    margin-bottom: 0;
+    font-size: 14px;
+    color: var(--color-body);
+  }
+  .hero {
+    padding-block: 56px var(--section-rhythm);
+  }
+  .eyebrow {
+    color: var(--color-muted);
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin: 0;
+  }
+  h1 {
+    font-weight: 400;
+    font-size: clamp(32px, 6vw, 72px);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+    margin: 12px 0 20px;
+    max-width: 14ch;
+  }
+  .lead {
+    color: var(--color-body);
+    font-size: 18px;
+    max-width: 640px;
+    margin: 0;
+  }
+  .cta-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 28px;
+  }
+  .section {
+    padding-block: var(--section-rhythm);
+    border-top: 1px solid var(--color-hairline);
+    scroll-margin-top: 72px;
+  }
+  h2 {
+    font-weight: 400;
+    font-size: clamp(26px, 3.5vw, 36px);
+    letter-spacing: -0.02em;
+    margin: 0 0 8px;
+  }
+  .intro {
+    color: var(--color-body);
+    margin: 0 0 32px;
+    max-width: 640px;
+  }
+  .grid {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .grid.two {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .card {
+    background: var(--color-surface-card);
+    border: 1px solid var(--color-hairline);
+    border-radius: var(--radius-lg);
+    padding: 24px;
+  }
+  .card h3,
+  .steps h3 {
+    font-size: 17px;
+    font-weight: 500;
+    margin: 0 0 6px;
+  }
+  .card p,
+  .steps p {
+    margin: 0;
+    color: var(--color-body);
+    font-size: 15px;
+  }
+  .steps {
+    list-style: none;
+    padding: 0;
+    margin: 32px 0 0;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+  }
+  .num {
+    font-family: var(--font-mono);
+    color: var(--color-primary);
+    font-size: 13px;
+  }
+  .faq {
+    max-width: 760px;
+    margin-top: 24px;
+  }
+  .faq details {
+    border-bottom: 1px solid var(--color-hairline);
+    padding: 16px 0;
+  }
+  .faq summary {
+    font-weight: 500;
+  }
+  .faq p {
+    color: var(--color-body);
+    margin: 10px 0 0;
+  }
+  .final {
+    text-align: center;
+  }
+  .final p {
+    color: var(--color-body);
+    margin: 0 0 24px;
+  }
+  .site-footer {
+    border-top: 1px solid var(--color-hairline);
+    background: var(--color-canvas-soft);
+  }
+  .foot {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    gap: 32px;
+    padding-block: 48px;
+  }
+  .foot nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .foot-h {
+    font-size: 13px;
+    font-weight: 600;
+    margin: 0 0 4px;
+  }
+  .muted {
+    color: var(--color-muted);
+    font-size: 14px;
+    margin: 6px 0 0;
+  }
+  @media (max-width: 960px) {
+    .primary {
+      display: none;
+    }
+    .mobile-nav {
+      display: block;
+    }
+    .grid,
+    .steps {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (max-width: 640px) {
+    .bar {
+      gap: 12px;
+    }
+    .actions .btn {
+      display: none;
+    }
+    .grid,
+    .grid.two,
+    .steps,
+    .foot {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

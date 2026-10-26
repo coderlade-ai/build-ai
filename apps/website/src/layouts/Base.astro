@@ -1,16 +1,19 @@
 ---
 import "@ladestack/design-tokens/tokens.css";
-import { localeInfo, type Locale } from "@ladestack/i18n";
+import { localeInfo, localePrefix, locales, type Locale } from "@ladestack/i18n";
 
 interface Props {
   title: string;
   description: string;
-  locale?: Locale;
+  locale: Locale;
+  /** Path after the locale prefix, e.g. "/" or "/about". */
+  path?: string;
 }
 
-const { title, description, locale = "en" } = Astro.props;
+const { title, description, locale, path = "/" } = Astro.props;
 const info = localeInfo[locale];
-const canonical = new URL(Astro.url.pathname, Astro.site).toString();
+const site = Astro.site ?? new URL("https://build.ladestack.in");
+const urlFor = (l: Locale) => new URL(`${localePrefix(l)}${path}`, site).toString();
 ---
 
 <!doctype html>
@@ -20,7 +23,15 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
+    <link rel="canonical" href={urlFor(locale)} />
+    {locales.map((l) => <link rel="alternate" hreflang={localeInfo[l].bcp47} href={urlFor(l)} />)}
+    <link rel="alternate" hreflang="x-default" href={urlFor("en")} />
+    <link rel="sitemap" href="/sitemap.xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={urlFor(locale)} />
+    <meta property="og:locale" content={info.bcp47.replace("-", "_")} />
   </head>
   <body>
     <slot />
@@ -28,12 +39,31 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
 </html>
 
 <style is:global>
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
   html {
     background: var(--color-canvas);
     color: var(--color-ink);
     font-family: var(--font-sans);
+    line-height: 1.5;
+    scroll-behavior: smooth;
   }
   body {
     margin: 0;
+  }
+  a {
+    color: inherit;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
   }
 </style>
