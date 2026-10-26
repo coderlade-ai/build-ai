@@ -145,6 +145,25 @@ export class ProjectStore {
     return { file, content: blob.content };
   }
 
+  /** Every file with its content, read in one transaction so the snapshot is consistent. */
+  async readAllFiles(projectId: string): Promise<{ path: string; content: string }[]> {
+    const tx = this.db.transaction(["projectFiles", "fileBlobs"]);
+    const files = await request(
+      tx.objectStore("projectFiles").index("byProject").getAll(projectId) as IDBRequest<
+        ProjectFile[]
+      >,
+    );
+    const blobs = tx.objectStore("fileBlobs");
+    const out = await Promise.all(
+      files.map(async (file) => {
+        const blob = await request(blobs.get(file.contentHash) as IDBRequest<FileBlob | undefined>);
+        if (!blob) throw new Error(`Missing content for ${file.path}`);
+        return { path: file.path, content: blob.content };
+      }),
+    );
+    return out.sort((a, b) => (a.path < b.path ? -1 : a.path > b.path ? 1 : 0));
+  }
+
   /**
    * Writes a file if `baseRevision` matches what is stored (`null` means "must not exist yet").
    * Never overwrites a newer revision: the caller gets the current record back as a conflict.

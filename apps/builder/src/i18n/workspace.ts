@@ -22,6 +22,9 @@ export interface WorkspaceStrings {
   back: string;
   viewLabel: string;
   editorLoading: string;
+  exportZip: string;
+  exporting: string;
+  exportError: string;
 }
 
 export const workspace: Record<Locale, WorkspaceStrings> = {
@@ -50,6 +53,9 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     back: "Back to start",
     viewLabel: "View",
     editorLoading: "Loading editor…",
+    exportZip: "Export ZIP",
+    exporting: "Exporting…",
+    exportError: "Export failed. Your files are still saved in this browser.",
   },
   ru: {
     useTemplate: "Использовать шаблон",
@@ -76,6 +82,9 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     back: "В начало",
     viewLabel: "Вид",
     editorLoading: "Загрузка редактора…",
+    exportZip: "Экспорт ZIP",
+    exporting: "Экспорт…",
+    exportError: "Не удалось экспортировать. Файлы по-прежнему сохранены в этом браузере.",
   },
   ja: {
     useTemplate: "このテンプレートを使う",
@@ -102,6 +111,9 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     back: "最初に戻る",
     viewLabel: "表示",
     editorLoading: "エディタを読み込んでいます…",
+    exportZip: "ZIPでエクスポート",
+    exporting: "エクスポート中…",
+    exportError: "エクスポートに失敗しました。ファイルはこのブラウザに保存されたままです。",
   },
   ko: {
     useTemplate: "이 템플릿 사용",
@@ -128,6 +140,9 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     back: "처음으로",
     viewLabel: "보기",
     editorLoading: "편집기를 불러오는 중…",
+    exportZip: "ZIP 내보내기",
+    exporting: "내보내는 중…",
+    exportError: "내보내기에 실패했습니다. 파일은 이 브라우저에 그대로 저장되어 있습니다.",
   },
   zh: {
     useTemplate: "使用此模板",
@@ -150,6 +165,9 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     back: "返回开始",
     viewLabel: "视图",
     editorLoading: "正在加载编辑器…",
+    exportZip: "导出 ZIP",
+    exporting: "正在导出…",
+    exportError: "导出失败。你的文件仍保存在此浏览器中。",
   },
   tr: {
     useTemplate: "Bu şablonu kullan",
@@ -176,6 +194,9 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     back: "Başa dön",
     viewLabel: "Görünüm",
     editorLoading: "Düzenleyici yükleniyor…",
+    exportZip: "ZIP olarak dışa aktar",
+    exporting: "Dışa aktarılıyor…",
+    exportError: "Dışa aktarma başarısız. Dosyalarınız bu tarayıcıda kayıtlı olmaya devam ediyor.",
   },
   fr: {
     useTemplate: "Utiliser ce modèle",
@@ -202,6 +223,9 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     back: "Retour au début",
     viewLabel: "Vue",
     editorLoading: "Chargement de l'éditeur…",
+    exportZip: "Exporter en ZIP",
+    exporting: "Exportation…",
+    exportError: "L'exportation a échoué. Vos fichiers restent enregistrés dans ce navigateur.",
   },
   pt: {
     useTemplate: "Usar este modelo",
@@ -228,5 +252,8 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     back: "Voltar ao início",
     viewLabel: "Visualização",
     editorLoading: "Carregando o editor…",
+    exportZip: "Exportar ZIP",
+    exporting: "Exportando…",
+    exportError: "Falha na exportação. Seus arquivos continuam salvos neste navegador.",
   },
 };
