@@ -44,10 +44,16 @@ describe("static runtime", () => {
 });
 
 describe("runtime selection", () => {
-  it("picks static for HTML and says no runtime for Node yet", () => {
+  it("picks static for HTML and the experimental bundler for package.json", () => {
     expect(projectKind(["index.html"])).toBe("static");
     expect(projectKind(["package.json", "index.html"])).toBe("node");
-    expect(selectRuntime(["index.html"])).toMatchObject({ ok: true });
+    const s = selectRuntime(["index.html"]);
+    expect(s.ok && s.adapter.capabilities().id).toBe("static");
+    const b = selectRuntime(["package.json", "index.html"]);
+    expect(b.ok && b.adapter.capabilities()).toMatchObject({
+      id: "esbuild-bundle",
+      install: false,
+    });
     expect(selectRuntime(["package.json"])).toMatchObject({ ok: false, kind: "node" });
     expect(selectRuntime(["readme.md"])).toMatchObject({ ok: false, kind: null });
   });

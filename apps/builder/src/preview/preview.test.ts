@@ -25,7 +25,8 @@ describe("preview origin", () => {
 describe("preview files", () => {
   it("previews plain HTML projects and waits for the runtime otherwise", () => {
     expect(previewKind(["index.html", "styles.css"])).toBe("static");
-    expect(previewKind(["index.html", "package.json", "src/main.tsx"])).toBe("needs-runtime");
+    expect(previewKind(["index.html", "package.json", "src/main.tsx"])).toBe("bundle");
+    expect(previewKind(["package.json", "src/main.tsx"])).toBe("no-entry");
     expect(previewKind(["about.html"])).toBe("no-entry");
   });
 });

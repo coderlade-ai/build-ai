@@ -9,33 +9,26 @@ import {
 } from "./contract";
 
 const noNode =
-  "The static runtime serves HTML, CSS and JS files only; it cannot install packages or run commands.";
+  "This runtime serves and bundles files only; it cannot install packages or run commands.";
 
 /**
- * The only runtime shipped today: files served as-is by the isolated preview origin (ADR 0016).
- * Everything Node-like answers `unsupported`.
+ * Runtimes that only hand files to the isolated preview origin (ADR 0016): static files as-is,
+ * or package.json projects bundled there with esbuild-wasm (experimental, ADR 0018). Install and
+ * process calls answer `unsupported`.
  */
-export function createStaticRuntime(): RuntimeAdapter {
+function createFileRuntime(
+  capabilities: RuntimeCapabilities,
+  unservable: (files: Map<string, string>) => string | null,
+): RuntimeAdapter {
   let files = new Map<string, string>();
   let revision: string | null = null;
   let dirty = false;
   const listeners = new Set<(s: PreviewStatus) => void>();
   const status = (): PreviewStatus => {
     if (revision === null) return "idle";
-    if (files.has("package.json")) return "unavailable";
-    return files.has("index.html") ? "ready" : "unavailable";
+    return unservable(files) === null ? "ready" : "unavailable";
   };
   const emit = () => listeners.forEach((l) => l(status()));
-  const capabilities: RuntimeCapabilities = {
-    id: "static",
-    label: "Static files",
-    projectKinds: ["static"],
-    install: false,
-    processes: false,
-    preview: true,
-    network: "none",
-    productionLicenceVerified: true, // our own MIT code
-  };
 
   return {
     capabilities: () => capabilities,
@@ -80,11 +73,7 @@ export function createStaticRuntime(): RuntimeAdapter {
     getPreviewEndpoint: () =>
       status() === "ready"
         ? ok({ kind: "static", entry: "index.html" })
-        : unsupported(
-            files.has("package.json")
-              ? "This project has a package.json and needs a Node runtime."
-              : "There is no index.html at the project root.",
-          ),
+        : unsupported(unservable(files) ?? "No project is mounted."),
     observePreviewStatus(onStatus) {
       listeners.add(onStatus);
       onStatus(status());
@@ -96,4 +85,48 @@ export function createStaticRuntime(): RuntimeAdapter {
         : ok({ revision, files: Object.fromEntries(files) }),
     reconcileProjectRevision: async (rev) => ok({ inSync: rev === revision && !dirty }),
   };
+}
+
+export function createStaticRuntime(): RuntimeAdapter {
+  return createFileRuntime(
+    {
+      id: "static",
+      label: "Static files",
+      projectKinds: ["static"],
+      install: false,
+      processes: false,
+      preview: true,
+      network: "none",
+      productionLicenceVerified: true, // our own MIT code
+    },
+    (files) =>
+      files.has("package.json")
+        ? "This project has a package.json; use the bundle runtime."
+        : files.has("index.html")
+          ? null
+          : "There is no index.html at the project root.",
+  );
+}
+
+/**
+ * Experimental (ADR 0018): esbuild-wasm (MIT) bundles the project's source on the preview origin
+ * and packages load from esm.sh. Not a Node runtime and not ADR 0008's final choice.
+ */
+export function createBundleRuntime(): RuntimeAdapter {
+  return createFileRuntime(
+    {
+      id: "esbuild-bundle",
+      label: "In-browser bundle (experimental)",
+      projectKinds: ["node"],
+      install: false,
+      processes: false,
+      preview: true,
+      network: "package-registry",
+      productionLicenceVerified: true, // esbuild-wasm is MIT; esm.sh is a public CDN (see ADR 0018)
+    },
+    (files) =>
+      files.has("index.html") && files.has("package.json")
+        ? null
+        : "A bundled project needs package.json and index.html at the root.",
+  );
 }

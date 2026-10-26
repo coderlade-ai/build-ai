@@ -62,15 +62,6 @@ export function Preview({
         },
         null,
       );
-    else if (kind === "needs-runtime")
-      c.attach(
-        {
-          ok: false,
-          reason:
-            "This project has a package.json. React/Vite projects need the runtime, which isn't available yet, so the preview can't run it; check the code by reading it.",
-        },
-        null,
-      );
     else if (kind === "no-entry")
       c.attach(
         {
@@ -103,7 +94,7 @@ export function Preview({
   }, []);
 
   useEffect(() => {
-    if (!ready || !previewOrigin || kind !== "static") return;
+    if (!ready || !previewOrigin || kind === "no-entry") return;
     let cancelled = false;
     void (async () => {
       const store = await getProjectStore();
@@ -126,13 +117,15 @@ export function Preview({
   const debugPrompt = debugPromptFromLogs(w.consoleDebugPrompt, logs);
 
   if (!previewOrigin) return <Notice text={w.previewOff} />;
-  if (kind === "needs-runtime") return <Notice text={w.previewUnavailable} />;
   if (kind === "no-entry") return <Notice text={w.previewNoEntry} />;
 
   return (
     <div className={styles.previewPane}>
       <div className={styles.previewBar}>
         {loaded ? null : <span role="status">{w.previewLoading}</span>}
+        {kind === "bundle" ? (
+          <span className={styles.previewNote}>{w.previewBundleNote}</span>
+        ) : null}
         <button
           type="button"
           className={styles.exportButton}

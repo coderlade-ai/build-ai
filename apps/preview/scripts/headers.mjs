@@ -20,7 +20,8 @@ export function hostHeaders(parents) {
   return {
     "Content-Security-Policy": [
       "default-src 'self'",
-      "script-src 'self'",
+      // esbuild-wasm bundles package.json projects on this origin (ADR 0018).
+      "script-src 'self' 'wasm-unsafe-eval'",
       "style-src 'unsafe-inline'",
       "frame-src 'self'",
       "worker-src 'self'",

@@ -1,9 +1,10 @@
 /** What the preview can show for a project, from its file paths. */
-export type PreviewKind = "static" | "needs-runtime" | "no-entry";
+export type PreviewKind = "static" | "bundle" | "no-entry";
 
+/** package.json projects are bundled on the preview origin (experimental, ADR 0018). */
 export function previewKind(paths: string[]): PreviewKind {
-  if (paths.includes("package.json")) return "needs-runtime";
-  return paths.includes("index.html") ? "static" : "no-entry";
+  if (!paths.includes("index.html")) return "no-entry";
+  return paths.includes("package.json") ? "bundle" : "static";
 }
 
 /** An unguessable id for this tab's preview cache on the preview origin. */

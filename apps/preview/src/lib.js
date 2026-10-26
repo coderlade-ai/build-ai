@@ -21,6 +21,7 @@ const types = {
   md: "text/plain; charset=utf-8",
   xml: "application/xml; charset=utf-8",
   webmanifest: "application/manifest+json",
+  wasm: "application/wasm",
 };
 
 /** @param {string} path */

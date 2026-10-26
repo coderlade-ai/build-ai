@@ -115,6 +115,18 @@ try {
     if (!projectFrame) throw new Error("project frame not found");
     await projectFrame.evaluate(() => console.error("bridge check"));
     await page.getByText("Console (1)").waitFor({ timeout: 5000 });
+
+    // React + Vite template: bundled with esbuild-wasm on the preview origin, React from esm.sh.
+    step("react preview (esbuild-wasm)");
+    await page.goto(base, { waitUntil: "networkidle" });
+    await page.getByRole("button", { name: "Use this template" }).nth(1).click();
+    await page.waitForURL(/\/app\/project\?id=/, { timeout: 15000 });
+    await page.getByRole("button", { name: "Preview", exact: true }).click();
+    const react = page
+      .frameLocator('iframe[title="Preview of your project"]')
+      .frameLocator("#frame");
+    await react.getByRole("button", { name: "Clicked 0 times" }).click({ timeout: 45000 });
+    await react.getByRole("button", { name: "Clicked 1 times" }).waitFor({ timeout: 5000 });
   }
   step("locale page");
   await page.goto(`${base}/ja`, { waitUntil: "networkidle" });
@@ -128,6 +140,6 @@ if (problems.length) {
   finish(false);
 }
 console.warn(
-  `Browser check passed: hydrated, Monaco mounted, checkpoint saved${checkPreview ? ", preview ran with console" : ""}, no CSP violations`,
+  `Browser check passed: hydrated, Monaco mounted, checkpoint saved${checkPreview ? ", static + React previews ran, console bridged" : ""}, no CSP violations`,
 );
 finish(true);

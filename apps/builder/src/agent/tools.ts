@@ -60,7 +60,7 @@ export const agentTools: ToolSpec[] = [
   {
     name: "check_preview",
     description:
-      "Load the project's saved files in the live preview and return what the page's console reported after it settled: errors, warnings, logs and files that failed to load. Use it after writing files to check your work. Only plain HTML/CSS/JS projects (index.html, no package.json) can be previewed for now.",
+      "Load the project's saved files in the live preview and return what the page's console reported after it settled: errors, warnings, logs and files that failed to load. Use it after writing files to check your work. Projects with package.json are bundled in the browser (packages from esm.sh) and build errors are reported too.",
     parameters: null,
   },
 ];

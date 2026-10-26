@@ -1,5 +1,5 @@
 import type { ProjectKind, RuntimeAdapter } from "./contract";
-import { createStaticRuntime } from "./static";
+import { createBundleRuntime, createStaticRuntime } from "./static";
 
 /** Which kind of project these files are (README §16 package.json policy). */
 export function projectKind(paths: string[]): ProjectKind | null {
@@ -7,8 +7,11 @@ export function projectKind(paths: string[]): ProjectKind | null {
   return paths.includes("index.html") ? "static" : null;
 }
 
-/** Runtimes available in this build. Node candidates join only after ADR 0008's benchmark. */
-const available: (() => RuntimeAdapter)[] = [createStaticRuntime];
+/**
+ * Runtimes available in this build. The bundle runtime is an experimental stand-in (ADR 0018);
+ * a full Node candidate joins only after ADR 0008's benchmark.
+ */
+const available: (() => RuntimeAdapter)[] = [createStaticRuntime, createBundleRuntime];
 
 export type RuntimeChoice =
   | { ok: true; adapter: RuntimeAdapter }
@@ -18,6 +21,8 @@ export type RuntimeChoice =
 export function selectRuntime(paths: string[]): RuntimeChoice {
   const kind = projectKind(paths);
   if (!kind) return { ok: false, kind, reason: "There is no index.html or package.json." };
+  if (kind === "node" && !paths.includes("index.html"))
+    return { ok: false, kind, reason: "There is no index.html entry to bundle." };
   for (const make of available) {
     const adapter = make();
     if (adapter.capabilities().projectKinds.includes(kind)) return { ok: true, adapter };
