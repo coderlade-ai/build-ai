@@ -131,3 +131,19 @@ describe("streamChat", () => {
     });
   });
 });
+
+describe("buildRequest with images", () => {
+  const img = { mediaType: "image/png", data: "AQID" };
+  const msgs = [{ role: "user" as const, content: "What is this?", images: [img] }];
+  const body = (provider: StreamOptions["provider"]) =>
+    JSON.stringify(buildRequest({ ...base, provider, messages: msgs }).body);
+
+  it("uses each provider's image part", () => {
+    expect(body("anthropic")).toContain(
+      '"source":{"type":"base64","media_type":"image/png","data":"AQID"}',
+    );
+    expect(body("gemini")).toContain('"inline_data":{"mime_type":"image/png","data":"AQID"}');
+    expect(body("openai")).toContain('"image_url":{"url":"data:image/png;base64,AQID"}');
+    expect(body("openrouter")).toContain('"text":"What is this?"');
+  });
+});
