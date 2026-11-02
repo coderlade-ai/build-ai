@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent } from "react";
 import { localePrefix, type Locale } from "@ladestack/i18n";
 import { createConversation } from "../agent/adapters";
+import type { ChatImage } from "../providers/stream";
 import {
   applyFixPrompt,
   buildFromPlanPrompt,
@@ -106,7 +107,8 @@ export function AgentPanel({
     const task = takePendingTask(projectId);
     if (task) {
       setMode(task.mode);
-      void run(task.prompt, task.mode);
+      // Handed-over prompts carry attached files, already bounded by the attachment limits.
+      void run(task.prompt, task.mode, task.images, false);
     }
   }, [session, projectId]);
   // A task from the preview console: run it now, or leave it in the box when no provider is
@@ -167,10 +169,10 @@ export function AgentPanel({
     }
   }
 
-  async function run(text = prompt, runMode: AgentMode = mode) {
+  async function run(text = prompt, runMode: AgentMode = mode, images?: ChatImage[], typed = true) {
     const s = getSession();
     const task = text.trim();
-    if (!s || !task || running || task.length > maxPrompt) return;
+    if (!s || !task || running || (typed && task.length > maxPrompt)) return;
     const controller = new AbortController();
     abort.current = controller;
     setRunning(true);
@@ -204,6 +206,7 @@ export function AgentPanel({
             runMode
           ],
           prompt: task,
+          images,
           tools: toolsForMode(runMode),
         }),
         fs,

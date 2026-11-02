@@ -1,3 +1,4 @@
+import { anthropicMessage, openAiMessage, type ChatImage } from "../providers/stream";
 import { authHeaders, classifyStatus } from "../providers/connect";
 import type { ProviderId } from "../providers/registry";
 import { ProviderStreamError } from "../providers/stream";
@@ -34,6 +35,8 @@ export interface ConversationOptions {
   model: string;
   system: string;
   prompt: string;
+  /** Images attached to the first user turn (INTAKE-03). */
+  images?: ChatImage[];
   tools: ToolSpec[];
   fetchImpl?: typeof fetch;
 }
@@ -157,7 +160,7 @@ function openAiCompatible(o: ConversationOptions): Conversation {
       : "https://openrouter.ai/api/v1/chat/completions";
   const messages: any[] = [
     { role: "system", content: o.system },
-    { role: "user", content: o.prompt },
+    openAiMessage({ role: "user", content: o.prompt, images: o.images }),
   ];
   const tools = o.tools.map((t) => ({
     type: "function",
@@ -242,7 +245,7 @@ function openAiCompatible(o: ConversationOptions): Conversation {
 }
 
 function anthropic(o: ConversationOptions): Conversation {
-  const messages: any[] = [{ role: "user", content: o.prompt }];
+  const messages: any[] = [anthropicMessage({ role: "user", content: o.prompt, images: o.images })];
   const tools = o.tools.map((t) => ({
     name: t.name,
     description: t.description,
@@ -331,7 +334,15 @@ function anthropic(o: ConversationOptions): Conversation {
 }
 
 function gemini(o: ConversationOptions): Conversation {
-  const contents: any[] = [{ role: "user", parts: [{ text: o.prompt }] }];
+  const contents: any[] = [
+    {
+      role: "user",
+      parts: [
+        ...(o.images ?? []).map((i) => ({ inline_data: { mime_type: i.mediaType, data: i.data } })),
+        { text: o.prompt },
+      ],
+    },
+  ];
   const functionDeclarations = o.tools.map((t) => ({
     name: t.name,
     description: t.description,

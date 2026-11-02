@@ -180,6 +180,33 @@ describe("provider tool-calling adapters", () => {
     expect(String(init.body)).not.toContain(key);
   });
 
+  it("sends attached images on the first user turn for every provider", async () => {
+    const images = [{ mediaType: "image/png", data: "AQID" }];
+    const expected = {
+      openai: '"image_url":{"url":"data:image/png;base64,AQID"}',
+      openrouter: '"image_url":{"url":"data:image/png;base64,AQID"}',
+      anthropic: '"source":{"type":"base64","media_type":"image/png","data":"AQID"}',
+      gemini: '"inline_data":{"mime_type":"image/png","data":"AQID"}',
+    } as const;
+    for (const provider of Object.keys(expected) as (keyof typeof expected)[]) {
+      const fetchImpl = vi
+        .fn()
+        .mockResolvedValue(
+          json(
+            provider === "anthropic"
+              ? { content: [{ type: "text", text: "ok" }] }
+              : provider === "gemini"
+                ? { candidates: [{ content: { parts: [{ text: "ok" }] } }] }
+                : { choices: [{ message: { content: "ok" } }] },
+          ),
+        );
+      await createConversation({ ...base, provider, images, fetchImpl }).step();
+      const [, init] = fetchImpl.mock.calls[0] as [string, RequestInit];
+      expect(String(init.body)).toContain(expected[provider]);
+      expect(String(init.body)).toContain("make a page");
+    }
+  });
+
   it("Anthropic: tool_use blocks and tool_result replies", async () => {
     const fetchImpl = vi
       .fn()

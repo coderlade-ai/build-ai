@@ -30,4 +30,17 @@ describe("code-mode handoff", () => {
     expect(projectNameFromPrompt("x".repeat(60))).toBe(`${"x".repeat(47)}…`);
     expect(Array.from(projectNameFromPrompt("日本語".repeat(30))).length).toBe(48);
   });
+  it("keeps images in memory, out of storage, and hands them over once", () => {
+    const store = new Map<string, string>();
+    const s = {
+      getItem: (k: string) => store.get(k) ?? null,
+      setItem: (k: string, v: string) => void store.set(k, v),
+      removeItem: (k: string) => void store.delete(k),
+    };
+    const images = [{ mediaType: "image/png", data: "AQID" }];
+    setPendingTask("img", { mode: "code", prompt: "match this", images }, s);
+    expect([...store.values()].join()).not.toContain("AQID");
+    expect(takePendingTask("img", s)).toEqual({ mode: "code", prompt: "match this", images });
+    expect(takePendingTask("img", s)).toBeNull();
+  });
 });

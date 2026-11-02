@@ -10,7 +10,6 @@ export interface AttachStrings {
   tooLarge: string;
   tooMany: string;
   readFailed: string;
-  imagesAskOnly: string;
 }
 
 export const attachStrings: Record<Locale, AttachStrings> = {
@@ -23,7 +22,6 @@ export const attachStrings: Record<Locale, AttachStrings> = {
     tooLarge: "{name}: too large (images up to 4 MB, text up to 200 KB, 300 KB of text in total).",
     tooMany: "{name}: you can attach up to 6 files.",
     readFailed: "{name}: couldn't read the file.",
-    imagesAskOnly: "Images can be sent in Ask mode for now. Remove them to continue in this mode.",
   },
   ru: {
     attach: "Прикрепить файлы",
@@ -35,8 +33,6 @@ export const attachStrings: Record<Locale, AttachStrings> = {
       "{name}: слишком большой файл (изображения до 4 МБ, текст до 200 КБ, всего текста до 300 КБ).",
     tooMany: "{name}: можно прикрепить не более 6 файлов.",
     readFailed: "{name}: не удалось прочитать файл.",
-    imagesAskOnly:
-      "Пока изображения можно отправлять только в режиме Ask. Уберите их, чтобы продолжить в этом режиме.",
   },
   ja: {
     attach: "ファイルを添付",
@@ -48,8 +44,6 @@ export const attachStrings: Record<Locale, AttachStrings> = {
       "{name}: サイズが大きすぎます（画像は 4 MB まで、テキストは 200 KB まで、テキスト合計 300 KB まで）。",
     tooMany: "{name}: 添付できるのは 6 件までです。",
     readFailed: "{name}: ファイルを読み込めませんでした。",
-    imagesAskOnly:
-      "現在、画像は Ask モードでのみ送信できます。このモードで続けるには画像を削除してください。",
   },
   ko: {
     attach: "파일 첨부",
@@ -61,8 +55,6 @@ export const attachStrings: Record<Locale, AttachStrings> = {
       "{name}: 파일이 너무 큽니다(이미지 최대 4MB, 텍스트 최대 200KB, 텍스트 합계 최대 300KB).",
     tooMany: "{name}: 최대 6개 파일까지 첨부할 수 있습니다.",
     readFailed: "{name}: 파일을 읽지 못했습니다.",
-    imagesAskOnly:
-      "현재 이미지는 Ask 모드에서만 보낼 수 있습니다. 이 모드로 계속하려면 이미지를 제거하세요.",
   },
   zh: {
     attach: "添加附件",
@@ -73,7 +65,6 @@ export const attachStrings: Record<Locale, AttachStrings> = {
     tooLarge: "{name}：文件过大（图片最大 4 MB，文本最大 200 KB，文本合计最大 300 KB）。",
     tooMany: "{name}：最多只能附加 6 个文件。",
     readFailed: "{name}：无法读取文件。",
-    imagesAskOnly: "目前只能在 Ask 模式下发送图片。要在此模式下继续，请移除图片。",
   },
   tr: {
     attach: "Dosya ekle",
@@ -85,8 +76,6 @@ export const attachStrings: Record<Locale, AttachStrings> = {
       "{name}: dosya çok büyük (görseller en fazla 4 MB, metin en fazla 200 KB, toplam metin en fazla 300 KB).",
     tooMany: "{name}: en fazla 6 dosya ekleyebilirsiniz.",
     readFailed: "{name}: dosya okunamadı.",
-    imagesAskOnly:
-      "Görseller şimdilik yalnızca Ask modunda gönderilebilir. Bu modda devam etmek için görselleri kaldırın.",
   },
   fr: {
     attach: "Joindre des fichiers",
@@ -98,8 +87,6 @@ export const attachStrings: Record<Locale, AttachStrings> = {
       "{name} : fichier trop volumineux (images jusqu’à 4 Mo, texte jusqu’à 200 Ko, 300 Ko de texte au total).",
     tooMany: "{name} : vous pouvez joindre jusqu’à 6 fichiers.",
     readFailed: "{name} : impossible de lire le fichier.",
-    imagesAskOnly:
-      "Pour l’instant, les images ne peuvent être envoyées qu’en mode Ask. Retirez-les pour continuer dans ce mode.",
   },
   pt: {
     attach: "Anexar arquivos",
@@ -111,7 +98,5 @@ export const attachStrings: Record<Locale, AttachStrings> = {
       "{name}: arquivo grande demais (imagens até 4 MB, texto até 200 KB, 300 KB de texto no total).",
     tooMany: "{name}: você pode anexar até 6 arquivos.",
     readFailed: "{name}: não foi possível ler o arquivo.",
-    imagesAskOnly:
-      "Por enquanto, imagens só podem ser enviadas no modo Ask. Remova-as para continuar neste modo.",
   },
 };
