@@ -1,7 +1,8 @@
 import { localePrefix, type Locale } from "@ladestack/i18n";
 import { shell } from "../i18n/shell";
 import { Composer } from "./Composer";
-import { EraseData } from "./EraseData";
+import Link from "next/link";
+import { settingsStrings } from "../i18n/settings";
 import { ImportZip } from "./ImportZip";
 import { ProviderSetup } from "./ProviderSetup";
 import { RecentProjects } from "./RecentProjects";
@@ -18,7 +19,12 @@ export function Welcome({ locale }: { locale: Locale }) {
         <a className={styles.wordmark} href={`${localePrefix(locale)}/`}>
           LadeStack <span>Build</span>
         </a>
-        <ProviderSetup locale={locale} idleLabel={s.providerStatus} />
+        <div className={styles.headerActions}>
+          <Link className={styles.headerLink} href={`${localePrefix(locale)}/settings`}>
+            {settingsStrings[locale].link}
+          </Link>
+          <ProviderSetup locale={locale} idleLabel={s.providerStatus} />
+        </div>
       </header>
       <main className={styles.main}>
         <p className={styles.kicker}>{s.kicker}</p>
@@ -29,7 +35,6 @@ export function Welcome({ locale }: { locale: Locale }) {
         <RecentProjects locale={locale} />
         <Templates s={s} locale={locale} />
         <ImportZip locale={locale} />
-        <EraseData locale={locale} />
         <a className={styles.back} href={`${localePrefix(locale)}/`}>
           {s.back}
         </a>

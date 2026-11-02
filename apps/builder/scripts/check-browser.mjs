@@ -196,14 +196,24 @@ try {
   step("erase local data");
   await page.goto(base, { waitUntil: "networkidle" });
   await page.getByRole("heading", { name: "Your projects" }).waitFor({ timeout: 10000 });
+  // Settings opens from the welcome header and carries the erase control.
+  await page.getByRole("link", { name: "Settings" }).click();
+  await page.waitForURL(/\/app\/settings$/, { timeout: 15000 });
+  await page.getByRole("heading", { name: "Language" }).waitFor();
   page.once("dialog", (d) => void d.accept());
   await Promise.all([
     page.waitForEvent("load", { timeout: 20000 }),
     page.getByRole("button", { name: "Erase all local data" }).click(),
   ]);
   await page.waitForLoadState("networkidle");
+  await page.goto(base, { waitUntil: "networkidle" });
   if (await page.getByRole("heading", { name: "Your projects" }).count())
     throw new Error("Projects are still listed after erasing local data");
+  // Language switch on the settings page keeps the user on settings.
+  await page.goto(`${base}/settings`, { waitUntil: "networkidle" });
+  await page.getByRole("link", { name: "日本語" }).click();
+  await page.waitForURL(/\/app\/ja\/settings$/, { timeout: 15000 });
+  await page.getByRole("heading", { name: "設定" }).waitFor();
   step("locale page");
   await page.goto(`${base}/ja`, { waitUntil: "networkidle" });
 } catch (e) {
