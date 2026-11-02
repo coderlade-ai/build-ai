@@ -157,12 +157,9 @@ export function Composer({ s, locale }: { s: ShellStrings; locale: Locale }) {
       return;
     }
     const name = providers[session.provider].name;
-    if (draft.mode !== "ask" && attachments.some((x) => x.kind === "image")) {
-      setNotice(at.imagesAskOnly);
-      return;
-    }
     if (draft.mode === "code" || draft.mode === "plan") {
-      void startProject(draft.mode, composeUserMessage(draft.prompt.trim(), attachments).content);
+      const m = composeUserMessage(draft.prompt.trim(), attachments);
+      void startProject(draft.mode, m.content, m.images);
       return;
     }
     if (draft.mode !== "ask") {
@@ -175,7 +172,11 @@ export function Composer({ s, locale }: { s: ShellStrings; locale: Locale }) {
   }
 
   /** Code or Plan mode: a new empty local project, then the workspace agent picks up the prompt. */
-  async function startProject(mode: "code" | "plan", prompt: string) {
+  async function startProject(
+    mode: "code" | "plan",
+    prompt: string,
+    images: { mediaType: string; data: string }[],
+  ) {
     if (creating) return;
     setCreating(true);
     setNotice(w.creating);
@@ -186,7 +187,7 @@ export function Composer({ s, locale }: { s: ShellStrings; locale: Locale }) {
         profile: "react-vite",
         files: {},
       });
-      setPendingTask(project.id, { mode, prompt });
+      setPendingTask(project.id, { mode, prompt, images });
       setDraft((d) => ({ ...d, prompt: "" }));
       setAttachments([]);
       router.push(`${localePrefix(locale)}/project?id=${encodeURIComponent(project.id)}`);

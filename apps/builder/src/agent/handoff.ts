@@ -1,3 +1,5 @@
+import type { ChatImage } from "../providers/stream";
+
 /**
  * Hands a Code- or Plan-mode prompt from the welcome composer to the new project's workspace.
  * Kept in this tab's sessionStorage only, and removed as soon as the workspace takes it,
@@ -10,14 +12,21 @@ type Storage = Pick<globalThis.Storage, "getItem" | "setItem" | "removeItem">;
 export interface PendingTask {
   mode: "code" | "plan";
   prompt: string;
+  /** Attached images. Too large for sessionStorage, so they stay in this tab's memory only. */
+  images?: ChatImage[];
 }
+
+const pendingImages = new Map<string, ChatImage[]>();
 
 export function setPendingTask(
   projectId: string,
   task: PendingTask,
   storage: Storage = sessionStorage,
 ) {
-  storage.setItem(prefix + projectId, JSON.stringify(task));
+  const { images, ...rest } = task;
+  if (images?.length) pendingImages.set(projectId, images);
+  else pendingImages.delete(projectId);
+  storage.setItem(prefix + projectId, JSON.stringify(rest));
 }
 
 /** Taken once. A plain string (older tabs) is read as a Code-mode prompt. */
@@ -25,6 +34,8 @@ export function takePendingTask(
   projectId: string,
   storage: Storage = sessionStorage,
 ): PendingTask | null {
+  const images = pendingImages.get(projectId);
+  pendingImages.delete(projectId);
   try {
     const raw = storage.getItem(prefix + projectId);
     storage.removeItem(prefix + projectId);
@@ -40,7 +51,8 @@ export function takePendingTask(
     } catch {
       // Not JSON: a plain prompt.
     }
-    return task.prompt.trim() ? task : null;
+    if (!task.prompt.trim()) return null;
+    return images?.length ? { ...task, images } : task;
   } catch {
     return null;
   }

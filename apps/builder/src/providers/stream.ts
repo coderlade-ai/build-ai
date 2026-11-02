@@ -15,7 +15,7 @@ export interface ChatMessage {
   images?: ChatImage[];
 }
 
-function anthropicMessage(m: ChatMessage) {
+export function anthropicMessage(m: ChatMessage) {
   if (!m.images?.length) return { role: m.role, content: m.content };
   return {
     role: m.role,
@@ -29,7 +29,7 @@ function anthropicMessage(m: ChatMessage) {
   };
 }
 
-function openAiMessage(m: ChatMessage) {
+export function openAiMessage(m: ChatMessage) {
   if (!m.images?.length) return { role: m.role, content: m.content };
   return {
     role: m.role,
