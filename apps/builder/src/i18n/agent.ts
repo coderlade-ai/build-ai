@@ -1,6 +1,6 @@
 import type { Locale } from "@ladestack/i18n";
 
-/** Workspace agent strings, in all eight locales. Placeholders: {provider}, {path}, {steps}. */
+/** Workspace agent strings, in all eight locales. Placeholders: {provider}, {path}, {steps}, {count}. */
 export interface AgentStrings {
   label: string;
   placeholder: string;
@@ -15,6 +15,10 @@ export interface AgentStrings {
   read: string;
   wrote: string;
   toolFailed: string;
+  listFailed: string;
+  readFailed: string;
+  previewFailed: string;
+  doneWithFailures: string;
   done: string;
   stopped: string;
   maxSteps: string;
@@ -57,6 +61,11 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     read: "Read {path}",
     wrote: "Wrote {path}",
     toolFailed: "Couldn't change {path}",
+    listFailed: "Couldn't list files",
+    readFailed: "Couldn't read {path}",
+    previewFailed: "Couldn't check the preview (preview problem, not the AI)",
+    doneWithFailures:
+      "Finished, but {count} step(s) failed. Check the result before relying on it.",
     done: "Done.",
     stopped: "Stopped. Files already written are saved.",
     maxSteps:
@@ -100,6 +109,11 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     read: "Прочитан {path}",
     wrote: "Записан {path}",
     toolFailed: "Не удалось изменить {path}",
+    listFailed: "Не удалось получить список файлов",
+    readFailed: "Не удалось прочитать {path}",
+    previewFailed: "Не удалось проверить предпросмотр (проблема предпросмотра, не ИИ)",
+    doneWithFailures:
+      "Завершено, но шагов с ошибкой: {count}. Проверьте результат, прежде чем на него полагаться.",
     done: "Готово.",
     stopped: "Остановлено. Уже записанные файлы сохранены.",
     maxSteps:
@@ -142,6 +156,11 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     read: "{path} を読み込み",
     wrote: "{path} を書き込み",
     toolFailed: "{path} を変更できませんでした",
+    listFailed: "ファイル一覧を取得できませんでした",
+    readFailed: "{path} を読み込めませんでした",
+    previewFailed: "プレビューを確認できませんでした（AI ではなくプレビュー側の問題）",
+    doneWithFailures:
+      "完了しましたが、{count} 件のステップが失敗しました。結果を確認してから使ってください。",
     done: "完了しました。",
     stopped: "停止しました。書き込み済みのファイルは保存されています。",
     maxSteps:
@@ -184,6 +203,10 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     read: "{path} 읽음",
     wrote: "{path} 작성",
     toolFailed: "{path}을(를) 변경하지 못했습니다",
+    listFailed: "파일 목록을 가져오지 못했습니다",
+    readFailed: "{path}을(를) 읽지 못했습니다",
+    previewFailed: "미리보기를 확인하지 못했습니다(AI가 아닌 미리보기 문제)",
+    doneWithFailures: "완료했지만 {count}개 단계가 실패했습니다. 결과를 확인한 뒤 사용하세요.",
     done: "완료했습니다.",
     stopped: "중지했습니다. 이미 작성한 파일은 저장되어 있습니다.",
     maxSteps:
@@ -226,6 +249,10 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     read: "已读取 {path}",
     wrote: "已写入 {path}",
     toolFailed: "无法修改 {path}",
+    listFailed: "无法列出文件",
+    readFailed: "无法读取 {path}",
+    previewFailed: "无法检查预览（预览问题，并非 AI 问题）",
+    doneWithFailures: "已结束，但有 {count} 个步骤失败。请先检查结果再使用。",
     done: "已完成。",
     stopped: "已停止。已写入的文件均已保存。",
     maxSteps: "已在 {steps} 步后停止。已写入的文件均已保存；再次运行即可继续。",
@@ -266,6 +293,11 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     read: "{path} okundu",
     wrote: "{path} yazıldı",
     toolFailed: "{path} değiştirilemedi",
+    listFailed: "Dosyalar listelenemedi",
+    readFailed: "{path} okunamadı",
+    previewFailed: "Önizleme denetlenemedi (yapay zekâ değil, önizleme sorunu)",
+    doneWithFailures:
+      "Bitti, ancak {count} adım başarısız oldu. Sonuca güvenmeden önce kontrol edin.",
     done: "Bitti.",
     stopped: "Durduruldu. Yazılmış dosyalar kaydedildi.",
     maxSteps:
@@ -309,6 +341,11 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     read: "{path} lu",
     wrote: "{path} écrit",
     toolFailed: "Impossible de modifier {path}",
+    listFailed: "Impossible de lister les fichiers",
+    readFailed: "Impossible de lire {path}",
+    previewFailed: "Impossible de vérifier l’aperçu (problème d’aperçu, pas de l’IA)",
+    doneWithFailures:
+      "Terminé, mais {count} étape(s) ont échoué. Vérifiez le résultat avant de vous y fier.",
     done: "Terminé.",
     stopped: "Arrêté. Les fichiers déjà écrits sont enregistrés.",
     maxSteps:
@@ -353,6 +390,11 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     read: "{path} lido",
     wrote: "{path} gravado",
     toolFailed: "Não foi possível alterar {path}",
+    listFailed: "Não foi possível listar os arquivos",
+    readFailed: "Não foi possível ler {path}",
+    previewFailed: "Não foi possível verificar a prévia (problema da prévia, não da IA)",
+    doneWithFailures:
+      "Concluído, mas {count} etapa(s) falharam. Confira o resultado antes de confiar nele.",
     done: "Concluído.",
     stopped: "Parado. Os arquivos já gravados estão salvos.",
     maxSteps:

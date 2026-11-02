@@ -413,7 +413,10 @@ describe("Debug mode", () => {
 
 describe("check_preview tool", () => {
   it("reports the preview console in Code and Debug, never in Plan", async () => {
-    const checkPreview = vi.fn(async () => "The page loaded. Console: 1 error(s)");
+    const checkPreview = vi.fn(async () => ({
+      ok: true,
+      report: "The page loaded. Console: 1 error(s)",
+    }));
     for (const mode of ["code", "debug"] as const) {
       const r = await runTool(store, projectId, call("check_preview", {}), { mode, checkPreview });
       expect(r).toMatchObject({ isError: false, output: "The page loaded. Console: 1 error(s)" });
@@ -425,6 +428,13 @@ describe("check_preview tool", () => {
     expect(plan.isError).toBe(true);
     expect(checkPreview).toHaveBeenCalledTimes(2);
     expect(toolsForMode("plan").map((t) => t.name)).not.toContain("check_preview");
+  });
+
+  it("reports a preview that could not be checked as a failed step", async () => {
+    const r = await runTool(store, projectId, call("check_preview", {}), {
+      checkPreview: async () => ({ ok: false, report: "The preview is not open." }),
+    });
+    expect(r).toMatchObject({ isError: true, output: "The preview is not open." });
   });
 
   it("fails cleanly without a preview", async () => {
