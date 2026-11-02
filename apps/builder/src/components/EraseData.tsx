@@ -22,7 +22,7 @@ function storages(): (Storage | null)[] {
 }
 
 /** SET-03: erase everything this builder keeps in the browser, after an explicit confirmation. */
-export function EraseData({ locale }: { locale: Locale }) {
+export function EraseData({ locale, title }: { locale: Locale; title?: string }) {
   const t = erase[locale];
   const [state, setState] = useState<State>("idle");
 
@@ -47,7 +47,7 @@ export function EraseData({ locale }: { locale: Locale }) {
   return (
     <section className={styles.templates} aria-labelledby="erase-title">
       <h2 id="erase-title" className={styles.sectionTitle}>
-        {t.title}
+        {title ?? t.title}
       </h2>
       <p className={styles.templateDesc}>{t.body}</p>
       <button
