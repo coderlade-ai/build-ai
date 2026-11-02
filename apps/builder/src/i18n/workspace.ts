@@ -8,6 +8,10 @@ export interface WorkspaceStrings {
   loading: string;
   missingId: string;
   notFound: string;
+  storageError: string;
+  retry: string;
+  fileError: string;
+  retrySave: string;
   files: string;
   code: string;
   preview: string;
@@ -55,6 +59,10 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     missingId: "No project was specified.",
     notFound:
       "This project isn't in this browser. Projects are stored only on the device and browser where they were created.",
+    storageError: "Couldn't open this browser's local storage. Your files have not been changed.",
+    retry: "Try again",
+    fileError: "Couldn't open this file. The saved copy is unchanged.",
+    retrySave: "Try saving again",
     files: "Files",
     code: "Code",
     preview: "Preview",
@@ -103,6 +111,10 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     missingId: "Проект не указан.",
     notFound:
       "Этого проекта нет в этом браузере. Проекты хранятся только на том устройстве и в том браузере, где они созданы.",
+    storageError: "Не удалось открыть локальное хранилище браузера. Ваши файлы не изменены.",
+    retry: "Повторить",
+    fileError: "Не удалось открыть файл. Сохранённая копия не изменена.",
+    retrySave: "Сохранить ещё раз",
     files: "Файлы",
     code: "Код",
     preview: "Превью",
@@ -151,6 +163,11 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     missingId: "プロジェクトが指定されていません。",
     notFound:
       "このプロジェクトはこのブラウザにありません。プロジェクトは作成したデバイスとブラウザにのみ保存されます。",
+    storageError:
+      "このブラウザーのローカルストレージを開けませんでした。ファイルは変更されていません。",
+    retry: "再試行",
+    fileError: "このファイルを開けませんでした。保存済みの内容は変更されていません。",
+    retrySave: "もう一度保存",
     files: "ファイル",
     code: "コード",
     preview: "プレビュー",
@@ -199,6 +216,10 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     missingId: "지정된 프로젝트가 없습니다.",
     notFound:
       "이 프로젝트는 이 브라우저에 없습니다. 프로젝트는 만든 기기와 브라우저에만 저장됩니다.",
+    storageError: "이 브라우저의 로컬 저장소를 열지 못했습니다. 파일은 변경되지 않았습니다.",
+    retry: "다시 시도",
+    fileError: "이 파일을 열지 못했습니다. 저장된 사본은 변경되지 않았습니다.",
+    retrySave: "다시 저장",
     files: "파일",
     code: "코드",
     preview: "미리보기",
@@ -245,6 +266,10 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     loading: "正在打开项目…",
     missingId: "未指定项目。",
     notFound: "此浏览器中没有这个项目。项目只保存在创建它的设备和浏览器中。",
+    storageError: "无法打开此浏览器的本地存储。你的文件没有被更改。",
+    retry: "重试",
+    fileError: "无法打开此文件。已保存的副本没有变化。",
+    retrySave: "再次保存",
     files: "文件",
     code: "代码",
     preview: "预览",
@@ -291,6 +316,10 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     missingId: "Bir proje belirtilmedi.",
     notFound:
       "Bu proje bu tarayıcıda yok. Projeler yalnızca oluşturuldukları cihaz ve tarayıcıda saklanır.",
+    storageError: "Bu tarayıcının yerel depolaması açılamadı. Dosyalarınız değiştirilmedi.",
+    retry: "Tekrar dene",
+    fileError: "Bu dosya açılamadı. Kayıtlı kopya değişmedi.",
+    retrySave: "Yeniden kaydet",
     files: "Dosyalar",
     code: "Kod",
     preview: "Önizleme",
@@ -339,6 +368,11 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     missingId: "Aucun projet indiqué.",
     notFound:
       "Ce projet n'est pas dans ce navigateur. Les projets sont enregistrés uniquement sur l'appareil et le navigateur où ils ont été créés.",
+    storageError:
+      "Impossible d’ouvrir le stockage local de ce navigateur. Vos fichiers n’ont pas été modifiés.",
+    retry: "Réessayer",
+    fileError: "Impossible d’ouvrir ce fichier. La copie enregistrée n’a pas changé.",
+    retrySave: "Réessayer d’enregistrer",
     files: "Fichiers",
     code: "Code",
     preview: "Aperçu",
@@ -388,6 +422,11 @@ export const workspace: Record<Locale, WorkspaceStrings> = {
     missingId: "Nenhum projeto foi indicado.",
     notFound:
       "Este projeto não está neste navegador. Os projetos ficam salvos só no dispositivo e no navegador onde foram criados.",
+    storageError:
+      "Não foi possível abrir o armazenamento local deste navegador. Seus arquivos não foram alterados.",
+    retry: "Tentar de novo",
+    fileError: "Não foi possível abrir este arquivo. A cópia salva não mudou.",
+    retrySave: "Tentar salvar de novo",
     files: "Arquivos",
     code: "Código",
     preview: "Prévia",

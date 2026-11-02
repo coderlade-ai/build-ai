@@ -22,7 +22,11 @@ const CodeEditor = dynamic(() => import("../editor/CodeEditor").then((m) => m.Co
   ssr: false,
 });
 
-type Load = { state: "loading" } | { state: "missing" } | { state: "ready"; project: Project };
+type Load =
+  | { state: "loading" }
+  | { state: "missing" }
+  | { state: "error" } // storage failed: not the same as a missing project (ERR-03)
+  | { state: "ready"; project: Project };
 type Save = "saved" | "dirty" | "saving" | "error" | "conflict";
 
 interface OpenFile {
@@ -38,6 +42,8 @@ export function Workspace({ locale }: { locale: Locale }) {
   const w = workspace[locale];
   const id = useSearchParams().get("id");
   const [load, setLoad] = useState<Load>({ state: "loading" });
+  const [attempt, setAttempt] = useState(0);
+  const [fileError, setFileError] = useState(false);
   const [files, setFiles] = useState<ProjectFile[]>([]);
   const [open, setOpen] = useState<OpenFile | null>(null);
   // The file the agent is writing right now, as it streams in (PRD: Monaco live streaming).
@@ -65,10 +71,16 @@ export function Workspace({ locale }: { locale: Locale }) {
   saveRef.current = save;
 
   const openFile = useCallback(async (projectId: string, path: string) => {
-    const store = await getProjectStore();
-    const read = await store.readFile(projectId, path);
-    if (read) setOpen({ path, revision: read.file.revision, content: read.content });
-    setSave("saved");
+    try {
+      const store = await getProjectStore();
+      const read = await store.readFile(projectId, path);
+      if (read) setOpen({ path, revision: read.file.revision, content: read.content });
+      setSave("saved");
+      setFileError(false);
+    } catch {
+      // Keep whatever is on screen; nothing was written (ERR-02).
+      setFileError(true);
+    }
   }, []);
 
   useEffect(() => {
@@ -90,13 +102,13 @@ export function Workspace({ locale }: { locale: Locale }) {
         const first = defaultFile(list.map((f) => f.path));
         if (first) await openFile(id, first);
       } catch {
-        if (!cancelled) setLoad({ state: "missing" });
+        if (!cancelled) setLoad({ state: "error" });
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, [id, openFile]);
+  }, [id, openFile, attempt]);
 
   const persist = useCallback(async () => {
     clearTimeout(timer.current);
@@ -211,8 +223,25 @@ export function Workspace({ locale }: { locale: Locale }) {
   if (load.state !== "ready") {
     return (
       <main className={styles.message}>
-        <p role="status">{load.state === "loading" ? w.loading : id ? w.notFound : w.missingId}</p>
-        {load.state === "missing" ? <Link href={home}>{w.back}</Link> : null}
+        {load.state === "error" ? (
+          <>
+            <p role="alert">{w.storageError}</p>
+            <button
+              type="button"
+              onClick={() => {
+                setLoad({ state: "loading" });
+                setAttempt((n) => n + 1);
+              }}
+            >
+              {w.retry}
+            </button>
+          </>
+        ) : (
+          <p role="status">
+            {load.state === "loading" ? w.loading : id ? w.notFound : w.missingId}
+          </p>
+        )}
+        {load.state !== "loading" ? <Link href={home}>{w.back}</Link> : null}
       </main>
     );
   }
@@ -272,12 +301,22 @@ export function Workspace({ locale }: { locale: Locale }) {
           {w.exportError}
         </p>
       ) : null}
+      {fileError ? (
+        <p className={styles.alert} role="alert">
+          {w.fileError}
+        </p>
+      ) : null}
       {save === "conflict" || save === "error" ? (
         <div className={styles.alert} role="alert">
           <span>{status[save]}</span>
           {save === "conflict" && open ? (
             <button type="button" onClick={() => void openFile(id!, open.path)}>
               {w.reloadFile}
+            </button>
+          ) : null}
+          {save === "error" ? (
+            <button type="button" onClick={() => void persist()}>
+              {w.retrySave}
             </button>
           ) : null}
         </div>
