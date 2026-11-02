@@ -3,7 +3,10 @@ import type { ProviderId } from "./registry";
 import { readSse } from "./sse";
 
 export interface ChatImage {
+  /** An image type, or application/pdf for a document the provider reads itself. */
   mediaType: string;
+  /** File name, sent with documents (OpenAI-style file parts need one). */
+  name?: string;
   /** Base64 without a data: prefix. */
   data: string;
 }
@@ -21,7 +24,7 @@ export function anthropicMessage(m: ChatMessage) {
     role: m.role,
     content: [
       ...m.images.map((i) => ({
-        type: "image",
+        type: i.mediaType === "application/pdf" ? "document" : "image",
         source: { type: "base64", media_type: i.mediaType, data: i.data },
       })),
       { type: "text", text: m.content },
@@ -35,10 +38,17 @@ export function openAiMessage(m: ChatMessage) {
     role: m.role,
     content: [
       { type: "text", text: m.content },
-      ...m.images.map((i) => ({
-        type: "image_url",
-        image_url: { url: `data:${i.mediaType};base64,${i.data}` },
-      })),
+      ...m.images.map((i) =>
+        i.mediaType === "application/pdf"
+          ? {
+              type: "file",
+              file: {
+                filename: i.name ?? "document.pdf",
+                file_data: `data:application/pdf;base64,${i.data}`,
+              },
+            }
+          : { type: "image_url", image_url: { url: `data:${i.mediaType};base64,${i.data}` } },
+      ),
     ],
   };
 }

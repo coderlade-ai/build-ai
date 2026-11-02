@@ -6,6 +6,7 @@
 export const attachmentLimits = {
   files: 6,
   imageBytes: 4 * 1024 * 1024,
+  pdfBytes: 4 * 1024 * 1024,
   textBytes: 200 * 1024,
   totalTextBytes: 300 * 1024,
 } as const;
@@ -34,7 +35,8 @@ export type AttachmentReason = "blocked" | "unsupported" | "too-large" | "too-ma
 
 export type Attachment =
   | { kind: "text"; name: string; size: number; text: string }
-  | { kind: "image"; name: string; size: number; mediaType: ImageType; data: string };
+  | { kind: "image"; name: string; size: number; mediaType: ImageType; data: string }
+  | { kind: "pdf"; name: string; size: number; mediaType: "application/pdf"; data: string };
 
 const extension = (name: string) => {
   const i = name.lastIndexOf(".");
@@ -45,10 +47,15 @@ export function classifyFile(
   name: string,
   type: string,
   size: number,
-): { ok: true; kind: "text" | "image" } | { ok: false; reason: AttachmentReason } {
+): { ok: true; kind: "text" | "image" | "pdf" } | { ok: false; reason: AttachmentReason } {
   const base = name.split(/[\\/]/).pop() ?? name;
   if (blockedName.test(base) || blockedExtensions.has(extension(base)))
     return { ok: false, reason: "blocked" };
+  // PDFs go to the provider as documents; it reads them, nothing is parsed here.
+  if (type === "application/pdf" || extension(base) === "pdf")
+    return size > attachmentLimits.pdfBytes
+      ? { ok: false, reason: "too-large" }
+      : { ok: true, kind: "pdf" };
   if ((imageTypes as readonly string[]).includes(type))
     return size > attachmentLimits.imageBytes
       ? { ok: false, reason: "too-large" }
@@ -87,6 +94,22 @@ export async function readAttachment(
   const c = classifyFile(file.name, file.type, file.size);
   if (!c.ok) return c;
   try {
+    if (c.kind === "pdf") {
+      const bytes = new Uint8Array(await file.arrayBuffer());
+      // "%PDF-" signature: a renamed file of another type is refused.
+      if (String.fromCharCode(...bytes.subarray(0, 5)) !== "%PDF-")
+        return { ok: false, reason: "unsupported" };
+      return {
+        ok: true,
+        attachment: {
+          kind: "pdf",
+          name: file.name,
+          size: file.size,
+          mediaType: "application/pdf",
+          data: toBase64(bytes),
+        },
+      };
+    }
     if (c.kind === "image")
       return {
         ok: true,
@@ -113,7 +136,7 @@ export async function readAttachment(
 export function composeUserMessage(
   prompt: string,
   attachments: Attachment[],
-): { content: string; images: { mediaType: ImageType; data: string }[] } {
+): { content: string; images: { mediaType: string; data: string; name?: string }[] } {
   const texts = attachments.filter((a) => a.kind === "text");
   let content = prompt;
   if (texts.length) {
@@ -124,8 +147,12 @@ export function composeUserMessage(
       content += `\n\n${a.name}\n${fence}\n${a.text}\n${fence}`;
     }
   }
-  const images = attachments.flatMap((a) =>
-    a.kind === "image" ? [{ mediaType: a.mediaType, data: a.data }] : [],
+  const images = attachments.flatMap((a): { mediaType: string; data: string; name?: string }[] =>
+    a.kind === "image"
+      ? [{ mediaType: a.mediaType, data: a.data }]
+      : a.kind === "pdf"
+        ? [{ mediaType: a.mediaType, data: a.data, name: a.name }]
+        : [],
   );
   return { content, images };
 }

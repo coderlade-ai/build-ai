@@ -146,4 +146,21 @@ describe("buildRequest with images", () => {
     expect(body("openai")).toContain('"image_url":{"url":"data:image/png;base64,AQID"}');
     expect(body("openrouter")).toContain('"text":"What is this?"');
   });
+
+  it("sends PDFs as documents", () => {
+    const pdf = { mediaType: "application/pdf", data: "JVBE", name: "spec.pdf" };
+    const b = (provider: StreamOptions["provider"]) =>
+      JSON.stringify(
+        buildRequest({
+          ...base,
+          provider,
+          messages: [{ role: "user", content: "Sum up", images: [pdf] }],
+        }).body,
+      );
+    expect(b("anthropic")).toContain('"type":"document"');
+    expect(b("openai")).toContain(
+      '"file":{"filename":"spec.pdf","file_data":"data:application/pdf;base64,JVBE"}',
+    );
+    expect(b("gemini")).toContain('"inline_data":{"mime_type":"application/pdf","data":"JVBE"}');
+  });
 });
