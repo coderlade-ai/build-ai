@@ -26,6 +26,8 @@ import type { StreamError } from "../providers/stream";
 import { useProviderSession } from "../providers/useProviderSession";
 import { getProjectStore } from "../storage/client";
 import styles from "./Workspace.module.css";
+import { composeUserMessage } from "../attachments/attach";
+import { AttachButton, AttachmentList, useAttachments } from "./Attachments";
 
 type LogEntry =
   | { kind: "you"; text: string }
@@ -78,6 +80,7 @@ export function AgentPanel({
   checkPreview?: () => Promise<string>;
 }) {
   const a = agentStrings[locale];
+  const at = useAttachments(locale);
   const t = providerStrings[locale];
   const session = useProviderSession();
   const [prompt, setPrompt] = useState("");
@@ -310,13 +313,22 @@ export function AgentPanel({
 
   function onSubmit(e: FormEvent) {
     e.preventDefault();
-    void run();
+    sendTyped();
+  }
+
+  /** The typed request with any attached files; attachments clear once a run starts. */
+  function sendTyped() {
+    if (!at.attachments.length) return void run();
+    const m = composeUserMessage(prompt.trim(), at.attachments);
+    if (!prompt.trim() || running || !getSession()) return;
+    at.clear();
+    void run(m.content, mode, m.images, false);
   }
 
   function onKeyDown(e: KeyboardEvent<HTMLTextAreaElement>) {
     if (isSubmitShortcut({ ...e, isComposing: e.nativeEvent.isComposing })) {
       e.preventDefault();
-      void run();
+      sendTyped();
     }
   }
 
@@ -414,7 +426,8 @@ export function AgentPanel({
           </button>
         ))}
       </div>
-      <form className={styles.agentForm} onSubmit={onSubmit}>
+      <AttachmentList at={at} />
+      <form className={styles.agentForm} onSubmit={onSubmit} {...at.dropProps}>
         <label htmlFor={ids.prompt} className={styles.srOnly}>
           {a.label}
         </label>
@@ -432,6 +445,7 @@ export function AgentPanel({
           onKeyDown={onKeyDown}
           disabled={running}
         />
+        <AttachButton at={at} disabled={running} />
         {running ? (
           <button
             type="button"

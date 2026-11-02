@@ -30,22 +30,8 @@ import {
   streamChat,
   type StreamError,
 } from "../providers/stream";
-import {
-  admit,
-  composeUserMessage,
-  readAttachment,
-  type Attachment,
-  type AttachmentReason,
-} from "../attachments/attach";
-import { attachStrings, type AttachStrings } from "../i18n/attach";
-
-const reasonKey: Record<AttachmentReason, keyof AttachStrings> = {
-  blocked: "blocked",
-  unsupported: "unsupported",
-  "too-large": "tooLarge",
-  "too-many": "tooMany",
-  "read-failed": "readFailed",
-};
+import { composeUserMessage } from "../attachments/attach";
+import { AttachButton, AttachmentList, useAttachments } from "./Attachments";
 
 /** Mode names are product terms and stay in English; their hints are localized. */
 const modeNames: Record<AlphaMode, string> = {
@@ -99,26 +85,8 @@ export function Composer({ s, locale }: { s: ShellStrings; locale: Locale }) {
     debug: s.hintDebug,
   };
   const tooLong = draft.prompt.length > maxPromptLength;
-  const at = attachStrings[locale];
-  const [attachments, setAttachments] = useState<Attachment[]>([]);
-  const [attachErrors, setAttachErrors] = useState<string[]>([]);
-  const fileInput = useRef<HTMLInputElement>(null);
-
-  /** Reads dropped or picked files one by one, checking each against the set so far. */
-  async function addFiles(files: FileList | null) {
-    if (!files?.length) return;
-    const errors: string[] = [];
-    let next = attachments;
-    for (const file of Array.from(files)) {
-      const read = await readAttachment(file);
-      const ok = read.ok ? admit(next, read.attachment) : read;
-      if (read.ok && ok.ok) next = [...next, read.attachment];
-      else if (!ok.ok) errors.push(at[reasonKey[ok.reason]].replace("{name}", file.name));
-    }
-    setAttachments(next);
-    setAttachErrors(errors);
-    setNotice(null);
-  }
+  const at = useAttachments(locale);
+  const attachments = at.attachments;
 
   // Restore the tab's draft after hydration so server and client render the same markup.
   useEffect(() => {
@@ -189,7 +157,7 @@ export function Composer({ s, locale }: { s: ShellStrings; locale: Locale }) {
       });
       setPendingTask(project.id, { mode, prompt, images });
       setDraft((d) => ({ ...d, prompt: "" }));
-      setAttachments([]);
+      at.clear();
       router.push(`${localePrefix(locale)}/project?id=${encodeURIComponent(project.id)}`);
     } catch {
       setNotice(w.createError);
@@ -221,7 +189,7 @@ export function Composer({ s, locale }: { s: ShellStrings; locale: Locale }) {
         setTurn((x) => x && { ...x, answer, state: "streaming" });
       }
       setTurn((x) => x && { ...x, state: "done" });
-      setAttachments([]);
+      at.clear();
       setDraft((d) => ({ ...d, prompt: "" })); // answered: clear the box for the next question
     } catch (e) {
       const code = e instanceof ProviderStreamError ? e.code : "unexpected";
@@ -246,19 +214,7 @@ export function Composer({ s, locale }: { s: ShellStrings; locale: Locale }) {
   }
 
   return (
-    <form
-      className={styles.composer}
-      onSubmit={onSubmit}
-      noValidate
-      onDragOver={(e) => {
-        if (e.dataTransfer.types.includes("Files")) e.preventDefault();
-      }}
-      onDrop={(e) => {
-        if (!e.dataTransfer.files.length) return;
-        e.preventDefault();
-        void addFiles(e.dataTransfer.files);
-      }}
-    >
+    <form className={styles.composer} onSubmit={onSubmit} noValidate {...at.dropProps}>
       <label htmlFor={ids.prompt} className={styles.srOnly}>
         {s.composerLabel}
       </label>
@@ -277,31 +233,7 @@ export function Composer({ s, locale }: { s: ShellStrings; locale: Locale }) {
         }}
         onKeyDown={onKeyDown}
       />
-      {attachments.length ? (
-        <ul className={styles.attachments} aria-label={at.attach}>
-          {attachments.map((x, i) => (
-            <li key={`${x.name}-${i}`} className={styles.attachment}>
-              <span>{x.name}</span>
-              <button
-                type="button"
-                className={styles.attachmentRemove}
-                aria-label={at.remove.replace("{name}", x.name)}
-                onClick={() => setAttachments((list) => list.filter((_, j) => j !== i))}
-              >
-                ×
-              </button>
-            </li>
-          ))}
-        </ul>
-      ) : null}
-      {attachments.length ? <p className={styles.hint}>{at.note}</p> : null}
-      {attachErrors.length ? (
-        <ul className={styles.attachErrors} role="alert">
-          {attachErrors.map((e) => (
-            <li key={e}>{e}</li>
-          ))}
-        </ul>
-      ) : null}
+      <AttachmentList at={at} />
       <div className={styles.row}>
         <fieldset className={styles.modes}>
           <legend className={styles.srOnly}>{s.modeLabel}</legend>
@@ -318,25 +250,7 @@ export function Composer({ s, locale }: { s: ShellStrings; locale: Locale }) {
             </label>
           ))}
         </fieldset>
-        <input
-          ref={fileInput}
-          type="file"
-          multiple
-          hidden
-          onChange={(e) => {
-            void addFiles(e.target.files);
-            e.target.value = "";
-          }}
-        />
-        <button
-          type="button"
-          className={styles.attach}
-          title={at.note}
-          onClick={() => fileInput.current?.click()}
-          disabled={busy || creating}
-        >
-          {at.attach}
-        </button>
+        <AttachButton at={at} disabled={busy || creating} />
         {busy ? (
           <button type="button" className={styles.submit} onClick={() => abort.current?.abort()}>
             {a.stop}
