@@ -15,6 +15,7 @@ describe("classifyFile", () => {
     expect(classifyFile("App.tsx", "", 100)).toEqual({ ok: true, kind: "text" });
     expect(classifyFile("README.md", "text/markdown", 100)).toEqual({ ok: true, kind: "text" });
     expect(classifyFile("shot.png", "image/png", 100)).toEqual({ ok: true, kind: "image" });
+    expect(classifyFile("spec.pdf", "application/pdf", 100)).toEqual({ ok: true, kind: "pdf" });
   });
 
   it("never reads credentials or executables", () => {
@@ -53,6 +54,15 @@ describe("readAttachment", () => {
       new File([new Uint8Array([1, 2, 3])], "p.png", { type: "image/png" }),
     );
     expect(i).toMatchObject({ ok: true, attachment: { kind: "image", data: "AQID" } });
+  });
+
+  it("reads PDFs by signature and refuses renamed files", async () => {
+    const pdf = await readAttachment(
+      new File(["%PDF-1.7\n"], "spec.pdf", { type: "application/pdf" }),
+    );
+    expect(pdf).toMatchObject({ ok: true, attachment: { kind: "pdf", name: "spec.pdf" } });
+    const fake = await readAttachment(new File(["hello"], "x.pdf", { type: "application/pdf" }));
+    expect(fake).toEqual({ ok: false, reason: "unsupported" });
   });
 
   it("refuses binary content behind a text extension", async () => {
