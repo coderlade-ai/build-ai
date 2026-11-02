@@ -10,6 +10,7 @@ import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState, useMemo } from "react";
 import { localePrefix, type Locale } from "@ladestack/i18n";
 import type { Project, ProjectFile } from "@ladestack/shared-types";
+import { settingsStrings } from "../i18n/settings";
 import { workspace } from "../i18n/workspace";
 import { getProjectStore } from "../storage/client";
 import { buildFileTree, defaultFile, type TreeNode } from "../workspace/fileTree";
@@ -56,6 +57,8 @@ export function Workspace({ locale }: { locale: Locale }) {
   const [agentBusy, setAgentBusy] = useState(false);
   const [historyKey, setHistoryKey] = useState(0);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  /** True while an edit is waiting for its autosave. */
+  const pending = useRef(false);
   const openRef = useRef(open);
   openRef.current = open;
   const saveRef = useRef(save);
@@ -97,6 +100,7 @@ export function Workspace({ locale }: { locale: Locale }) {
 
   const persist = useCallback(async () => {
     clearTimeout(timer.current);
+    pending.current = false;
     const current = openRef.current;
     if (!id || !current) return;
     setSave("saving");
@@ -118,6 +122,18 @@ export function Workspace({ locale }: { locale: Locale }) {
     }
   }, [id]);
 
+  // Leaving the workspace inside the app (home, settings) unmounts it: save what is pending first.
+  const persistRef = useRef(persist);
+  useEffect(() => {
+    persistRef.current = persist;
+  }, [persist]);
+  useEffect(
+    () => () => {
+      if (pending.current) void persistRef.current();
+    },
+    [],
+  );
+
   // Flush pending edits when the tab is hidden or closed.
   useEffect(() => {
     const flush = () => {
@@ -131,6 +147,7 @@ export function Workspace({ locale }: { locale: Locale }) {
     setOpen((o) => (o ? { ...o, content } : o));
     if (save === "conflict") return; // never autosave over a newer version
     setSave("dirty");
+    pending.current = true;
     clearTimeout(timer.current);
     timer.current = setTimeout(() => void persist(), autosaveDelayMs);
   }
@@ -243,6 +260,9 @@ export function Workspace({ locale }: { locale: Locale }) {
           refreshKey={historyKey}
           onRestored={() => void restored()}
         />
+        <Link className={styles.settingsLink} href={`${localePrefix(locale)}/settings`}>
+          {settingsStrings[locale].link}
+        </Link>
         <p className={styles.saveState} role="status" data-state={save}>
           {save === "conflict" || save === "error" ? null : status[save]}
         </p>

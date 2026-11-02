@@ -191,6 +191,30 @@ try {
     await page.getByRole("button", { name: "Desktop", exact: true }).click();
     if (Math.round(await frameWidth()) !== Math.round(fullWidth))
       throw new Error("Desktop viewport does not fill the pane");
+
+    // Leaving for Settings right after typing still saves the edit (no autosave wait).
+    step("workspace settings link keeps edits");
+    await page.locator("header").getByRole("button", { name: "Code", exact: true }).click();
+    await page.getByRole("button", { name: "App.css", exact: true }).click();
+    await page.locator(".monaco-editor").first().click();
+    await page.keyboard.press("ControlOrMeta+End");
+    await page.keyboard.insertText("\n.flushmarker { color: red; }\n");
+    const workspaceUrl = page.url();
+    await page.locator("header").getByRole("link", { name: "Settings" }).click();
+    await page.waitForURL(/\/app\/settings$/, { timeout: 15000 });
+    await page.getByRole("heading", { name: "Language" }).waitFor();
+    // A fresh load reads the file back from IndexedDB (the preview keeps the network busy).
+    await page.goto(workspaceUrl);
+    await page.getByRole("button", { name: "App.css", exact: true }).click();
+    await page.locator(".monaco-editor .view-lines").first().waitFor();
+    let kept = false;
+    for (let t = Date.now(); Date.now() - t < 10000 && !kept; ) {
+      kept = (await page.locator(".monaco-editor .view-lines").first().innerText()).includes(
+        "flushmarker",
+      );
+      if (!kept) await page.waitForTimeout(300);
+    }
+    if (!kept) throw new Error("Edit made just before opening Settings was not saved");
   }
   // Erase local data: after confirming, the saved projects are gone from the welcome screen.
   step("erase local data");
