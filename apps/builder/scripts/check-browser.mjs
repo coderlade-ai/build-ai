@@ -199,10 +199,12 @@ try {
     await page.locator(".monaco-editor").first().click();
     await page.keyboard.press("ControlOrMeta+End");
     await page.keyboard.insertText("\n.flushmarker { color: red; }\n");
+    const workspaceUrl = page.url();
     await page.locator("header").getByRole("link", { name: "Settings" }).click();
     await page.waitForURL(/\/app\/settings$/, { timeout: 15000 });
     await page.getByRole("heading", { name: "Language" }).waitFor();
-    await page.goBack({ waitUntil: "networkidle" });
+    // A fresh load reads the file back from IndexedDB (the preview keeps the network busy).
+    await page.goto(workspaceUrl);
     await page.getByRole("button", { name: "App.css", exact: true }).click();
     await page.locator(".monaco-editor .view-lines").first().waitFor();
     let kept = false;
