@@ -85,6 +85,15 @@ try {
   step("welcome hydrates");
   // Welcome screen hydrates: the template button is interactive only after React runs.
   await page.goto(base, { waitUntil: "networkidle" });
+  // Attachments: a Markdown file becomes a chip, a credential file is refused unread.
+  step("composer attachments");
+  await page.locator("form input[type=file]").setInputFiles([
+    { name: "notes.md", mimeType: "text/markdown", buffer: Buffer.from("# Notes") },
+    { name: ".env", mimeType: "text/plain", buffer: Buffer.from("SECRET=1") },
+  ]);
+  await page.getByRole("button", { name: "Remove notes.md" }).waitFor({ timeout: 5000 });
+  await page.getByText(".env: credential and executable files are never attached.").waitFor();
+  await page.getByRole("button", { name: "Remove notes.md" }).click();
   await page.getByRole("button", { name: "Use this template" }).first().click();
 
   step("workspace + Monaco");
@@ -207,6 +216,6 @@ if (problems.length) {
   finish(false);
 }
 console.warn(
-  `Browser check passed: hydrated, Monaco mounted, checkpoint saved, local data erased${checkPreview ? ", static + React + Tailwind previews ran, viewports switched, new tab opened, console bridged" : ""}, no CSP violations`,
+  `Browser check passed: hydrated, Monaco mounted, attachments checked, checkpoint saved, local data erased${checkPreview ? ", static + React + Tailwind previews ran, viewports switched, new tab opened, console bridged" : ""}, no CSP violations`,
 );
 finish(true);

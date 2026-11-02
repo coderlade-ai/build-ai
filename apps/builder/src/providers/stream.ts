@@ -2,9 +2,45 @@ import { authHeaders, classifyStatus, type ConnectError } from "./connect";
 import type { ProviderId } from "./registry";
 import { readSse } from "./sse";
 
+export interface ChatImage {
+  mediaType: string;
+  /** Base64 without a data: prefix. */
+  data: string;
+}
+
 export interface ChatMessage {
   role: "user" | "assistant";
   content: string;
+  /** Images on a user turn (INTAKE-03); sent only to the user's own provider. */
+  images?: ChatImage[];
+}
+
+function anthropicMessage(m: ChatMessage) {
+  if (!m.images?.length) return { role: m.role, content: m.content };
+  return {
+    role: m.role,
+    content: [
+      ...m.images.map((i) => ({
+        type: "image",
+        source: { type: "base64", media_type: i.mediaType, data: i.data },
+      })),
+      { type: "text", text: m.content },
+    ],
+  };
+}
+
+function openAiMessage(m: ChatMessage) {
+  if (!m.images?.length) return { role: m.role, content: m.content };
+  return {
+    role: m.role,
+    content: [
+      { type: "text", text: m.content },
+      ...m.images.map((i) => ({
+        type: "image_url",
+        image_url: { url: `data:${i.mediaType};base64,${i.data}` },
+      })),
+    ],
+  };
 }
 
 export type StreamError = ConnectError | "interrupted" | "aborted" | "rejected";
@@ -42,7 +78,7 @@ export function buildRequest(o: StreamOptions): Request {
           model: o.model,
           max_tokens: maxTokens,
           system: o.system,
-          messages: o.messages,
+          messages: o.messages.map(anthropicMessage),
           stream: true,
         },
       };
@@ -53,7 +89,12 @@ export function buildRequest(o: StreamOptions): Request {
           systemInstruction: { parts: [{ text: o.system }] },
           contents: o.messages.map((m) => ({
             role: m.role === "assistant" ? "model" : "user",
-            parts: [{ text: m.content }],
+            parts: [
+              ...(m.images ?? []).map((i) => ({
+                inline_data: { mime_type: i.mediaType, data: i.data },
+              })),
+              { text: m.content },
+            ],
           })),
           generationConfig: { maxOutputTokens: maxTokens },
         },
@@ -66,7 +107,7 @@ export function buildRequest(o: StreamOptions): Request {
             : "https://openrouter.ai/api/v1/chat/completions",
         body: {
           model: o.model,
-          messages: [{ role: "system", content: o.system }, ...o.messages],
+          messages: [{ role: "system", content: o.system }, ...o.messages.map(openAiMessage)],
           stream: true,
         },
       };
