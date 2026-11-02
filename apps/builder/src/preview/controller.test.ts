@@ -33,9 +33,9 @@ describe("check_preview report", () => {
 describe("PreviewController", () => {
   it("explains why it can't check", async () => {
     const c = new PreviewController(instant, sleep);
-    expect(await c.check()).toMatch(/not open/);
+    expect(await c.check()).toEqual({ ok: false, report: expect.stringMatching(/not open/) });
     c.attach({ ok: false, reason: "needs runtime" }, null);
-    expect(await c.check()).toBe("needs runtime");
+    expect(await c.check()).toEqual({ ok: false, report: "needs runtime" });
   });
 
   it("reloads, waits for the load and reports that load's console", async () => {
@@ -48,7 +48,8 @@ describe("PreviewController", () => {
         c.loaded();
       }, 5);
     });
-    const out = await c.check();
+    const { ok, report: out } = await c.check();
+    expect(ok).toBe(true);
     expect(out).toContain("new");
     expect(out).not.toContain("old");
   });
@@ -56,8 +57,11 @@ describe("PreviewController", () => {
   it("times out when the page never loads", async () => {
     const c = new PreviewController(instant, sleep);
     c.attach({ ok: true }, () => {});
-    expect(await c.check()).toMatch(/did not finish loading/);
+    expect(await c.check()).toEqual({
+      ok: false,
+      report: expect.stringMatching(/did not finish loading/),
+    });
     c.detach();
-    expect(await c.check()).toMatch(/not open/);
+    expect((await c.check()).ok).toBe(false);
   });
 });

@@ -15,9 +15,10 @@ import {
   type AgentOutcome,
 } from "../agent/loop";
 import { projectNameFromPrompt, takePendingTask } from "../agent/handoff";
-import { toolsForMode, type AgentMode } from "../agent/tools";
+import { toolsForMode, type AgentMode, type ToolContext } from "../agent/tools";
 import { partialStringField } from "../agent/partialJson";
 import { agentStrings } from "../i18n/agent";
+import { toolLabel } from "../agent/labels";
 import { providerStrings, type ProviderStrings } from "../i18n/providers";
 import { isSubmitShortcut } from "../composer/draft";
 import { providers } from "../providers/registry";
@@ -32,7 +33,7 @@ import { AttachButton, AttachmentList, useAttachments } from "./Attachments";
 type LogEntry =
   | { kind: "you"; text: string }
   | { kind: "text"; text: string }
-  | { kind: "tool"; label: string; error: boolean }
+  | { kind: "tool"; label: string; error: boolean; runtime?: boolean }
   | {
       kind: "end";
       text: string;
@@ -77,7 +78,7 @@ export function AgentPanel({
   /** A task started from elsewhere in the workspace (the preview console); runs when its id changes. */
   request?: { id: number; mode: AgentMode; prompt: string };
   /** Reloads the live preview and reports its console (tool check_preview). */
-  checkPreview?: () => Promise<string>;
+  checkPreview?: ToolContext["checkPreview"];
 }) {
   const a = agentStrings[locale];
   const at = useAttachments(locale);
@@ -182,6 +183,7 @@ export function AgentPanel({
     add({ kind: "you", text: task });
     setPrompt("");
     let wrote = false;
+    let failures = 0; // failed tool steps this run (declines excluded)
     try {
       const fs = await getProjectStore();
       // Checkpoint before any AI edit (PRD A.20): no checkpoint, no run. Plan mode never edits.
@@ -233,23 +235,10 @@ export function AgentPanel({
           }
           clearDraft();
           const { call, isError, path } = e.result;
-          const p = path ?? "?";
-          const done: Record<string, string> = {
-            read_file: a.read,
-            write_file: a.wrote,
-            delete_file: a.deleted,
-          };
-          const label =
-            call.name === "list_files"
-              ? a.listed
-              : call.name === "check_preview"
-                ? a.checkedPreview
-                : e.result.declined
-                  ? a.declined.replace("{path}", p)
-                  : isError
-                    ? a.toolFailed.replace("{path}", p)
-                    : (done[call.name] ?? a.toolFailed).replace("{path}", p);
-          add({ kind: "tool", label, error: isError && !e.result.declined });
+          const label = toolLabel(a, e.result);
+          const error = isError && !e.result.declined;
+          if (error) failures++;
+          add({ kind: "tool", label, error, runtime: error && call.name === "check_preview" });
           if (isError || !path) return;
           if (call.name === "write_file") {
             wrote = true;
@@ -273,7 +262,13 @@ export function AgentPanel({
             setApproval({ path: req.path, decide });
           }),
       });
-      const end = endText(outcome);
+      let end = endText(outcome);
+      if (outcome.reason === "done" && failures > 0 && end.kind === "end")
+        end = {
+          ...end,
+          text: a.doneWithFailures.replace("{count}", String(failures)),
+          error: true,
+        };
       if (end.kind !== "end") add(end);
       else if (runMode !== "code" && outcome.reason === "done" && plan)
         add({ ...end, build: { request: task, plan, mode: runMode } });
@@ -347,7 +342,12 @@ export function AgentPanel({
       {log.length ? (
         <ol className={styles.agentLog} aria-live="polite">
           {log.map((e, i) => (
-            <li key={i} data-kind={e.kind} data-error={"error" in e ? e.error : undefined}>
+            <li
+              key={i}
+              data-kind={e.kind}
+              data-error={"error" in e ? e.error : undefined}
+              data-source={e.kind === "tool" && e.runtime ? "runtime" : undefined}
+            >
               {e.kind === "tool" ? e.label : e.text}
               {e.kind === "end" && e.build ? (
                 <>

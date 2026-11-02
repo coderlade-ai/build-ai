@@ -96,7 +96,8 @@ export interface ToolContext {
   /** Resolves true only on an explicit allow. Missing, aborted or silent means denied. */
   approve?: (request: ApprovalRequest) => Promise<boolean>;
   /** Reloads the live preview and reports its console; missing means no preview here. */
-  checkPreview?: () => Promise<string>;
+  /** `ok: false` when the preview could not be checked (runtime failure, reported as an error). */
+  checkPreview?: () => Promise<{ ok: boolean; report: string }>;
 }
 
 export interface ToolCall {
@@ -247,7 +248,8 @@ export async function runTool(
     }
     case "check_preview": {
       if (!ctx.checkPreview) return fail(call, "The preview is not available here.");
-      return { call, output: await ctx.checkPreview(), isError: false };
+      const r = await ctx.checkPreview();
+      return { call, output: r.report, isError: !r.ok };
     }
     default:
       return fail(call, `Unknown tool: ${call.name}`);

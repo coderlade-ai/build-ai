@@ -30,6 +30,12 @@ type Availability = { ok: true } | { ok: false; reason: string };
  * Lets the agent load the live preview and read its console (tool check_preview). The Preview
  * component registers how to reload and reports loads and console messages here.
  */
+/** Result of check_preview: `ok` is whether the preview could be checked at all. */
+export interface PreviewCheck {
+  ok: boolean;
+  report: string;
+}
+
 export class PreviewController {
   private availability: Availability = { ok: false, reason: "The preview is not open." };
   private reloader: (() => void) | null = null;
@@ -68,10 +74,14 @@ export class PreviewController {
     if (this.logs.length > 200) this.logs.shift();
   }
 
-  /** Reloads the preview with the saved files, waits for it to settle, and reports the console. */
-  async check(): Promise<string> {
-    if (!this.availability.ok) return this.availability.reason;
-    if (!this.reloader) return "The preview is not open.";
+  /**
+   * Reloads the preview with the saved files, waits for it to settle, and reports the console.
+   * `ok: false` means the preview itself could not be checked (a runtime problem, not the
+   * model's), so the UI never shows it as a completed check (ERR-03/04).
+   */
+  async check(): Promise<PreviewCheck> {
+    if (!this.availability.ok) return { ok: false, report: this.availability.reason };
+    if (!this.reloader) return { ok: false, report: "The preview is not open." };
     const loaded = new Promise<boolean>((resolve) => {
       this.waiting = () => resolve(true);
       void this.sleep(this.timing.loadTimeoutMs).then(() => resolve(false));
@@ -79,9 +89,9 @@ export class PreviewController {
     this.reloader();
     if (!(await loaded)) {
       this.waiting = null;
-      return "The preview did not finish loading within 20 seconds.";
+      return { ok: false, report: "The preview did not finish loading within 20 seconds." };
     }
     await this.sleep(this.timing.settleMs);
-    return formatPreviewReport(this.logs);
+    return { ok: true, report: formatPreviewReport(this.logs) };
   }
 }
