@@ -5,6 +5,8 @@ export const messageTypes = {
   files: "ladestack:preview-files",
   loaded: "ladestack:preview-loaded",
   log: "ladestack:preview-log",
+  clear: "ladestack:preview-clear",
+  cleared: "ladestack:preview-cleared",
 };
 
 export const limits = { files: 2000, totalBytes: 50 * 1024 * 1024 };
@@ -65,6 +67,11 @@ export function parseFilesMessage(data) {
     files[path] = content;
   }
   return { session: /** @type {string} */ (d.session), files };
+}
+
+/** True for a Cache Storage name this preview origin created. @param {string} name */
+export function isPreviewCache(name) {
+  return name.startsWith("ladestack-preview-");
 }
 
 /** @param {string} session */
