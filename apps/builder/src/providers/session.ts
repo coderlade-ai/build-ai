@@ -1,3 +1,4 @@
+import type { ModelInputs } from "./capability";
 import { isProviderId, type ProviderId } from "./registry";
 
 /**
@@ -9,6 +10,8 @@ export interface ProviderSession {
   provider: ProviderId;
   key: string;
   model: string;
+  /** What the provider reported the model reads; absent when it reports nothing. */
+  inputs?: ModelInputs;
 }
 
 const storageKey = "ladestack.build.provider";
@@ -34,7 +37,17 @@ export function parseSession(raw: string | null): ProviderSession | null {
       typeof v.model === "string" &&
       v.model
     )
-      return { provider: v.provider, key: v.key, model: v.model };
+      return {
+        provider: v.provider,
+        key: v.key,
+        model: v.model,
+        ...(v.inputs &&
+        typeof v.inputs === "object" &&
+        typeof v.inputs.images === "boolean" &&
+        typeof v.inputs.pdf === "boolean"
+          ? { inputs: { images: v.inputs.images, pdf: v.inputs.pdf } }
+          : {}),
+      };
   } catch {
     // fall through
   }

@@ -5,6 +5,8 @@ export interface ModelInfo {
   label: string;
   /** True or false only when the provider reports it; undefined means unknown. */
   tools?: boolean;
+  /** Inputs the provider reports for this model (OpenRouter); undefined means not reported. */
+  inputs?: { images: boolean; pdf: boolean };
 }
 
 export type ConnectError =
@@ -81,11 +83,21 @@ export function parseModels(provider: ProviderId, body: unknown): ModelInfo[] {
       case "openrouter": {
         const id = String(m.id ?? "");
         const params = Array.isArray(m.supported_parameters) ? m.supported_parameters : null;
+        const arch = m.architecture as { input_modalities?: unknown } | undefined;
+        const modalities = Array.isArray(arch?.input_modalities) ? arch.input_modalities : null;
         if (id)
           out.push({
             id,
             label: String(m.name ?? id),
             tools: params ? params.includes("tools") : undefined,
+            ...(modalities
+              ? {
+                  inputs: {
+                    images: modalities.includes("image"),
+                    pdf: modalities.includes("file"),
+                  },
+                }
+              : {}),
           });
         break;
       }

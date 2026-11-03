@@ -1,6 +1,6 @@
 import type { Locale } from "@ladestack/i18n";
 
-/** Composer attachments, in all eight locales. `{name}` is a file name. */
+/** Composer attachments, in all eight locales. `{name}` is a file name, `{model}` a model id. */
 export interface AttachStrings {
   attach: string;
   note: string;
@@ -10,6 +10,11 @@ export interface AttachStrings {
   tooLarge: string;
   tooMany: string;
   readFailed: string;
+  /** `{model}` is the chosen model id. */
+  cantImages: string;
+  cantPdf: string;
+  unsureImages: string;
+  unsurePdf: string;
 }
 
 export const attachStrings: Record<Locale, AttachStrings> = {
@@ -23,6 +28,11 @@ export const attachStrings: Record<Locale, AttachStrings> = {
       "{name}: too large (images and PDFs up to 4 MB, text up to 200 KB, 300 KB of text in total).",
     tooMany: "{name}: you can attach up to 6 files.",
     readFailed: "{name}: couldn't read the file.",
+    cantImages: "{model} can't read images. Remove them or choose another model in Settings.",
+    cantPdf: "{model} can't read PDFs. Remove them or choose another model in Settings.",
+    unsureImages:
+      "Couldn't confirm that {model} reads images. Your provider may refuse the request.",
+    unsurePdf: "Couldn't confirm that {model} reads PDFs. Your provider may refuse the request.",
   },
   ru: {
     attach: "Прикрепить файлы",
@@ -34,6 +44,12 @@ export const attachStrings: Record<Locale, AttachStrings> = {
       "{name}: слишком большой файл (изображения и PDF до 4 МБ, текст до 200 КБ, всего текста до 300 КБ).",
     tooMany: "{name}: можно прикрепить не более 6 файлов.",
     readFailed: "{name}: не удалось прочитать файл.",
+    cantImages:
+      "{model} не умеет читать изображения. Уберите их или выберите другую модель в настройках.",
+    cantPdf: "{model} не умеет читать PDF. Уберите их или выберите другую модель в настройках.",
+    unsureImages:
+      "Не удалось подтвердить, что {model} читает изображения. Провайдер может отклонить запрос.",
+    unsurePdf: "Не удалось подтвердить, что {model} читает PDF. Провайдер может отклонить запрос.",
   },
   ja: {
     attach: "ファイルを添付",
@@ -45,6 +61,12 @@ export const attachStrings: Record<Locale, AttachStrings> = {
       "{name}: サイズが大きすぎます（画像と PDF は 4 MB まで、テキストは 200 KB まで、テキスト合計 300 KB まで）。",
     tooMany: "{name}: 添付できるのは 6 件までです。",
     readFailed: "{name}: ファイルを読み込めませんでした。",
+    cantImages: "{model} は画像を読み取れません。画像を外すか、設定で別のモデルを選んでください。",
+    cantPdf: "{model} は PDF を読み取れません。PDF を外すか、設定で別のモデルを選んでください。",
+    unsureImages:
+      "{model} が画像を読み取れるか確認できませんでした。プロバイダーがリクエストを拒否する場合があります。",
+    unsurePdf:
+      "{model} が PDF を読み取れるか確認できませんでした。プロバイダーがリクエストを拒否する場合があります。",
   },
   ko: {
     attach: "파일 첨부",
@@ -56,6 +78,13 @@ export const attachStrings: Record<Locale, AttachStrings> = {
       "{name}: 파일이 너무 큽니다(이미지·PDF 최대 4MB, 텍스트 최대 200KB, 텍스트 합계 최대 300KB).",
     tooMany: "{name}: 최대 6개 파일까지 첨부할 수 있습니다.",
     readFailed: "{name}: 파일을 읽지 못했습니다.",
+    cantImages:
+      "{model}은(는) 이미지를 읽을 수 없습니다. 이미지를 빼거나 설정에서 다른 모델을 선택하세요.",
+    cantPdf: "{model}은(는) PDF를 읽을 수 없습니다. PDF를 빼거나 설정에서 다른 모델을 선택하세요.",
+    unsureImages:
+      "{model}이(가) 이미지를 읽을 수 있는지 확인하지 못했습니다. 제공업체가 요청을 거부할 수 있습니다.",
+    unsurePdf:
+      "{model}이(가) PDF를 읽을 수 있는지 확인하지 못했습니다. 제공업체가 요청을 거부할 수 있습니다.",
   },
   zh: {
     attach: "添加附件",
@@ -66,6 +95,10 @@ export const attachStrings: Record<Locale, AttachStrings> = {
     tooLarge: "{name}：文件过大（图片和 PDF 最大 4 MB，文本最大 200 KB，文本合计最大 300 KB）。",
     tooMany: "{name}：最多只能附加 6 个文件。",
     readFailed: "{name}：无法读取文件。",
+    cantImages: "{model} 无法读取图片。请移除图片，或在设置中选择其他模型。",
+    cantPdf: "{model} 无法读取 PDF。请移除 PDF，或在设置中选择其他模型。",
+    unsureImages: "无法确认 {model} 能否读取图片。提供商可能会拒绝该请求。",
+    unsurePdf: "无法确认 {model} 能否读取 PDF。提供商可能会拒绝该请求。",
   },
   tr: {
     attach: "Dosya ekle",
@@ -77,6 +110,13 @@ export const attachStrings: Record<Locale, AttachStrings> = {
       "{name}: dosya çok büyük (görseller ve PDF en fazla 4 MB, metin en fazla 200 KB, toplam metin en fazla 300 KB).",
     tooMany: "{name}: en fazla 6 dosya ekleyebilirsiniz.",
     readFailed: "{name}: dosya okunamadı.",
+    cantImages:
+      "{model} görselleri okuyamaz. Görselleri kaldırın veya Ayarlar'dan başka bir model seçin.",
+    cantPdf: "{model} PDF okuyamaz. PDF'leri kaldırın veya Ayarlar'dan başka bir model seçin.",
+    unsureImages:
+      "{model} modelinin görselleri okuyup okuyamadığı doğrulanamadı. Sağlayıcınız isteği reddedebilir.",
+    unsurePdf:
+      "{model} modelinin PDF okuyup okuyamadığı doğrulanamadı. Sağlayıcınız isteği reddedebilir.",
   },
   fr: {
     attach: "Joindre des fichiers",
@@ -88,6 +128,14 @@ export const attachStrings: Record<Locale, AttachStrings> = {
       "{name} : fichier trop volumineux (images et PDF jusqu’à 4 Mo, texte jusqu’à 200 Ko, 300 Ko de texte au total).",
     tooMany: "{name} : vous pouvez joindre jusqu’à 6 fichiers.",
     readFailed: "{name} : impossible de lire le fichier.",
+    cantImages:
+      "{model} ne peut pas lire les images. Retirez-les ou choisissez un autre modèle dans les réglages.",
+    cantPdf:
+      "{model} ne peut pas lire les PDF. Retirez-les ou choisissez un autre modèle dans les réglages.",
+    unsureImages:
+      "Impossible de confirmer que {model} lit les images. Votre fournisseur peut refuser la requête.",
+    unsurePdf:
+      "Impossible de confirmer que {model} lit les PDF. Votre fournisseur peut refuser la requête.",
   },
   pt: {
     attach: "Anexar arquivos",
@@ -99,5 +147,11 @@ export const attachStrings: Record<Locale, AttachStrings> = {
       "{name}: arquivo grande demais (imagens e PDFs até 4 MB, texto até 200 KB, 300 KB de texto no total).",
     tooMany: "{name}: você pode anexar até 6 arquivos.",
     readFailed: "{name}: não foi possível ler o arquivo.",
+    cantImages: "{model} não lê imagens. Remova-as ou escolha outro modelo nas Configurações.",
+    cantPdf: "{model} não lê PDFs. Remova-os ou escolha outro modelo nas Configurações.",
+    unsureImages:
+      "Não foi possível confirmar que {model} lê imagens. Seu provedor pode recusar a solicitação.",
+    unsurePdf:
+      "Não foi possível confirmar que {model} lê PDFs. Seu provedor pode recusar a solicitação.",
   },
 };

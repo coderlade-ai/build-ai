@@ -90,7 +90,8 @@ export function ProviderSetup({ locale, idleLabel }: { locale: Locale; idleLabel
 
   function save() {
     if (!models || !model) return;
-    setSession({ provider, key: key.trim(), model });
+    const inputs = models.find((m) => m.id === model)?.inputs;
+    setSession({ provider, key: key.trim(), model, ...(inputs ? { inputs } : {}) });
     close();
   }
 
