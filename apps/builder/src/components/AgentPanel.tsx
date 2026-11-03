@@ -24,6 +24,7 @@ import { isSubmitShortcut } from "../composer/draft";
 import { providers } from "../providers/registry";
 import { getSession } from "../providers/session";
 import type { StreamError } from "../providers/stream";
+import { checkAttachments } from "../providers/capability";
 import { useProviderSession } from "../providers/useProviderSession";
 import { getProjectStore } from "../storage/client";
 import styles from "./Workspace.module.css";
@@ -316,6 +317,7 @@ export function AgentPanel({
     if (!at.attachments.length) return void run();
     const m = composeUserMessage(prompt.trim(), at.attachments);
     if (!prompt.trim() || running || !getSession()) return;
+    if (checkAttachments(getSession(), at.attachments).blocked.length) return; // BYOK-01
     at.clear();
     void run(m.content, mode, m.images, false);
   }
@@ -426,7 +428,11 @@ export function AgentPanel({
           </button>
         ))}
       </div>
-      <AttachmentList at={at} />
+      <AttachmentList
+        at={at}
+        check={checkAttachments(session, at.attachments)}
+        model={session?.model}
+      />
       <form className={styles.agentForm} onSubmit={onSubmit} {...at.dropProps}>
         <label htmlFor={ids.prompt} className={styles.srOnly}>
           {a.label}

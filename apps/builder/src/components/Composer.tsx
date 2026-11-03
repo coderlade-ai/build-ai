@@ -23,7 +23,9 @@ import { getProjectStore } from "../storage/client";
 import { askStrings } from "../i18n/ask";
 import { providerStrings, type ProviderStrings } from "../i18n/providers";
 import { providers } from "../providers/registry";
+import { checkAttachments } from "../providers/capability";
 import { getSession } from "../providers/session";
+import { useProviderSession } from "../providers/useProviderSession";
 import {
   askSystemPrompt,
   ProviderStreamError,
@@ -87,6 +89,8 @@ export function Composer({ s, locale }: { s: ShellStrings; locale: Locale }) {
   const tooLong = draft.prompt.length > maxPromptLength;
   const at = useAttachments(locale);
   const attachments = at.attachments;
+  const current = useProviderSession();
+  const check = checkAttachments(current, attachments);
 
   // Restore the tab's draft after hydration so server and client render the same markup.
   useEffect(() => {
@@ -124,6 +128,8 @@ export function Composer({ s, locale }: { s: ShellStrings; locale: Locale }) {
       setNotice(s.needProvider);
       return;
     }
+    // BYOK-01: a model known not to read these files gets nothing sent; the draft stays.
+    if (checkAttachments(session, attachments).blocked.length) return;
     const name = providers[session.provider].name;
     if (draft.mode === "code" || draft.mode === "plan") {
       const m = composeUserMessage(draft.prompt.trim(), attachments);
@@ -233,7 +239,7 @@ export function Composer({ s, locale }: { s: ShellStrings; locale: Locale }) {
         }}
         onKeyDown={onKeyDown}
       />
-      <AttachmentList at={at} />
+      <AttachmentList at={at} check={check} model={current?.model} />
       <div className={styles.row}>
         <fieldset className={styles.modes}>
           <legend className={styles.srOnly}>{s.modeLabel}</legend>

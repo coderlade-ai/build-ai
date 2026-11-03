@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, type DragEvent } from "react";
+import type { AttachmentCheck } from "../providers/capability";
 import type { Locale } from "@ladestack/i18n";
 import {
   admit,
@@ -68,8 +69,17 @@ export function useAttachments(locale: Locale) {
 type Attach = ReturnType<typeof useAttachments>;
 
 /** Chips for the attached files, the privacy note, and any per-file errors. */
-export function AttachmentList({ at }: { at: Attach }) {
+export function AttachmentList({
+  at,
+  check,
+  model,
+}: {
+  at: Attach;
+  check?: AttachmentCheck;
+  model?: string;
+}) {
   const { t, attachments, errors } = at;
+  const say = (s: string) => s.replace("{model}", model ?? "");
   return (
     <>
       {attachments.length ? (
@@ -90,6 +100,20 @@ export function AttachmentList({ at }: { at: Attach }) {
         </ul>
       ) : null}
       {attachments.length ? <p className={styles.hint}>{t.note}</p> : null}
+      {check?.blocked.length ? (
+        <ul className={styles.attachErrors} role="alert">
+          {check.blocked.map((k) => (
+            <li key={k}>{say(k === "image" ? t.cantImages : t.cantPdf)}</li>
+          ))}
+        </ul>
+      ) : null}
+      {check?.unsure.length ? (
+        <ul className={styles.hint} role="status">
+          {check.unsure.map((k) => (
+            <li key={k}>{say(k === "image" ? t.unsureImages : t.unsurePdf)}</li>
+          ))}
+        </ul>
+      ) : null}
       {errors.length ? (
         <ul className={styles.attachErrors} role="alert">
           {errors.map((e) => (
