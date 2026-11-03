@@ -4,6 +4,7 @@ import { bundleProject, errorPage } from "./bundle.js";
 import { allowedParents } from "./config.js";
 import {
   cacheName,
+  isPreviewCache,
   fileHeaders,
   messageTypes,
   parseFilesMessage,
@@ -20,8 +21,7 @@ let current = "";
 
 async function store(session, files) {
   for (const name of await caches.keys())
-    if (name.startsWith("ladestack-preview-") && name !== cacheName(session))
-      await caches.delete(name);
+    if (isPreviewCache(name) && name !== cacheName(session)) await caches.delete(name);
   const cache = await caches.open(cacheName(session));
   for (const req of await cache.keys())
     if (!(new URL(req.url).pathname.slice(`/p/${session}/`.length) in files))
@@ -112,6 +112,21 @@ async function start() {
       return;
     }
     if (event.source !== window.parent || !allowedParents.includes(event.origin)) return;
+    // SET-03: the builder is erasing local data; drop every project copy cached on this origin.
+    if (event.data && event.data.type === messageTypes.clear) {
+      version++; // files still being built are dropped, not stored after the erase
+      builder = "";
+      current = "";
+      frame.removeAttribute("src");
+      let ok = true;
+      try {
+        for (const name of await caches.keys()) if (isPreviewCache(name)) await caches.delete(name);
+      } catch {
+        ok = false;
+      }
+      window.parent.postMessage({ type: messageTypes.cleared, ok }, event.origin);
+      return;
+    }
     const msg = parseFilesMessage(event.data);
     if (!msg) return;
     const v = ++version;

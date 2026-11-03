@@ -233,6 +233,14 @@ try {
   await page.goto(base, { waitUntil: "networkidle" });
   if (await page.getByRole("heading", { name: "Your projects" }).count())
     throw new Error("Projects are still listed after erasing local data");
+  if (checkPreview) {
+    // The preview origin's cached copy of the last previewed project went with the erase.
+    await page.goto(`http://127.0.0.1:${previewPort}/`, { waitUntil: "load" });
+    const left = await page.evaluate(async () =>
+      (await caches.keys()).filter((n) => n.startsWith("ladestack-preview-")),
+    );
+    if (left.length) throw new Error(`Preview caches left after erase: ${left.join(", ")}`);
+  }
   // Language switch on the settings page keeps the user on settings.
   await page.goto(`${base}/settings`, { waitUntil: "networkidle" });
   await page.getByRole("link", { name: "日本語" }).click();
@@ -250,6 +258,6 @@ if (problems.length) {
   finish(false);
 }
 console.warn(
-  `Browser check passed: hydrated, Monaco mounted, attachments checked, checkpoint saved, local data erased${checkPreview ? ", static + React + Tailwind previews ran, viewports switched, new tab opened, console bridged" : ""}, no CSP violations`,
+  `Browser check passed: hydrated, Monaco mounted, attachments checked, checkpoint saved, local data erased${checkPreview ? " (preview cache too)" : ""}${checkPreview ? ", static + React + Tailwind previews ran, viewports switched, new tab opened, console bridged" : ""}, no CSP violations`,
 );
 finish(true);

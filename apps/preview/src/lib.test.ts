@@ -4,6 +4,7 @@ import {
   contentTypeFor,
   fileHeaders,
   injectBridge,
+  isPreviewCache,
   parseLogMessage,
   shortWhere,
   isSafePreviewPath,
@@ -123,5 +124,13 @@ describe("preview console bridge", () => {
     expect(
       shortWhere(`https://p.example/p/${session}/index.html?v=4:12`, "https://p.example", session),
     ).toBe("index.html:12");
+  });
+});
+
+describe("isPreviewCache", () => {
+  it("matches only caches this origin created", () => {
+    expect(isPreviewCache(cacheName(session))).toBe(true);
+    expect(isPreviewCache("workbox-precache")).toBe(false);
+    expect(isPreviewCache("other-ladestack-preview-x")).toBe(false);
   });
 });

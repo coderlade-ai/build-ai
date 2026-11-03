@@ -10,6 +10,7 @@ export interface EraseStrings {
   blocked: string;
   done: string;
   failed: string;
+  previewNotCleared: string;
 }
 
 export const erase: Record<Locale, EraseStrings> = {
@@ -23,6 +24,8 @@ export const erase: Record<Locale, EraseStrings> = {
     blocked: "Waiting for other LadeStack Build tabs to close. Close them to finish erasing.",
     done: "All local data was erased from this browser.",
     failed: "Couldn't erase the data. Please try again.",
+    previewNotCleared:
+      "Local data was erased, but the preview's copy of the last previewed project couldn't be reached. It is replaced the next time you open a preview, or clear this site's data in your browser settings.",
   },
   ru: {
     title: "Данные в этом браузере",
@@ -35,6 +38,8 @@ export const erase: Record<Locale, EraseStrings> = {
       "Ожидание закрытия других вкладок LadeStack Build. Закройте их, чтобы завершить удаление.",
     done: "Все локальные данные удалены из этого браузера.",
     failed: "Не удалось удалить данные. Попробуйте ещё раз.",
+    previewNotCleared:
+      "Локальные данные удалены, но копию последнего проекта в предпросмотре удалить не удалось. Она будет заменена при следующем открытии предпросмотра; также можно очистить данные сайта в настройках браузера.",
   },
   ja: {
     title: "このブラウザのデータ",
@@ -46,6 +51,8 @@ export const erase: Record<Locale, EraseStrings> = {
     blocked: "ほかの LadeStack Build タブが閉じられるのを待っています。閉じると消去が完了します。",
     done: "このブラウザのローカルデータをすべて消去しました。",
     failed: "データを消去できませんでした。もう一度お試しください。",
+    previewNotCleared:
+      "ローカルデータは消去されましたが、プレビューに残る最後のプロジェクトのコピーには到達できませんでした。次にプレビューを開くと置き換えられます。ブラウザーの設定でこのサイトのデータを消去することもできます。",
   },
   ko: {
     title: "이 브라우저의 데이터",
@@ -57,6 +64,8 @@ export const erase: Record<Locale, EraseStrings> = {
     blocked: "다른 LadeStack Build 탭이 닫히기를 기다리는 중입니다. 탭을 닫으면 삭제가 완료됩니다.",
     done: "이 브라우저의 로컬 데이터를 모두 지웠습니다.",
     failed: "데이터를 지우지 못했습니다. 다시 시도해 주세요.",
+    previewNotCleared:
+      "로컬 데이터는 삭제되었지만 미리보기에 남은 마지막 프로젝트 사본에는 접근하지 못했습니다. 다음에 미리보기를 열면 교체되며, 브라우저 설정에서 이 사이트 데이터를 지울 수도 있습니다.",
   },
   zh: {
     title: "此浏览器中的数据",
@@ -67,6 +76,8 @@ export const erase: Record<Locale, EraseStrings> = {
     blocked: "正在等待其他 LadeStack Build 标签页关闭。关闭它们即可完成清除。",
     done: "已从此浏览器清除所有本地数据。",
     failed: "无法清除数据，请重试。",
+    previewNotCleared:
+      "本地数据已清除，但无法访问预览中保存的上一个项目副本。下次打开预览时会被替换，你也可以在浏览器设置中清除此网站的数据。",
   },
   tr: {
     title: "Bu tarayıcıdaki veriler",
@@ -79,6 +90,8 @@ export const erase: Record<Locale, EraseStrings> = {
       "Diğer LadeStack Build sekmelerinin kapanması bekleniyor. Silmeyi tamamlamak için onları kapatın.",
     done: "Tüm yerel veriler bu tarayıcıdan silindi.",
     failed: "Veriler silinemedi. Lütfen tekrar deneyin.",
+    previewNotCleared:
+      "Yerel veriler silindi, ancak önizlemedeki son projenin kopyasına ulaşılamadı. Bir sonraki önizlemede değiştirilir; tarayıcı ayarlarından bu sitenin verilerini de silebilirsiniz.",
   },
   fr: {
     title: "Données dans ce navigateur",
@@ -91,6 +104,8 @@ export const erase: Record<Locale, EraseStrings> = {
       "En attente de la fermeture des autres onglets LadeStack Build. Fermez-les pour terminer l’effacement.",
     done: "Toutes les données locales ont été effacées de ce navigateur.",
     failed: "Impossible d’effacer les données. Veuillez réessayer.",
+    previewNotCleared:
+      "Les données locales ont été effacées, mais la copie du dernier projet dans l’aperçu n’a pas pu être atteinte. Elle sera remplacée au prochain aperçu ; vous pouvez aussi effacer les données de ce site dans les réglages du navigateur.",
   },
   pt: {
     title: "Dados neste navegador",
@@ -103,5 +118,7 @@ export const erase: Record<Locale, EraseStrings> = {
       "Aguardando o fechamento de outras abas do LadeStack Build. Feche-as para concluir a exclusão.",
     done: "Todos os dados locais foram apagados deste navegador.",
     failed: "Não foi possível apagar os dados. Tente novamente.",
+    previewNotCleared:
+      "Os dados locais foram apagados, mas não foi possível alcançar a cópia do último projeto na pré-visualização. Ela será substituída na próxima pré-visualização; você também pode limpar os dados deste site nas configurações do navegador.",
   },
 };
