@@ -466,3 +466,20 @@ a.secondary {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
+.answerAction {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-primary);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+.answerAction:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.answerAction:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}

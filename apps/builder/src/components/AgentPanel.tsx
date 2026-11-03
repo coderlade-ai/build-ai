@@ -30,6 +30,7 @@ import { getProjectStore } from "../storage/client";
 import styles from "./Workspace.module.css";
 import { composeUserMessage } from "../attachments/attach";
 import { AttachButton, AttachmentList, useAttachments } from "./Attachments";
+import { RecoveryActions } from "./RecoveryActions";
 
 type LogEntry =
   | { kind: "you"; text: string }
@@ -41,6 +42,11 @@ type LogEntry =
       error: boolean;
       undo?: { checkpointId: string; label: string };
       build?: { request: string; plan: string; mode: "plan" | "debug" };
+      /** Provider error: what the user can do next (BYOK-07). */
+      failed?: {
+        code: StreamError;
+        retry: { text: string; mode: AgentMode; images?: ChatImage[] };
+      };
     };
 
 const errorKey: Record<Exclude<StreamError, "aborted">, keyof ProviderStrings> = {
@@ -157,7 +163,10 @@ export function AgentPanel({
     [],
   );
 
-  function endText(o: AgentOutcome): LogEntry {
+  function endText(
+    o: AgentOutcome,
+    retry?: { text: string; mode: AgentMode; images?: ChatImage[] },
+  ): LogEntry {
     switch (o.reason) {
       case "done":
         return { kind: "end", text: a.done, error: false };
@@ -170,6 +179,7 @@ export function AgentPanel({
           kind: "end",
           text: t[errorKey[o.code === "aborted" ? "unexpected" : o.code]],
           error: true,
+          ...(o.code !== "aborted" && retry ? { failed: { code: o.code, retry } } : {}),
         };
     }
   }
@@ -263,7 +273,7 @@ export function AgentPanel({
             setApproval({ path: req.path, decide });
           }),
       });
-      let end = endText(outcome);
+      let end = endText(outcome, { text: task, mode: runMode, images });
       if (outcome.reason === "done" && failures > 0 && end.kind === "end")
         end = {
           ...end,
@@ -373,6 +383,19 @@ export function AgentPanel({
                     {e.build.mode === "debug" ? a.applyFix : a.buildPlan}
                   </button>
                 </>
+              ) : null}
+              {e.kind === "end" && e.failed ? (
+                <RecoveryActions
+                  code={e.failed.code}
+                  retry={() => {
+                    const r = e.failed!.retry;
+                    void run(r.text, r.mode, r.images, false);
+                  }}
+                  settings={`${localePrefix(locale)}/settings`}
+                  t={t}
+                  disabled={running || restoring}
+                  className={styles.agentLink}
+                />
               ) : null}
               {e.kind === "end" && e.undo ? (
                 <>
