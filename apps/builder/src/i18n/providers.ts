@@ -2,6 +2,8 @@ import type { Locale } from "@ladestack/i18n";
 
 /** BYOK provider setup strings, in all eight locales. Placeholders: {provider}, {model}. */
 export interface ProviderStrings {
+  retry: string;
+  changeProvider: string;
   connect: string;
   connected: string;
   title: string;
@@ -35,6 +37,8 @@ export interface ProviderStrings {
 
 export const providerStrings: Record<Locale, ProviderStrings> = {
   en: {
+    retry: "Try again",
+    changeProvider: "Change key or model",
     connect: "Connect AI provider",
     connected: "{provider} · {model}",
     title: "AI provider",
@@ -72,6 +76,8 @@ export const providerStrings: Record<Locale, ProviderStrings> = {
       "Debug works inside a project. Open one from your recent projects or import a ZIP, then choose Debug in the agent panel. Your draft is still here.",
   },
   ru: {
+    retry: "Повторить",
+    changeProvider: "Сменить ключ или модель",
     connect: "Подключить ИИ-провайдера",
     connected: "{provider} · {model}",
     title: "ИИ-провайдер",
@@ -108,6 +114,8 @@ export const providerStrings: Record<Locale, ProviderStrings> = {
       "Отладка работает внутри проекта. Откройте проект из недавних или импортируйте ZIP, затем выберите «Отладка» в панели агента. Черновик сохранён.",
   },
   ja: {
+    retry: "再試行",
+    changeProvider: "キーまたはモデルを変更",
     connect: "AI プロバイダーに接続",
     connected: "{provider} · {model}",
     title: "AI プロバイダー",
@@ -146,6 +154,8 @@ export const providerStrings: Record<Locale, ProviderStrings> = {
       "デバッグはプロジェクト内で使えます。最近のプロジェクトから開くか ZIP をインポートし、エージェントパネルで「デバッグ」を選んでください。下書きはそのまま残っています。",
   },
   ko: {
+    retry: "다시 시도",
+    changeProvider: "키 또는 모델 변경",
     connect: "AI 제공업체 연결",
     connected: "{provider} · {model}",
     title: "AI 제공업체",
@@ -182,6 +192,8 @@ export const providerStrings: Record<Locale, ProviderStrings> = {
       "디버그는 프로젝트 안에서 사용할 수 있습니다. 최근 프로젝트에서 열거나 ZIP을 가져온 뒤 에이전트 패널에서 디버그를 선택하세요. 초안은 그대로 있습니다.",
   },
   zh: {
+    retry: "重试",
+    changeProvider: "更换密钥或模型",
     connect: "连接 AI 服务商",
     connected: "{provider} · {model}",
     title: "AI 服务商",
@@ -216,6 +228,8 @@ export const providerStrings: Record<Locale, ProviderStrings> = {
       "调试需要在项目中使用。请从最近的项目中打开一个或导入 ZIP，然后在智能体面板中选择“调试”。草稿仍保留。",
   },
   tr: {
+    retry: "Tekrar dene",
+    changeProvider: "Anahtarı veya modeli değiştir",
     connect: "Yapay zekâ sağlayıcısı bağla",
     connected: "{provider} · {model}",
     title: "Yapay zekâ sağlayıcısı",
@@ -254,6 +268,8 @@ export const providerStrings: Record<Locale, ProviderStrings> = {
       "Hata ayıklama bir proje içinde çalışır. Son projelerinizden birini açın veya bir ZIP içe aktarın, ardından ajan panelinde Hata ayıklama'yı seçin. Taslağınız duruyor.",
   },
   fr: {
+    retry: "Réessayer",
+    changeProvider: "Changer de clé ou de modèle",
     connect: "Connecter un fournisseur d'IA",
     connected: "{provider} · {model}",
     title: "Fournisseur d'IA",
@@ -293,6 +309,8 @@ export const providerStrings: Record<Locale, ProviderStrings> = {
       "Le débogage fonctionne dans un projet. Ouvrez-en un depuis vos projets récents ou importez un ZIP, puis choisissez Débogage dans le panneau de l'agent. Votre brouillon est conservé.",
   },
   pt: {
+    retry: "Tentar de novo",
+    changeProvider: "Trocar chave ou modelo",
     connect: "Conectar provedor de IA",
     connected: "{provider} · {model}",
     title: "Provedor de IA",

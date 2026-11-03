@@ -34,6 +34,7 @@ import {
 } from "../providers/stream";
 import { composeUserMessage } from "../attachments/attach";
 import { AttachButton, AttachmentList, useAttachments } from "./Attachments";
+import { RecoveryActions } from "./RecoveryActions";
 
 /** Mode names are product terms and stay in English; their hints are localized. */
 const modeNames: Record<AlphaMode, string> = {
@@ -64,6 +65,7 @@ interface AskTurn {
   answer: string;
   state: "waiting" | "streaming" | "done" | "stopped" | "interrupted" | "failed";
   error?: string;
+  code?: StreamError;
 }
 
 export function Composer({ s, locale }: { s: ShellStrings; locale: Locale }) {
@@ -201,7 +203,7 @@ export function Composer({ s, locale }: { s: ShellStrings; locale: Locale }) {
       const code = e instanceof ProviderStreamError ? e.code : "unexpected";
       if (code === "aborted") setTurn((x) => x && { ...x, state: "stopped" });
       else if (code === "interrupted") setTurn((x) => x && { ...x, state: "interrupted" });
-      else setTurn((x) => x && { ...x, state: "failed", error: t[streamErrorKey[code]] });
+      else setTurn((x) => x && { ...x, state: "failed", error: t[streamErrorKey[code]], code });
     } finally {
       if (abort.current === controller) abort.current = null;
     }
@@ -297,6 +299,16 @@ export function Composer({ s, locale }: { s: ShellStrings; locale: Locale }) {
                 : turn.state === "interrupted"
                   ? a.interrupted
                   : turn.error}
+              {turn.state !== "stopped" ? (
+                <RecoveryActions
+                  code={turn.code ?? "interrupted"}
+                  retry={submit}
+                  settings={`${localePrefix(locale)}/settings`}
+                  t={t}
+                  disabled={busy}
+                  className={styles.answerAction}
+                />
+              ) : null}
             </p>
           ) : null}
           <p className={styles.answerNote}>{a.notSaved}</p>
