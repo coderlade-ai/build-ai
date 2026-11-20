@@ -18,6 +18,7 @@ import { projectNameFromPrompt, takePendingTask } from "../agent/handoff";
 import { toolsForMode, type AgentMode, type ToolContext } from "../agent/tools";
 import { partialStringField } from "../agent/partialJson";
 import { agentStrings } from "../i18n/agent";
+import { countText } from "../i18n/plural";
 import { toolLabel } from "../agent/labels";
 import { providerStrings, type ProviderStrings } from "../i18n/providers";
 import { isSubmitShortcut } from "../composer/draft";
@@ -277,7 +278,7 @@ export function AgentPanel({
       if (outcome.reason === "done" && failures > 0 && end.kind === "end")
         end = {
           ...end,
-          text: a.doneWithFailures.replace("{count}", String(failures)),
+          text: countText(locale, a.doneWithFailures, failures),
           error: true,
         };
       if (end.kind !== "end") add(end);

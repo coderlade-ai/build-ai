@@ -1,5 +1,6 @@
 import { locales } from "@ladestack/i18n";
 import { describe, expect, it } from "vitest";
+import { formsOf } from "./plural";
 import { format, importZip } from "./importZip";
 
 describe("ZIP import strings", () => {
@@ -9,8 +10,10 @@ describe("ZIP import strings", () => {
     for (const l of locales) {
       expect(Object.keys(importZip[l]).sort()).toEqual(keys);
       for (const k of keys as (keyof typeof importZip.en)[]) {
-        expect(importZip[l][k].trim()).not.toBe("");
-        expect(holes(importZip[l][k])).toEqual(holes(importZip.en[k]));
+        for (const form of formsOf(importZip[l][k])) {
+          expect(form.trim()).not.toBe("");
+          expect(holes(form)).toEqual(holes(formsOf(importZip.en[k])[0]!));
+        }
       }
     }
   });
