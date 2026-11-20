@@ -1,5 +1,6 @@
 import { locales } from "@ladestack/i18n";
 import { describe, expect, it } from "vitest";
+import { formsOf } from "./plural";
 import { agentStrings } from "./agent";
 import { askStrings } from "./ask";
 import { providerStrings } from "./providers";
@@ -33,8 +34,10 @@ describe("provider strings", () => {
     const holes = (s: string) => (s.match(/\{\w+\}/g) ?? []).sort();
     for (const l of locales)
       for (const k of keys) {
-        expect(agentStrings[l][k].trim()).not.toBe("");
-        expect(holes(agentStrings[l][k])).toEqual(holes(agentStrings.en[k]));
+        for (const form of formsOf(agentStrings[l][k])) {
+          expect(form.trim()).not.toBe("");
+          expect(holes(form)).toEqual(holes(formsOf(agentStrings.en[k])[0]!));
+        }
       }
   });
 });

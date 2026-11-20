@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { localePrefix, type Locale } from "@ladestack/i18n";
+import { localeInfo, localePrefix, type Locale } from "@ladestack/i18n";
 import type { Project } from "@ladestack/shared-types";
 import { fill, recent } from "../i18n/recent";
 import { getProjectStore } from "../storage/client";
@@ -36,7 +36,7 @@ export function RecentProjects({ locale }: { locale: Locale }) {
 
   if (projects.length === 0) return null;
 
-  const date = new Intl.DateTimeFormat(locale === "pt" ? "pt-BR" : locale, {
+  const date = new Intl.DateTimeFormat(localeInfo[locale].bcp47, {
     dateStyle: "medium",
     timeStyle: "short",
   });

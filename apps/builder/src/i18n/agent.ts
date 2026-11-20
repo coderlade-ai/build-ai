@@ -1,3 +1,4 @@
+import type { Countable } from "./plural";
 import type { Locale } from "@ladestack/i18n";
 
 /** Workspace agent strings, in all eight locales. Placeholders: {provider}, {path}, {steps}, {count}. */
@@ -18,7 +19,7 @@ export interface AgentStrings {
   listFailed: string;
   readFailed: string;
   previewFailed: string;
-  doneWithFailures: string;
+  doneWithFailures: Countable;
   done: string;
   stopped: string;
   maxSteps: string;
@@ -64,8 +65,10 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     listFailed: "Couldn't list files",
     readFailed: "Couldn't read {path}",
     previewFailed: "Couldn't check the preview (preview problem, not the AI)",
-    doneWithFailures:
-      "Finished, but {count} step(s) failed. Check the result before relying on it.",
+    doneWithFailures: {
+      one: "Finished, but {count} step failed. Check the result before relying on it.",
+      other: "Finished, but {count} steps failed. Check the result before relying on it.",
+    },
     done: "Done.",
     stopped: "Stopped. Files already written are saved.",
     maxSteps:
@@ -344,8 +347,10 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     listFailed: "Impossible de lister les fichiers",
     readFailed: "Impossible de lire {path}",
     previewFailed: "Impossible de vérifier l’aperçu (problème d’aperçu, pas de l’IA)",
-    doneWithFailures:
-      "Terminé, mais {count} étape(s) ont échoué. Vérifiez le résultat avant de vous y fier.",
+    doneWithFailures: {
+      one: "Terminé, mais {count} étape a échoué. Vérifiez le résultat avant de vous y fier.",
+      other: "Terminé, mais {count} étapes ont échoué. Vérifiez le résultat avant de vous y fier.",
+    },
     done: "Terminé.",
     stopped: "Arrêté. Les fichiers déjà écrits sont enregistrés.",
     maxSteps:
@@ -393,8 +398,10 @@ export const agentStrings: Record<Locale, AgentStrings> = {
     listFailed: "Não foi possível listar os arquivos",
     readFailed: "Não foi possível ler {path}",
     previewFailed: "Não foi possível verificar a prévia (problema da prévia, não da IA)",
-    doneWithFailures:
-      "Concluído, mas {count} etapa(s) falharam. Confira o resultado antes de confiar nele.",
+    doneWithFailures: {
+      one: "Concluído, mas {count} etapa falhou. Confira o resultado antes de confiar nele.",
+      other: "Concluído, mas {count} etapas falharam. Confira o resultado antes de confiar nele.",
+    },
     done: "Concluído.",
     stopped: "Parado. Os arquivos já gravados estão salvos.",
     maxSteps:

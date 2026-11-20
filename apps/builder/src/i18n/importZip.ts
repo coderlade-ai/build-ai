@@ -1,3 +1,4 @@
+import type { Countable } from "./plural";
 import type { Locale } from "@ladestack/i18n";
 
 /** ZIP import on the welcome screen, in all eight locales. Placeholders: {count}, {hooks}, {path}. */
@@ -7,7 +8,7 @@ export interface ImportStrings {
   choose: string;
   importing: string;
   open: string;
-  skipped: string;
+  skipped: Countable;
   hooks: string;
   createError: string;
   archiveTooLarge: string;
@@ -26,8 +27,11 @@ export const importZip: Record<Locale, ImportStrings> = {
     choose: "Choose ZIP file",
     importing: "Importing…",
     open: "Open project",
-    skipped:
-      "Imported. {count} files were left out (images and other binaries, .env secrets, or files over 2 MB).",
+    skipped: {
+      one: "Imported. {count} file was left out (images and other binaries, .env secrets, or files over 2 MB).",
+      other:
+        "Imported. {count} files were left out (images and other binaries, .env secrets, or files over 2 MB).",
+    },
     hooks:
       "package.json has install scripts ({hooks}). LadeStack Build never runs them automatically.",
     createError:
@@ -143,8 +147,11 @@ export const importZip: Record<Locale, ImportStrings> = {
     choose: "Choisir un fichier ZIP",
     importing: "Importation…",
     open: "Ouvrir le projet",
-    skipped:
-      "Importé. {count} fichiers ont été écartés (images et autres fichiers binaires, secrets .env ou fichiers de plus de 2 Mo).",
+    skipped: {
+      one: "Importé. {count} fichier a été écarté (images et autres fichiers binaires, secrets .env ou fichiers de plus de 2 Mo).",
+      other:
+        "Importé. {count} fichiers ont été écartés (images et autres fichiers binaires, secrets .env ou fichiers de plus de 2 Mo).",
+    },
     hooks:
       "package.json contient des scripts d'installation ({hooks}). LadeStack Build ne les exécute jamais automatiquement.",
     createError:
@@ -163,8 +170,11 @@ export const importZip: Record<Locale, ImportStrings> = {
     choose: "Escolher arquivo ZIP",
     importing: "Importando…",
     open: "Abrir projeto",
-    skipped:
-      "Importado. {count} arquivos ficaram de fora (imagens e outros binários, segredos .env ou arquivos com mais de 2 MB).",
+    skipped: {
+      one: "Importado. {count} arquivo ficou de fora (imagens e outros binários, segredos .env ou arquivos com mais de 2 MB).",
+      other:
+        "Importado. {count} arquivos ficaram de fora (imagens e outros binários, segredos .env ou arquivos com mais de 2 MB).",
+    },
     hooks:
       "O package.json tem scripts de instalação ({hooks}). O LadeStack Build nunca os executa automaticamente.",
     createError:

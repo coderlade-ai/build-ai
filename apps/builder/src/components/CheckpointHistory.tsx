@@ -1,9 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useId, useState } from "react";
-import type { Locale } from "@ladestack/i18n";
+import { localeInfo, type Locale } from "@ladestack/i18n";
 import type { Checkpoint } from "@ladestack/shared-types";
 import { history } from "../i18n/history";
+import { countText } from "../i18n/plural";
 import { formatCheckpointTime } from "../history/time";
 import { getProjectStore } from "../storage/client";
 import styles from "./Workspace.module.css";
@@ -135,12 +136,12 @@ export function CheckpointHistory({
                   <p>
                     <time
                       dateTime={c.createdAt}
-                      title={new Date(c.createdAt).toLocaleString(locale)}
+                      title={new Date(c.createdAt).toLocaleString(localeInfo[locale].bcp47)}
                     >
-                      {formatCheckpointTime(c.createdAt, locale)}
+                      {formatCheckpointTime(c.createdAt, localeInfo[locale].bcp47)}
                     </time>
                     {" · "}
-                    {h.files.replace("{count}", String(Object.keys(c.manifest).length))}
+                    {countText(locale, h.files, Object.keys(c.manifest).length)}
                   </p>
                 </div>
                 <button

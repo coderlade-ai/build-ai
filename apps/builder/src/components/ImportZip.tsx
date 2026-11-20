@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { localePrefix, type Locale } from "@ladestack/i18n";
 import { format, importZip, type ImportStrings } from "../i18n/importZip";
+import { countText } from "../i18n/plural";
 import type { RejectReason } from "../import/zip";
 import { getProjectStore } from "../storage/client";
 import styles from "./Welcome.module.css";
@@ -14,7 +15,7 @@ type State =
   | { kind: "error"; message: string }
   | { kind: "done"; href: string; notes: string[] };
 
-const rejectKey: Record<RejectReason, keyof ImportStrings> = {
+const rejectKey: Record<RejectReason, Exclude<keyof ImportStrings, "skipped">> = {
   "archive-too-large": "archiveTooLarge",
   "not-a-zip": "notAZip",
   "unsafe-path": "unsafePath",
@@ -56,7 +57,7 @@ export function ImportZip({ locale }: { locale: Locale }) {
       const href = `${localePrefix(locale)}/project?id=${encodeURIComponent(project.id)}`;
       const notes: string[] = [];
       if (result.skipped.length > 0)
-        notes.push(format(t.skipped, { count: result.skipped.length }));
+        notes.push(countText(locale, t.skipped, result.skipped.length));
       if (result.installHooks.length > 0)
         notes.push(format(t.hooks, { hooks: result.installHooks.join(", ") }));
       if (notes.length === 0) router.push(href);

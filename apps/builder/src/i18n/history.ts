@@ -1,3 +1,4 @@
+import type { Countable } from "./plural";
 import type { Locale } from "@ladestack/i18n";
 
 /** Checkpoint history panel strings, in all eight locales. */
@@ -12,7 +13,7 @@ export interface HistoryStrings {
   restored: string;
   failed: string;
   busy: string;
-  files: string;
+  files: Countable;
   current: string;
   reasonAuto: string;
   reasonManual: string;
@@ -33,7 +34,7 @@ export const history: Record<Locale, HistoryStrings> = {
     restored: "Files restored. Your previous files were saved as a checkpoint.",
     failed: "Something went wrong. Your files were not changed.",
     busy: "Wait for the agent to finish.",
-    files: "{count} files",
+    files: { one: "{count} file", other: "{count} files" },
     current: "Unsaved edits in the editor are not included until they save.",
     reasonAuto: "Before agent run",
     reasonManual: "Saved by you",
@@ -147,7 +148,7 @@ export const history: Record<Locale, HistoryStrings> = {
       "Fichiers restaurés. Vos fichiers précédents ont été enregistrés comme point de restauration.",
     failed: "Un problème est survenu. Vos fichiers n'ont pas été modifiés.",
     busy: "Attendez que l'agent ait terminé.",
-    files: "{count} fichiers",
+    files: { one: "{count} fichier", other: "{count} fichiers" },
     current:
       "Les modifications non enregistrées de l'éditeur ne sont incluses qu'une fois enregistrées.",
     reasonAuto: "Avant l'exécution de l'agent",
@@ -168,7 +169,7 @@ export const history: Record<Locale, HistoryStrings> = {
       "Arquivos restaurados. Seus arquivos anteriores foram salvos como ponto de restauração.",
     failed: "Algo deu errado. Seus arquivos não foram alterados.",
     busy: "Aguarde o agente terminar.",
-    files: "{count} arquivos",
+    files: { one: "{count} arquivo", other: "{count} arquivos" },
     current: "Edições não salvas no editor só entram depois de salvas.",
     reasonAuto: "Antes da execução do agente",
     reasonManual: "Salvo por você",
